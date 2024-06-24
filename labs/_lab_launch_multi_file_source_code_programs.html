@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : Launch Multi-File Source-Code Programs</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="_lab_launch_multi_file_source_code_programs" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-launch-multisource.html">Lab : Launch Multi-File Source-Code Programs</a></span></p><ul class="sectlevel3">
+<li><a href="lab-launch-multisource.html#_lab_launch_multi_file_source_code_programs"><span class="toc-current">1. Lab : Launch Multi-File Source-Code Programs</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="_lab_launch_multi_file_source_code_programs"><a class="anchor" href="#_lab_launch_multi_file_source_code_programs"></a>1. Lab : Launch Multi-File Source-Code Programs</h4>
+<div class="paragraph">
+<p>Dans le JDK 11, la <a href="https://openjdk.org/jeps/330">JEP 330</a> permet à la JVM de pouvoir exécuter directement un unique fichier source .java, sans requérir de compilation explicite préalable.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Consulter le fichier Hello.java dans le sous-répertoire <code>src\main\java</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Le fichier Hello.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+</pre></td><td class="code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Hello</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Utils</span><span class="o">.</span><span class="na">saluer</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">interface</span> <span class="nc">Utils</span> <span class="o">{</span>
+    <span class="kd">static</span> <span class="kt">void</span> <span class="nf">saluer</span><span class="o">()</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Exécuter cette application en passant le fichier <code>Hello.java</code> en paramètre de la JVM avec la commande :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">java Hello.java</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="title">Résultat d&#8217;exécution</div>
+<div class="content">
+<pre>C:\workshop-javase\src\main\java&gt;java Hello.java
+Hello</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La JVM compile à la volée le fichier source et exécute le bytecode.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+En Java 11, le fichier .class ne doit pas exister sinon une erreur qui arrête la JVM «
+error: class found on application class path » est émise au lancement de l&#8217;application
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>À partir de Java 22, la JVM a été améliorée pour permettre d&#8217;exécuter une application composée de plusieurs fichiers source toujours sans aucune compilation préalable.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Standard en Java 22</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/458">458: Launch Multi-File Source-Code Programs</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Refactorer le code pour ne plus imbriquer l&#8217;interface <code>Utils</code> mais pour la définir dans son propre fichier <code>Utils.java</code> :</p>
+</div>
+<div class="listingblock">
+<div class="title">Le fichier Hello.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Hello</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Utils</span><span class="o">.</span><span class="na">saluer</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Le fichier Utils.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="kd">interface</span> <span class="nc">Utils</span> <span class="o">{</span>
+  <span class="kd">static</span> <span class="kt">void</span> <span class="nf">saluer</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Exécuter cette application en passant le fichier <code>Hello.java</code> en paramètre de la JVM avec la commande :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">java Hello.java</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="title">Résultat d&#8217;exécution</div>
+<div class="content">
+<pre>C:\workshop-javase\src\main\java&gt;java Hello.java
+Hello</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La JVM recherche le fichier <code>Utils.java</code> et le compile à la volée.</p>
+</div>
+<div class="paragraph">
+<p>Si une classe utilisée est dans le même fichier .java alors elle n&#8217;est pas recherchée et est compilée et utilisée.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier le fichier <code>Hello.java</code> pour ajouter l&#8217;interface imbriquée <code>Utils</code></p>
+</div>
+<div class="listingblock">
+<div class="title">Le fichier Hello.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+</pre></td><td class="code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Hello</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Utils</span><span class="o">.</span><span class="na">saluer</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">interface</span> <span class="nc">Utils</span> <span class="o">{</span>
+    <span class="kd">static</span> <span class="kt">void</span> <span class="nf">saluer</span><span class="o">()</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello interne"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Exécuter cette application en passant le fichier <code>Hello.java</code> en paramètre de la JVM avec la commande :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">java Hello.java</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="title">Résultat d&#8217;exécution</div>
+<div class="content">
+<pre>C:\workshop-javase\src\main\java&gt;java Hello.java
+Hello interne</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il n&#8217;est pas possible d&#8217;avoir un même type déclaré dans plusieurs fichiers source de l&#8217;application.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Retirer l&#8217;interface imbriquée <code>Utils</code> dans le fichier <code>Hello.java</code> et ajouter une classe <code>Affichage</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">class</span> <span class="nc">Affichage</span> <span class="o">{}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>dans les fichiers <code>Hello.java</code> et <code>Utils.java</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Le fichier Hello.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Hello</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Utils</span><span class="o">.</span><span class="na">saluer</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Affichage</span> <span class="o">{}</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Le fichier Utils.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre><span class="kd">interface</span> <span class="nc">Utils</span> <span class="o">{</span>
+  <span class="kd">static</span> <span class="kt">void</span> <span class="nf">saluer</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Affichage</span> <span class="o">{}</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Exécuter l&#8217;application en passant le fichier <code>Hello.java</code> en paramètre de la JVM avec la commande :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">java Hello.java</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="title">Résultat d&#8217;exécution</div>
+<div class="content">
+<pre>C:\workshop-javase\src\main\java&gt;java Hello.java
+C:\workshop-javase\src\main\java\Utils.java:7: error: duplicate class: Affichage
+class Affichage {}
+^
+1 error
+error: compilation failed</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Une erreur est émise par la JVM.</p>
+</div>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 18:24:54 +0200
+</div>
+</div>
+</body>
+</html>

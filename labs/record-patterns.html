@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : les Record Patterns</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="record-patterns" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-record-patterns.html">Lab : les Record Patterns</a></span></p><ul class="sectlevel3">
+<li><a href="lab-record-patterns.html#record-patterns"><span class="toc-current">1. Lab : les Record Patterns</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="record-patterns"><a class="anchor" href="#record-patterns"></a>1. Lab : les Record Patterns</h4>
+<div class="paragraph">
+<p>Le but est d&#8217;ajouter un nouveau pattern utilisable dans le pattern matching : le record pattern permettant de déconstruire les valeurs d&#8217;un record. Ce mécanisme permet d&#8217;affecter dans des variables les valeurs des composants du record.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Première preview en Java 19 <a href="https://openjdk.org/jeps/405">JEP 405</a>. Standard en Java 21</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/440">440: Record Patterns</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect4">
+<h5 id="_le_record_pattern_avec_instanceof"><a class="anchor" href="#_le_record_pattern_avec_instanceof"></a>1.1. Le record pattern avec <code>instanceof</code></h5>
+<div class="paragraph">
+<p>Un record pattern est utilisable dans le pattern matching avec une instruction <code>instanceof</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="n">record</span> <span class="nf">Utilisateur</span><span class="o">(</span><span class="nc">String</span> <span class="n">prenom</span><span class="o">,</span> <span class="nc">String</span> <span class="n">nom</span><span class="o">)</span> <span class="o">{}</span>
+<span class="nc">Object</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Utilisateur</span><span class="o">(</span><span class="s">"John"</span><span class="o">,</span> <span class="s">"Doe"</span><span class="o">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est possible d&#8217;utiliser le type pattern pour vérifier le type d&#8217;un record et l&#8217;assigner à une variable s&#8217;il correspond. On peut alors invoquer les accesseurs sur les composants du record.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="k">if</span> <span class="o">(</span><span class="n">obj</span> <span class="k">instanceof</span> <span class="nc">Utilisateur</span> <span class="n">utilisateur</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Utilisateur : "</span> <span class="o">+</span> <span class="n">utilisateur</span><span class="o">.</span><span class="na">prenom</span><span class="o">()</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">utilisateur</span><span class="o">.</span><span class="na">nom</span><span class="o">());</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Le code peut être réécrit en utilisant un record pattern dont la syntaxe est le type du record suivi de la définition de ses composants.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="k">if</span> <span class="o">(</span><span class="n">obj</span> <span class="k">instanceof</span> <span class="nf">Utilisateur</span><span class="o">(</span><span class="nc">String</span> <span class="n">prenom</span><span class="o">,</span> <span class="nc">String</span> <span class="n">nom</span><span class="o">))</span> <span class="o">{</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Utilisateur : "</span> <span class="o">+</span> <span class="n">prenom</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">nom</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dans l&#8217;exemple ci-dessus, <code>Utilisateur(String prenom, String nom)</code> est un record pattern.
+Le pattern fait la correspondance avec un type qui est un record et si elle réussit alors les variables définies dans le pattern sont initialisées avec celles résultant de l&#8217;invocation des accesseurs correspondants sur l&#8217;instance du record.
+Ces traitements correspondent à une forme de déconstruction du record.</p>
+</div>
+<div class="paragraph">
+<p>Il est alors possible d&#8217;accéder directement à l&#8217;état des composants du record via des variables définies dans le pattern.
+Cela réduit et simplifie le code nécessaire sans nuire à la lisibilité.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la classe <code>fr.sciam.workshop.javase.recordpattern.MainRecordPattern</code>, compléter la méthode <code>afficherHeros()</code> afin d&#8217;utiliser un record pattern pour obtenir les <code>prenom</code>, <code>nom</code> et <code>univers</code> de l&#8217;instance passée en paramètre si elle est de type <code>Heros</code>. Puis afficher ces valeurs dans la console.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">afficherHeros</span><span class="o">(</span><span class="nc">Object</span> <span class="n">objet</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">objet</span> <span class="k">instanceof</span> <span class="nf">Heros</span><span class="o">(</span><span class="nc">String</span> <span class="n">prenom</span><span class="o">,</span> <span class="nc">String</span> <span class="n">nom</span><span class="o">,</span> <span class="nc">Univers</span> <span class="n">univers</span><span class="o">))</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Héros : "</span> <span class="o">+</span> <span class="n">prenom</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">nom</span><span class="o">);</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Univers : "</span> <span class="o">+</span> <span class="n">univers</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainRecordPattern</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Afficher Héros
+Héros : Bilbon Sacquet
+Univers : Univers[nom=Le seigneur des anneaux, type=FANTAISIE]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Le nom des composants n&#8217;a pas l&#8217;obligation d&#8217;être identique à celui utilisé dans la définition du record : seuls l&#8217;ordre et le type des composants doivent être respectés.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>afficherHeros()</code> pour utiliser des noms de composants différents de celui du record <code>Heros</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">afficherHeros</span><span class="o">(</span><span class="nc">Object</span> <span class="n">objet</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">objet</span> <span class="k">instanceof</span> <span class="nf">Heros</span><span class="o">(</span><span class="nc">String</span> <span class="n">p</span><span class="o">,</span> <span class="nc">String</span> <span class="n">n</span><span class="o">,</span> <span class="nc">Univers</span> <span class="n">u</span><span class="o">))</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Héros : "</span> <span class="o">+</span> <span class="n">p</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">n</span><span class="o">);</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Univers : "</span> <span class="o">+</span> <span class="n">u</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainRecordPattern</code> et vérifier que l&#8217;on obtient le même résultat :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Afficher Héros
+Héros : Bilbon Sacquet
+Univers : Univers[nom=Le seigneur des anneaux, type=FANTAISIE]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est également possible d&#8217;utiliser l&#8217;inférence de type avec <code>var</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier à nouveau la méthode <code>afficherHeros()</code> pour utiliser l&#8217;inférence de type avec <code>var</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">afficherHeros</span><span class="o">(</span><span class="nc">Object</span> <span class="n">objet</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">objet</span> <span class="k">instanceof</span> <span class="nf">Heros</span><span class="o">(</span><span class="kt">var</span> <span class="n">p</span><span class="o">,</span> <span class="kt">var</span> <span class="n">n</span><span class="o">,</span> <span class="kt">var</span> <span class="n">u</span><span class="o">))</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Héros : "</span> <span class="o">+</span> <span class="n">p</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">n</span><span class="o">);</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Univers : "</span> <span class="o">+</span> <span class="n">u</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainRecordPattern</code> et vérifier que l&#8217;on obtient encore le même résultat :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Afficher Héros
+Héros : Bilbon Sacquet
+Univers : Univers[nom=Le seigneur des anneaux, type=FANTAISIE]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Les record patterns peuvent être imbriqués pour permettre d&#8217;exploiter facilement les valeurs de records encapsulés dans d&#8217;autres records.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier à nouveau la méthode <code>afficherHeros()</code> pour déconstruire le record <code>Univers</code> encapsulé dans <code>Heros</code>. Afficher les valeurs des composants d'<code>Univers</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">afficherHeros</span><span class="o">(</span><span class="nc">Object</span> <span class="n">objet</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">objet</span> <span class="k">instanceof</span> <span class="nf">Heros</span><span class="o">(</span><span class="kt">var</span> <span class="n">p</span><span class="o">,</span> <span class="kt">var</span> <span class="n">n</span><span class="o">,</span> <span class="nc">Univers</span><span class="o">(</span><span class="nc">String</span> <span class="n">titre</span><span class="o">,</span> <span class="nc">Type</span> <span class="n">type</span><span class="o">)))</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Héros : "</span> <span class="o">+</span> <span class="n">p</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">n</span><span class="o">);</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Univers : "</span> <span class="o">+</span> <span class="n">titre</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">type</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainRecordPattern</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Afficher Héros
+Héros : Bilbon Sacquet
+Univers : Le seigneur des anneaux FANTAISIE</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+La valeur <code>null</code> ne correspond à aucun record pattern.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="record-patterns-switch"><a class="anchor" href="#record-patterns-switch"></a>1.2. Le record pattern avec <code>switch</code></h5>
+<div class="paragraph">
+<p>Un record pattern est utilisable dans le pattern matching avec une instruction <code>switch</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>utiliserSwitch()</code> en utilisant une instruction <code>switch</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Dans le cas d&#8217;un objet de type <code>Heros</code>, afficher le <code>prenom</code> et le <code>nom</code>.</p>
+</li>
+<li>
+<p>Dans le cas d&#8217;un objet de type <code>Univers</code>, afficher le <code>titre</code> et le <code>type</code>.</p>
+</li>
+<li>
+<p>Dans les autres cas, afficher un message alternatif.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">utiliserSwitch</span><span class="o">(</span><span class="nc">Object</span> <span class="n">objet</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">switch</span> <span class="o">(</span><span class="n">objet</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nf">Heros</span><span class="o">(</span><span class="nc">String</span> <span class="n">prenom</span><span class="o">,</span> <span class="nc">String</span> <span class="n">nom</span><span class="o">,</span> <span class="nc">Univers</span> <span class="n">univers</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">prenom</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">nom</span><span class="o">);</span>
+      <span class="k">case</span> <span class="nf">Univers</span><span class="o">(</span><span class="nc">String</span> <span class="n">titre</span><span class="o">,</span> <span class="nc">Type</span> <span class="n">type</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">titre</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">type</span><span class="o">);</span>
+      <span class="k">case</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Paramètre null"</span><span class="o">);</span>
+      <span class="k">default</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Type non supporté : "</span> <span class="o">+</span> <span class="n">objet</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainRecordPattern</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Utiliser switch
+Bilbon Sacquet
+Le seigneur des anneaux FANTAISIE
+Type non supporté : class java.lang.Integer</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_le_record_pattern_avec_les_types_génériques"><a class="anchor" href="#_le_record_pattern_avec_les_types_génériques"></a>1.3. Le record pattern avec les types génériques</h5>
+<div class="paragraph">
+<p>L&#8217;inférence des types d&#8217;arguments génériques dans les record patterns est supportée.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>utiliserGeneriques()</code> en testant le type du paramètre <code>objet</code> :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>S&#8217;il est de type <code>Quete&lt;Heros&gt;</code>, afficher <code>prenom</code> et <code>nom</code> du <code>Heros</code> déconstruit.</p>
+</li>
+<li>
+<p>S&#8217;il est de type <code>Quete&lt;String&gt;</code> afficher la chaîne de caractères.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">utiliserGeneriques</span><span class="o">(</span><span class="nc">Object</span> <span class="n">objet</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">objet</span> <span class="k">instanceof</span> <span class="nf">Quete</span><span class="o">(</span><span class="nc">Heros</span><span class="o">(</span><span class="nc">String</span> <span class="n">prenom</span><span class="o">,</span> <span class="nc">String</span> <span class="n">nom</span><span class="o">,</span> <span class="nc">Univers</span> <span class="n">univers</span><span class="o">)))</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">prenom</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">nom</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">objet</span> <span class="k">instanceof</span> <span class="nf">Quete</span><span class="o">(</span><span class="nc">String</span> <span class="n">valeur</span><span class="o">))</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">valeur</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainRecordPattern</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Utiliser génériques
+Bilbon Sacquet
+Anneau unique</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 18:24:58 +0200
+</div>
+</div>
+</body>
+</html>

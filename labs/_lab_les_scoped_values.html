@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : les Scoped Values</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="_lab_les_scoped_values" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-scoped-values.html">Lab : les Scoped Values</a></span></p><ul class="sectlevel3">
+<li><a href="lab-scoped-values.html#_lab_les_scoped_values"><span class="toc-current">1. Lab : les Scoped Values</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="_lab_les_scoped_values"><a class="anchor" href="#_lab_les_scoped_values"></a>1. Lab : les Scoped Values</h4>
+<div class="paragraph">
+<p>Historiquement depuis Java 1.2, on utilise une variable de type <code>java.lang.ThreadLocal</code> pour partager des objets dans le code exécuté par un thread, évitant ainsi de les passer en paramètres des différentes méthodes invoquées.</p>
+</div>
+<div class="paragraph">
+<p>Son utilisation est notoirement connue pour présenter plusieurs risques : les objets sont mutables, fuite de mémoire, consommation de ressources, …</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Première preview en Java 21 <a href="https://openjdk.org/jeps/446">JEP 446</a>. Second preview en Java 22</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/464">462: Scoped Values</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+{preview}
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>L&#8217;API <code>java.lang.ScopedValue</code> tente de remédier à ces inconvénients.</p>
+</div>
+<div class="paragraph">
+<p>Une <code>ScopedValue</code> est une valeur qui est définie une fois et qui est ensuite accessible en lecture uniquement pendant une période limitée d&#8217;exécution par des traitements dans un thread.</p>
+</div>
+<div class="paragraph">
+<p>Une <code>ScopedValue</code> permet ainsi de partager des données de manière sûre et efficace pendant une période d&#8217;exécution limitée sans passer les données en paramètres des méthodes invoquées.</p>
+</div>
+<div class="sect4">
+<h5 id="_la_création_dune_instance"><a class="anchor" href="#_la_création_dune_instance"></a>1.1. La création d&#8217;une instance</h5>
+<div class="paragraph">
+<p>La création d&#8217;une instance de type <code>java.lang.ScopedValue</code> est similaire à celle d&#8217;une instance de type <code>java.lang.ThreadLocal</code> : il faut définir une variable <code>public static final</code> pour faciliter son accès et l&#8217;initialiser avec l&#8217;invocation de la fabrique <code>ScopedValue::newinstance</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la classe <code>fr.sciam.workshop.javase.scopedvalues.Contexte</code> pour ajouter un champ <code>public static final NOM_UTILISATEUR</code> de type <code>ScopedValue&lt;String&gt;</code> initialisé avec l&#8217;invocation de <code>ScopedValue::newinstance</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">class</span> <span class="nc">Contexte</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">ScopedValue</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="no">NOM_UTILISATEUR</span> <span class="o">=</span> <span class="nc">ScopedValue</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lassociation_dune_valeur"><a class="anchor" href="#_lassociation_dune_valeur"></a>1.2. L&#8217;association d&#8217;une valeur</h5>
+<div class="paragraph">
+<p>L&#8217;appel à une méthode <code>ScopedValue::xxxWhere</code> permet d&#8217;associer une valeur à un thread et d&#8217;exécuter des traitements qui pourront accéder à cette valeur dans le thread actuel sans avoir à les passer en paramètres des différentes méthodes utilisées.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>associerValeur()</code> de la classe <code>MainScopedValues</code> pour :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>exécuter la méthode <code>MonService::executer</code> via la <code>ScopedValue</code> <code>NOM_UTILISATEUR</code>  qui associe la valeur <code>admin-main</code> au thread courant</p>
+</li>
+<li>
+<p>démarrer un thread virtuel qui associe la valeur <code>admin-virtuel</code> à la <code>ScopedValue</code> <code>NOM_UTILISATEUR</code> pour exécuter la méthode <code>MonService::executer</code></p>
+</li>
+<li>
+<p>attendre la fin de l&#8217;exécution du thread</p>
+</li>
+<li>
+<p>démarrer un thread de la plateforme nommé <code>Tache1</code> qui associe la valeur <code>admin-plateforme</code> à la <code>ScopedValue</code> <code>NOM_UTILISATEUR</code> pour exécuter la méthode <code>MonService::executer</code></p>
+</li>
+<li>
+<p>attendre la fin de l&#8217;exécution du thread</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Une tâche est exécutée dans un thread virtuel, cette fonctionnalité est détaillée dans le lab <a href="lab-threads-virtuels.html#threads-virtuels">les threads virtuels</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">associerValeur</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+
+    <span class="nc">ScopedValue</span><span class="o">.</span><span class="na">runWhere</span><span class="o">(</span><span class="nc">Contexte</span><span class="o">.</span><span class="na">NOM_UTILISATEUR</span><span class="o">,</span> <span class="s">"admin-main"</span><span class="o">,</span> <span class="nl">MonService:</span><span class="o">:</span><span class="n">executer</span><span class="o">);</span>
+
+    <span class="kt">var</span> <span class="n">tache1</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">ofVirtual</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">name</span><span class="o">(</span><span class="s">"Tache1"</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">start</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="nc">ScopedValue</span><span class="o">.</span><span class="na">runWhere</span><span class="o">(</span><span class="nc">Contexte</span><span class="o">.</span><span class="na">NOM_UTILISATEUR</span><span class="o">,</span> <span class="s">"admin-virtuel"</span><span class="o">,</span> <span class="nl">MonService:</span><span class="o">:</span><span class="n">executer</span><span class="o">));</span>
+    <span class="n">tache1</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="nc">Duration</span><span class="o">.</span><span class="na">ofSeconds</span><span class="o">(</span><span class="mi">1L</span><span class="o">));</span>
+
+    <span class="kt">var</span> <span class="n">tache2</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">ofPlatform</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">name</span><span class="o">(</span><span class="s">"Tache2"</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">start</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="nc">ScopedValue</span><span class="o">.</span><span class="na">runWhere</span><span class="o">(</span><span class="nc">Contexte</span><span class="o">.</span><span class="na">NOM_UTILISATEUR</span><span class="o">,</span> <span class="s">"admin-plateforme"</span><span class="o">,</span> <span class="nl">MonService:</span><span class="o">:</span><span class="n">executer</span><span class="o">));</span>
+    <span class="n">tache2</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="nc">Duration</span><span class="o">.</span><span class="na">ofSeconds</span><span class="o">(</span><span class="mi">1L</span><span class="o">));</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Pour obtenir une valeur associée au thread courant, il faut utiliser la méthode <code>ScopedValue::get</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>executer()</code> de la classe <code>MonService</code> pour obtenir la valeur de <code>NOM_UTILISATEUR</code> en invoquant sa méthode <code>get()</code> et afficher le thread courant et la valeur obtenue.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">static</span> <span class="kt">int</span> <span class="nf">executer</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">nomUtilisateur</span> <span class="o">=</span> <span class="nc">Contexte</span><span class="o">.</span><span class="na">NOM_UTILISATEUR</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">()</span> <span class="o">+</span> <span class="s">" Monservice utilisateur : "</span> <span class="o">+</span> <span class="n">nomUtilisateur</span><span class="o">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainScopedValues</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Associer une valeur à un traitement
+Thread[#1,main,5,main] Monservice utilisateur : admin-main
+VirtualThread[#29,Tache1]/runnable@ForkJoinPool-1-worker-1 Monservice utilisateur : admin-virtuel
+Thread[#32,Tache2,5,main] Monservice utilisateur : admin-plateforme</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La valeur est associée pendant la durée d&#8217;exécution des traitements associés. Une fois l&#8217;exécution terminée, la valeur n&#8217;est plus accessible.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>associerValeur()</code> de la classe <code>MainScopedValues</code> pour ajouter à la fin l&#8217;invocation de la méthode <code>MonService::executer</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">    <span class="nc">MonService</span><span class="o">.</span><span class="na">executer</span><span class="o">();</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainScopedValues</code> pour vérifier la levée d&#8217;une exception car la valeur n&#8217;est pas associée dans le thread courant.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Associer une valeur à un traitement
+Thread[#1,main,5,main] Monservice utilisateur : admin-main
+VirtualThread[#29,Tache1]/runnable@ForkJoinPool-1-worker-1 Monservice utilisateur : admin-virtuel
+Thread[#32,Tache2,5,main] Monservice utilisateur : admin-plateforme
+Exception in thread "main" java.util.NoSuchElementException
+	at java.base/java.lang.ScopedValue.slowGet(ScopedValue.java:700)
+	at java.base/java.lang.ScopedValue.get(ScopedValue.java:693)
+	at fr.sciam.workshop.javase.scopedvalues.MonService.executer(MainScopedValues.java:67)
+	at fr.sciam.workshop.javase.scopedvalues.MainScopedValues.associerValeur(MainScopedValues.java:45)
+	at fr.sciam.workshop.javase.scopedvalues.MainScopedValues.main(MainScopedValues.java:13)</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est possible d&#8217;utiliser la méthode <code>ScopedValue::isBound</code> qui renvoie un booléen indiquant si une valeur est associée au thread courant.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>executer()</code> de la classe <code>MonService</code> pour obtenir la valeur de <code>NOM_UTILISATEUR</code> en invoquant sa méthode <code>get()</code> si elle est associée ou <code>"Inconnu"</code> dans le cas contraire.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">static</span> <span class="kt">int</span> <span class="nf">executer</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">nomUtilisateur</span> <span class="o">=</span> <span class="nc">Contexte</span><span class="o">.</span><span class="na">NOM_UTILISATEUR</span><span class="o">.</span><span class="na">isBound</span><span class="o">()</span> <span class="o">?</span> <span class="nc">Contexte</span><span class="o">.</span><span class="na">NOM_UTILISATEUR</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">:</span> <span class="s">"Inconnu"</span><span class="o">;</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">()</span> <span class="o">+</span> <span class="s">" Monservice utilisateur : "</span> <span class="o">+</span> <span class="n">nomUtilisateur</span><span class="o">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainScopedValues</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Associer une valeur à un traitement
+Thread[#1,main,5,main] Monservice utilisateur : admin-main
+VirtualThread[#29,Tache1]/runnable@ForkJoinPool-1-worker-1 Monservice utilisateur : admin-virtuel
+Thread[#32,Tache2,5,main] Monservice utilisateur : admin-plateforme
+Thread[#1,main,5,main] Monservice utilisateur : Inconnu</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_réassociation_dune_valeur"><a class="anchor" href="#_la_réassociation_dune_valeur"></a>1.3. La réassociation d&#8217;une valeur</h5>
+<div class="paragraph">
+<p>Les valeurs associées sont immutables mais il est possible de réassocier une autre valeur pour un traitement sous-jacent exécuté avec la <code>ScopedValue</code> où une valeur différente est associée.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>reassocierValeur()</code> de la classe <code>MainScopedValues</code> pour lancer un thread nommé <code>Tache3</code> qui associe la valeur <code>admin</code> à la <code>ScopedValue</code> <code>NOM_UTILISATEUR</code> pour exécuter les traitements suivants :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>invoquer la méthode <code>MonService::executer</code></p>
+</li>
+<li>
+<p>lancer un thread nommé <code>Tache4</code> qui associe la valeur <code>admin-rebind</code> à la <code>ScopedValue</code> <code>NOM_UTILISATEUR</code> pour exécuter la méthode <code>MonService::executer</code></p>
+</li>
+<li>
+<p>attendre la fin du thread <code>Tache4</code></p>
+</li>
+<li>
+<p>invoquer la méthode <code>MonService::executer</code></p>
+</li>
+<li>
+<p>attendre la fin du thread <code>Tache3</code></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">reassocierValeur</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+
+    <span class="kt">var</span> <span class="n">tache3</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">ofPlatform</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">name</span><span class="o">(</span><span class="s">"Tache3"</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">start</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="nc">ScopedValue</span><span class="o">.</span><span class="na">runWhere</span><span class="o">(</span><span class="nc">Contexte</span><span class="o">.</span><span class="na">NOM_UTILISATEUR</span><span class="o">,</span> <span class="s">"admin"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+          <span class="nc">MonService</span><span class="o">.</span><span class="na">executer</span><span class="o">();</span>
+
+          <span class="kt">var</span> <span class="n">tache4</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">ofPlatform</span><span class="o">()</span>
+              <span class="o">.</span><span class="na">name</span><span class="o">(</span><span class="s">"Tache4"</span><span class="o">)</span>
+              <span class="o">.</span><span class="na">start</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="nc">ScopedValue</span><span class="o">.</span><span class="na">runWhere</span><span class="o">(</span><span class="nc">Contexte</span><span class="o">.</span><span class="na">NOM_UTILISATEUR</span><span class="o">,</span> <span class="s">"admin-rebind"</span><span class="o">,</span> <span class="nl">MonService:</span><span class="o">:</span><span class="n">executer</span><span class="o">));</span>
+          <span class="k">try</span> <span class="o">{</span>
+            <span class="n">tache4</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+          <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">);</span>
+          <span class="o">}</span>
+
+          <span class="nc">MonService</span><span class="o">.</span><span class="na">executer</span><span class="o">();</span>
+        <span class="o">}));</span>
+    <span class="n">tache3</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainScopedValues</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Reassocier une valeur à un traitement
+Thread[#33,Tache3,5,main] Monservice utilisateur : admin
+Thread[#34,Tache4,5,main] Monservice utilisateur : admin-rebind
+Thread[#33,Tache3,5,main] Monservice utilisateur : admin</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lassociation_de_plusieurs_valeurs"><a class="anchor" href="#_lassociation_de_plusieurs_valeurs"></a>1.4. L&#8217;association de plusieurs valeurs</h5>
+<div class="paragraph">
+<p>La méthode <code>ScopedValue::where</code> retourne une instance de type <code>ScopedValue.Carrier</code> qui permet au travers de sa méthode <code>where()</code> d&#8217;associer une valeur à une autre <code>ScopedValue</code> et ses méthodes <code>run()</code> ou <code>call()</code> de préciser le traitement à exécuter.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br></p>
+</div>
+<div class="paragraph">
+<p>Compléter la classe <code>Contexte</code> pour ajout un champ <code>public static final ID_UTILISATEUR</code> de type <code>ScopedValue&lt;Long&gt;</code> initialisé avec l&#8217;invocation de <code>ScopedValue::newInstance</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">ScopedValue</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">&gt;</span> <span class="no">ID_UTILISATEUR</span> <span class="o">=</span> <span class="nc">ScopedValue</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Compléter la méthode <code>associerPlusieursValeurs()</code> de la classe <code>MainScopedValues</code> pour exécuter la méthode <code>MonService::executer</code> dans le thread courant via la <code>ScopedValue</code> <code>NOM_UTILISATEUR</code> qui associe la valeur <code>admin-main</code> et la <code>ScopedValue</code> <code>ID_UTILISATEUR</code> qui associe la valeur <code>12345</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">associerPlusieursValeurs</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+
+    <span class="nc">ScopedValue</span><span class="o">.</span><span class="na">where</span><span class="o">(</span><span class="nc">Contexte</span><span class="o">.</span><span class="na">NOM_UTILISATEUR</span><span class="o">,</span> <span class="s">"admin-main"</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">where</span><span class="o">(</span><span class="nc">Contexte</span><span class="o">.</span><span class="na">ID_UTILISATEUR</span><span class="o">,</span> <span class="mi">12345L</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="nl">MonService:</span><span class="o">:</span><span class="n">traiter</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Compléter la méthode <code>traiter()</code> de la classe <code>MonService</code> pour obtenir les valeurs de <code>NOM_UTILISATEUR</code> et de <code>ID_UTILISATEUR</code> en invoquant leur méthode <code>get()</code> et afficher le thread courant et les valeurs obtenues.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">static</span> <span class="kt">int</span> <span class="nf">traiter</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">nomUtilisateur</span> <span class="o">=</span> <span class="nc">Contexte</span><span class="o">.</span><span class="na">NOM_UTILISATEUR</span><span class="o">.</span><span class="na">isBound</span><span class="o">()</span> <span class="o">?</span> <span class="nc">Contexte</span><span class="o">.</span><span class="na">NOM_UTILISATEUR</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">:</span> <span class="s">"Inconnu"</span><span class="o">;</span>
+    <span class="nc">Long</span> <span class="n">idUtilisateur</span> <span class="o">=</span> <span class="nc">Contexte</span><span class="o">.</span><span class="na">ID_UTILISATEUR</span><span class="o">.</span><span class="na">isBound</span><span class="o">()</span> <span class="o">?</span> <span class="nc">Contexte</span><span class="o">.</span><span class="na">ID_UTILISATEUR</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">:</span> <span class="o">-</span><span class="mi">1L</span><span class="o">;</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">()</span> <span class="o">+</span> <span class="s">" Monservice utilisateur : "</span> <span class="o">+</span> <span class="n">nomUtilisateur</span> <span class="o">+</span> <span class="s">" (id="</span> <span class="o">+</span> <span class="n">idUtilisateur</span> <span class="o">+</span> <span class="s">")"</span><span class="o">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainScopedValues</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Associer plusieurs valeurs à un traitement
+Thread[#1,main,5,main] Monservice utilisateur : admin-main (id=12345)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_le_partage_de_valeurs_dans_les_threads_virtuels_dune_stucturedtaskscope"><a class="anchor" href="#_le_partage_de_valeurs_dans_les_threads_virtuels_dune_stucturedtaskscope"></a>1.5. Le partage de valeurs dans les threads virtuels d&#8217;une StucturedTaskScope</h5>
+<div class="paragraph">
+<p>Une valeur d&#8217;une <code>ScopedValue</code> n&#8217;est associée qu&#8217;au thread dans lequel elle est définie.</p>
+</div>
+<div class="paragraph">
+<p>Il y a une exception concernant le partage d&#8217;une valeur d&#8217;une <code>ScopedValue</code> avec les threads virtuels d&#8217;une <code>StucturedTaskScope</code>. Pour cela, il faut définir les traitements d&#8217;une <code>StructuredTaskScope</code> dans ceux exécutés par une <code>ScopedValue</code>. Tous les threads virtuels auront alors accès à la valeur associée dans la <code>ScopedValue</code>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Cette fonctionnalité est détaillée dans le lab <a href="lab-structured-concurrency.html#structured-concurrency">la Structured Concurrency</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>associerValeurConcurrenceStructuree()</code> de la classe <code>MainScopedValues</code> pour :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>itérer sur une collection de utilisateurs et pour chacun :</p>
+<div class="ulist">
+<ul>
+<li>
+<p>associer l&#8217;utilisateur à la <code>ScopedValue</code> <code>NOM_UTILISATEUR</code> pour exécuter l&#8217;invocation trois fois de la méthode <code>MonService::executer</code> dans une <code>StucturedTaskScope.ShutdownOnFailure</code>.</p>
+</li>
+<li>
+<p>attendre la fin de l&#8217;exécution des threads</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">associerValeurConcurrenceStructuree</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">utilisateurs</span> <span class="o">=</span> <span class="nc">List</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"utilisateur1"</span><span class="o">,</span> <span class="s">"utilisateur2"</span><span class="o">);</span>
+    <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">utilisateur</span> <span class="o">:</span> <span class="n">utilisateurs</span><span class="o">)</span> <span class="o">{</span>
+      <span class="nc">ScopedValue</span><span class="o">.</span><span class="na">where</span><span class="o">(</span><span class="nc">Contexte</span><span class="o">.</span><span class="na">NOM_UTILISATEUR</span><span class="o">,</span> <span class="n">utilisateur</span><span class="o">)</span>
+          <span class="o">.</span><span class="na">run</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">(</span><span class="kt">var</span> <span class="n">scope</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StructuredTaskScope</span><span class="o">.</span><span class="na">ShutdownOnFailure</span><span class="o">())</span> <span class="o">{</span>
+              <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(</span><span class="nl">MonService:</span><span class="o">:</span><span class="n">executer</span><span class="o">);</span>
+              <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(</span><span class="nl">MonService:</span><span class="o">:</span><span class="n">executer</span><span class="o">);</span>
+              <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(</span><span class="nl">MonService:</span><span class="o">:</span><span class="n">executer</span><span class="o">);</span>
+              <span class="k">try</span> <span class="o">{</span>
+                <span class="n">scope</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+              <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+              <span class="o">}</span>
+            <span class="o">}</span>
+          <span class="o">});</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainScopedValues</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Associer une valeur à un StructuredTaskScope
+VirtualThread[#35]/runnable@ForkJoinPool-1-worker-1 Monservice utilisateur : utilisateur1
+VirtualThread[#36]/runnable@ForkJoinPool-1-worker-2 Monservice utilisateur : utilisateur1
+VirtualThread[#37]/runnable@ForkJoinPool-1-worker-2 Monservice utilisateur : utilisateur1
+VirtualThread[#38]/runnable@ForkJoinPool-1-worker-2 Monservice utilisateur : utilisateur2
+VirtualThread[#40]/runnable@ForkJoinPool-1-worker-3 Monservice utilisateur : utilisateur2
+VirtualThread[#39]/runnable@ForkJoinPool-1-worker-1 Monservice utilisateur : utilisateur2</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 18:24:54 +0200
+</div>
+</div>
+</body>
+</html>

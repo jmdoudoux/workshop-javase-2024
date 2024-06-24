@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : le formatage des nombres compacts</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="_lab_le_formatage_des_nombres_compacts" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-compact-number-format.html">Lab : le formatage des nombres compacts</a></span></p><ul class="sectlevel3">
+<li><a href="lab-compact-number-format.html#_lab_le_formatage_des_nombres_compacts"><span class="toc-current">1. Lab : le formatage des nombres compacts</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="_lab_le_formatage_des_nombres_compacts"><a class="anchor" href="#_lab_le_formatage_des_nombres_compacts"></a>1. Lab : le formatage des nombres compacts</h4>
+<div class="paragraph">
+<p>Le formatage compact des nombres fait référence à la représentation d&#8217;un nombre sous une forme plus courte. Il consiste à appliquer un ensemble de règles sur une valeur numérique pour en obtenir une représentation compacte. Ces règles sont basées sur une Locale, qui détermine les symboles et les règles de formatage utilisés pour les différentes plages de nombres. Elles sont définies par la spécification LDML pour <a href="https://unicode.org/reports/tr35/tr35-numbers.html#Compact_Number_Formats">les formats de nombres compacts</a>.</p>
+</div>
+<div class="paragraph">
+<p>La forme compacte permet un affichage dans un environnement restreint mais aussi facilite la lecture de grand nombre. Par exemple avec la Locale <code>FR</code>,  des nombres comme 1000 peuvent être formatés comme "1 k" (style court) ou "1 millier" (style long). De même, "M" sera utilisé pour million et "Md" pour milliard.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Standard en Java 12</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>OpenJDK Issue</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://bugs.openjdk.org/browse/JDK-8188147">JDK-8188147</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>La classe <code>java.text.CompactNumberFormat</code>, qui hérite de la classe <code>java.text.NumberFormat</code>, permet de formater et analyser un nombre décimal sous sa forme compacte/courte en tenant compte de la Locale avec une gestion de l&#8217;arrondi.</p>
+</div>
+<div class="paragraph">
+<p>Les nombres sont exprimés dans les formats de nombres compacts "court" et "long" grâce à la nouvelle énumération <code>NumberFormat.Style</code> qui propose deux valeurs : <code>LONG</code> et <code>SHORT</code>.</p>
+</div>
+<div class="sect4">
+<h5 id="_le_formatage_compact_par_défaut"><a class="anchor" href="#_le_formatage_compact_par_défaut"></a>1.1. Le formatage compact par défaut</h5>
+<div class="paragraph">
+<p>La fabrique <code>getCompactNumberInstance()</code> de <code>NumberFormat</code> sans paramètre renvoie une instance de type <code>CompactNumberFormat</code> pour la Locale par défaut et le style <code>SHORT</code>.</p>
+</div>
+<div class="paragraph">
+<p>Les surcharges de la méthode <code>format()</code> permettent d&#8217;obtenir la représentation compacte de la valeur passée en paramètre.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>formaterSimple()</code> de la classe <code>fr.sciam.workshop.javase.compactformat.MainCompactNumberFormat</code> pour obtenir une instance de type <code>NumberFormat</code> configurée par défaut pour formater la liste <code>nombreRonds</code> et l&#8217;afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">formaterSimple</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">NumberFormat</span> <span class="n">fmt</span> <span class="o">=</span> <span class="nc">NumberFormat</span><span class="o">.</span><span class="na">getCompactNumberInstance</span><span class="o">();</span>
+    <span class="nc">LongStream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">nombreRonds</span><span class="o">).</span><span class="na">forEach</span><span class="o">(</span> <span class="n">n</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%-12s -&gt; %s\n"</span><span class="o">,</span> <span class="n">n</span><span class="o">,</span> <span class="n">fmt</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">n</span><span class="o">)));</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainCompactNumberFormat</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Formatage par défaut
+100          -&gt; 100
+1000         -&gt; 1 k
+10000        -&gt; 10 k
+100000       -&gt; 100 k
+1000000      -&gt; 1 M
+1000001      -&gt; 1 M
+10000000     -&gt; 10 M
+10000001     -&gt; 10 M
+10000000000  -&gt; 10 Md
+10000000001  -&gt; 10 Md</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Le caractère d&#8217;espacement utilisé dans le format <code>SHORT</code> pour la Locale <code>FR</code> est NO-BREAK SPACE (<code>U+00A0</code> ou le caractère 160), et non SPACE (<code>U+0020</code> ou le caractère 32).
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_le_formatage_compact_en_précisant_la_locale_et_le_style"><a class="anchor" href="#_le_formatage_compact_en_précisant_la_locale_et_le_style"></a>1.2. Le formatage compact en précisant la Locale et le style</h5>
+<div class="paragraph">
+<p>La fabrique <code>getCompactNumberInstance(Locale locale, NumberFormat.Style formatStyle)</code> renvoie une instance de type <code>NumberFormat</code> pour le formatage compact configurée avec la Locale et le style fournis en paramètres.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>formaterAvecLocaleLong()</code> de la classe <code>MainCompactNumberFormat</code> pour obtenir une instance de type <code>CompactNumberFormat</code> configurée par défaut pour formater la liste <code>nombreronds</code> et l&#8217;afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">formaterAvecLocaleLong</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">NumberFormat</span> <span class="n">fmt</span> <span class="o">=</span> <span class="nc">NumberFormat</span><span class="o">.</span><span class="na">getCompactNumberInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">FRANCE</span><span class="o">,</span> <span class="nc">NumberFormat</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">LONG</span><span class="o">);</span>
+    <span class="nc">LongStream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">nombreRonds</span><span class="o">).</span><span class="na">forEach</span><span class="o">(</span> <span class="n">n</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%-12s -&gt; %s\n"</span><span class="o">,</span> <span class="n">n</span><span class="o">,</span> <span class="n">fmt</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">n</span><span class="o">)));</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainCompactNumberFormat</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Formatage avec Locale long
+100          -&gt; 100
+1000         -&gt; 1 millier
+10000        -&gt; 10 mille
+100000       -&gt; 100 mille
+1000000      -&gt; 1 million
+1000001      -&gt; 1 million
+10000000     -&gt; 10 million
+10000001     -&gt; 10 millions
+10000000000  -&gt; 10 milliard</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_gestion_de_larrondi"><a class="anchor" href="#_la_gestion_de_larrondi"></a>1.3. La gestion de l&#8217;arrondi</h5>
+<div class="paragraph">
+<p>Par défaut le formatage utilise l&#8217;arrondi <code>RoundingMode.HALF_EVEN</code> mais il est possible d&#8217;utiliser d&#8217;autres arrondis en utilisant la méthode <code>setRoundingMode(RoundingMode)</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>formaterAvecArrondi()</code> de la classe <code>MainCompactNumberFormat</code> pour obtenir une instance de type <code>CompactNumberFormat</code> configurée par défaut pour formater la liste <code>nombreArrondis</code>. L&#8217;utiliser pour afficher chaque valeur avec les arrondis <code>HALF_DOWN</code>, <code>HALF_EVEN</code> et <code>HALF_UP</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">formaterAvecArrondi</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">NumberFormat</span> <span class="n">fmt</span> <span class="o">=</span> <span class="nc">NumberFormat</span><span class="o">.</span><span class="na">getCompactNumberInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">FRANCE</span><span class="o">,</span> <span class="nc">NumberFormat</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">SHORT</span><span class="o">);</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%-12s %-12s %-12s %-12s\n"</span><span class="o">,</span> <span class="s">""</span><span class="o">,</span> <span class="s">"HALF_DOWN"</span><span class="o">,</span> <span class="s">"HALF_EVEN"</span><span class="o">,</span> <span class="s">"HALF_UP"</span><span class="o">);</span>
+    <span class="nc">LongStream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">nombresArrondis</span><span class="o">).</span><span class="na">forEach</span><span class="o">(</span> <span class="n">n</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="n">fmt</span><span class="o">.</span><span class="na">setRoundingMode</span><span class="o">(</span><span class="nc">RoundingMode</span><span class="o">.</span><span class="na">HALF_DOWN</span><span class="o">);</span>
+      <span class="nc">String</span> <span class="n">down</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">n</span><span class="o">);</span>
+      <span class="n">fmt</span><span class="o">.</span><span class="na">setRoundingMode</span><span class="o">(</span><span class="nc">RoundingMode</span><span class="o">.</span><span class="na">HALF_EVEN</span><span class="o">);</span>
+      <span class="nc">String</span> <span class="n">even</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">n</span><span class="o">);</span>
+      <span class="n">fmt</span><span class="o">.</span><span class="na">setRoundingMode</span><span class="o">(</span><span class="nc">RoundingMode</span><span class="o">.</span><span class="na">HALF_UP</span><span class="o">);</span>
+      <span class="nc">String</span> <span class="n">up</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">n</span><span class="o">);</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%-12s %-12s %-12s %-12s\n"</span><span class="o">,</span> <span class="n">n</span><span class="o">,</span> <span class="n">down</span><span class="o">,</span> <span class="n">even</span><span class="o">,</span> <span class="n">up</span><span class="o">);</span>
+    <span class="o">});</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainCompactNumberFormat</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Formatage avec arrondi
+             HALF_DOWN    HALF_EVEN    HALF_UP
+1200         1 k          1 k          1 k
+1500         1 k          2 k          2 k
+1700         2 k          2 k          2 k
+2500         2 k          2 k          3 k
+999          999          999          999
+9999         10 k         10 k         10 k
+999999       1 M          1 M          1 M</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_gestion_de_la_partie_décimale"><a class="anchor" href="#_la_gestion_de_la_partie_décimale"></a>1.4. la gestion de la partie décimale</h5>
+<div class="paragraph">
+<p>Par défaut, le nombre de chiffres de la partie décimale est 0 mais il est possible de le modifier en utilisant la méthode setMinimumFractionDigits().</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>formaterDecimaux()</code> de la classe <code>MainCompactNumberFormat</code> pour obtenir une instance de type <code>CompactNumberFormat</code> configurée par défaut.
+Modifier le nombre de chiffre décimaux entre 0 et 2 pour formater la liste <code>nombreDecimaux</code> et l&#8217;afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">formaterDecimaux</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">NumberFormat</span> <span class="n">fmt</span> <span class="o">=</span> <span class="nc">NumberFormat</span><span class="o">.</span><span class="na">getCompactNumberInstance</span><span class="o">();</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="na">setMinimumFractionDigits</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="na">setMaximumFractionDigits</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+    <span class="nc">LongStream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">nombresDecimaux</span><span class="o">).</span><span class="na">forEach</span><span class="o">(</span> <span class="n">n</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%-12s -&gt; %s\n"</span><span class="o">,</span> <span class="n">n</span><span class="o">,</span> <span class="n">fmt</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">n</span><span class="o">)));</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainCompactNumberFormat</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Formatage des décimaux
+101          -&gt; 101
+1023         -&gt; 1,02 k
+1234         -&gt; 1,23 k
+10345        -&gt; 10,35 k
+10678        -&gt; 10,68 k
+999999       -&gt; 1 M</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_personnalisation_des_patterns"><a class="anchor" href="#_la_personnalisation_des_patterns"></a>1.5. La personnalisation des patterns</h5>
+<div class="paragraph">
+<p>Il est également possible d&#8217;obtenir une instance personnalisée et définir la manière dont les nombres seront représentés sous une forme plus courte à l&#8217;aide du constructeur <code>CompactNumberFormat(String, DecimalFormatSymbols, String[])</code>.</p>
+</div>
+<div class="paragraph">
+<p>Le format du <code>compactPattern</code> est fourni sous forme d&#8217;un tableau de chaînes de caractères qui peut contenir un à plusieurs motifs dont l&#8217;index dans le tableau correspond au début de  la plage de valeurs 10<sup>index</sup>. Il est décrit dans la section <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/text/CompactNumberFormat.html#compact_number_patterns">Compact Number Patterns</a> de la Javadoc.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>formaterAvecPatterns()</code> de la classe <code>MainCompactNumberFormat</code> pour obtenir une instance de type <code>CompactNumberFormat</code> configurée avec un pattern dédié pour formater la liste <code>nombreRonds</code> et l&#8217;afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">formaterAvecPatterns</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">String</span><span class="o">[]</span> <span class="n">compactPatterns</span> <span class="o">=</span> <span class="o">{</span> <span class="s">""</span><span class="o">,</span> <span class="s">""</span><span class="o">,</span> <span class="s">""</span><span class="o">,</span> <span class="s">"0k"</span><span class="o">,</span> <span class="s">"00k"</span><span class="o">,</span> <span class="s">"000k"</span><span class="o">,</span> <span class="s">"0m"</span><span class="o">,</span> <span class="s">"00m"</span><span class="o">,</span> <span class="s">"000m"</span><span class="o">,</span>
+                                 <span class="s">"0md"</span><span class="o">,</span> <span class="s">"00md"</span><span class="o">,</span> <span class="s">"000md"</span><span class="o">,</span> <span class="s">"0t"</span><span class="o">,</span> <span class="s">"00t"</span><span class="o">,</span> <span class="s">"000t"</span> <span class="o">};</span>
+
+    <span class="nc">DecimalFormat</span> <span class="n">decimalFormat</span> <span class="o">=</span> <span class="o">(</span><span class="nc">DecimalFormat</span><span class="o">)</span> <span class="nc">NumberFormat</span><span class="o">.</span><span class="na">getNumberInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">FRANCE</span><span class="o">);</span>
+
+    <span class="nc">CompactNumberFormat</span> <span class="n">fmt</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CompactNumberFormat</span><span class="o">(</span><span class="n">decimalFormat</span><span class="o">.</span><span class="na">toPattern</span><span class="o">(),</span>
+        <span class="n">decimalFormat</span><span class="o">.</span><span class="na">getDecimalFormatSymbols</span><span class="o">(),</span> <span class="n">compactPatterns</span><span class="o">);</span>
+
+    <span class="nc">LongStream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">nombreRonds</span><span class="o">).</span><span class="na">forEach</span><span class="o">(</span> <span class="n">n</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%-12s -&gt; %s\n"</span><span class="o">,</span> <span class="n">n</span><span class="o">,</span> <span class="n">fmt</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">n</span><span class="o">)));</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainCompactNumberFormat</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Formatage avec patterns
+100          -&gt; 100
+1000         -&gt; 1k
+10000        -&gt; 10k
+100000       -&gt; 100k
+1000000      -&gt; 1m
+1000001      -&gt; 1m
+10000000     -&gt; 10m
+10000001     -&gt; 10m
+10000000000  -&gt; 10md
+10000000001  -&gt; 10md</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lextraction_de_la_valeur_dun_nombre_compact"><a class="anchor" href="#_lextraction_de_la_valeur_dun_nombre_compact"></a>1.6. L&#8217;extraction de la valeur d&#8217;un nombre compact</h5>
+<div class="paragraph">
+<p>Une instance de type <code>CompactNumberFormat</code> permet aussi d&#8217;analyse une chaîne de caractères contenant un nombre compact en utilisant la méthode <code>parse(String)</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>parser()</code> de la classe <code>MainCompactNumberFormat</code> pour obtenir une instance de type <code>CompactNumberFormat</code> configurée pour la Locale <code>FRANCE</code> et le style <code>LONG</code>, utilisée pour analyser plusieurs chaînes contenant des valeurs compactes en français et les afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">parser</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="n">nombresTextes</span> <span class="o">=</span> <span class="nc">List</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"100"</span><span class="o">,</span> <span class="s">"1 millier"</span><span class="o">,</span> <span class="s">"10 mille"</span><span class="o">,</span> <span class="s">"10 millions"</span><span class="o">,</span> <span class="s">"1 milliard"</span><span class="o">);</span>
+
+    <span class="nc">NumberFormat</span> <span class="n">fmt</span> <span class="o">=</span> <span class="nc">NumberFormat</span><span class="o">.</span><span class="na">getCompactNumberInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">FRANCE</span><span class="o">,</span> <span class="nc">NumberFormat</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">LONG</span><span class="o">);</span>
+
+    <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">n</span> <span class="o">:</span> <span class="n">nombresTextes</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">try</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%-12s -&gt; %s\n"</span><span class="o">,</span> <span class="n">n</span><span class="o">,</span> <span class="n">fmt</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">n</span><span class="o">));</span>
+      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">ParseException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainCompactNumberFormat</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Parser
+100          -&gt; 100
+1 millier    -&gt; 1000
+10 mille     -&gt; 10000
+10 millions  -&gt; 10000000
+1 milliard   -&gt; 1000000000</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Par défaut, l&#8217;analyse ne prend pas en compte d&#8217;éventuels séparateurs de groupe. La méthode <code>setGroupingUsed(boolean)</code> en lui passant en paramètre la valeur <code>true</code> permet de modifier ce comportement.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>parserAvecGroupe()</code> de la classe <code>MainCompactNumberFormat</code> pour obtenir une instance de type <code>CompactNumberFormat</code> configurée pour la Locale <code>US</code> et le style <code>SHORT</code>, utilisée pour analyser la chaîne <code>"1,000K"</code> avec et la gestion du groupement et les afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">parserAvecGroupe</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">texte</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+    <span class="nc">NumberFormat</span> <span class="n">fmt</span> <span class="o">=</span> <span class="nc">NumberFormat</span><span class="o">.</span><span class="na">getCompactNumberInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">US</span><span class="o">,</span> <span class="nc">NumberFormat</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">SHORT</span><span class="o">);</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="n">texte</span> <span class="o">=</span> <span class="s">"1,000K"</span><span class="o">;</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%-12s -&gt; %s\n"</span><span class="o">,</span> <span class="n">texte</span><span class="o">,</span> <span class="n">fmt</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">texte</span><span class="o">));</span>
+      <span class="n">fmt</span><span class="o">.</span><span class="na">setGroupingUsed</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%-12s -&gt; %s\n"</span><span class="o">,</span> <span class="n">texte</span><span class="o">,</span> <span class="n">fmt</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">texte</span><span class="o">));</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">ParseException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainCompactNumberFormat</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Parser avec groupe
+1,000K       -&gt; 1
+1,000K       -&gt; 1000000</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Par défaut, l&#8217;analyse se fait sur la partie entière et la partie décimale. Pour que l&#8217;analyse ne tienne compte que de la partie entière, il faut utiliser la méthode
+<code>setParseIntegerOnly()</code> en lui passant en paramètre la valeur <code>true</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>parserEntier()</code> de la classe <code>MainCompactNumberFormat</code> pour obtenir une instance de type <code>CompactNumberFormat</code> configurée pour la Locale <code>FRANCE</code> et le style <code>LONG</code>, utilisée pour analyser la chaîne <code>"1,5 milliers"</code> avec la partie décimale et avec la partie entière uniquement et les afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">parserEntier</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">NumberFormat</span> <span class="n">fmt</span> <span class="o">=</span> <span class="nc">NumberFormat</span><span class="o">.</span><span class="na">getCompactNumberInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">FRANCE</span><span class="o">,</span> <span class="nc">NumberFormat</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">LONG</span><span class="o">);</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="nc">String</span> <span class="n">texte</span> <span class="o">=</span> <span class="s">"1,5 milliers"</span><span class="o">;</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%-12s -&gt; %s\n"</span><span class="o">,</span> <span class="n">texte</span><span class="o">,</span> <span class="n">fmt</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">texte</span><span class="o">));</span>
+      <span class="n">fmt</span><span class="o">.</span><span class="na">setParseIntegerOnly</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%-12s -&gt; %s\n"</span><span class="o">,</span> <span class="n">texte</span><span class="o">,</span> <span class="n">fmt</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">texte</span><span class="o">));</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">ParseException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainCompactNumberFormat</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Parser entier
+1,5 milliers -&gt; 1.5
+1,5 milliers -&gt; 1</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 18:24:54 +0200
+</div>
+</div>
+</body>
+</html>

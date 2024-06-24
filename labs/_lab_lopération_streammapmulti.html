@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : l&#8217;opération Stream::mapMulti</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="_lab_lopération_streammapmulti" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-stream-mapmulti.html">Lab : l&#8217;opération Stream::mapMulti</a></span></p><ul class="sectlevel3">
+<li><a href="lab-stream-mapmulti.html#_lab_lopération_streammapmulti"><span class="toc-current">1. Lab : l&#8217;opération Stream::mapMulti</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="_lab_lopération_streammapmulti"><a class="anchor" href="#_lab_lopération_streammapmulti"></a>1. Lab : l&#8217;opération Stream::mapMulti</h4>
+<div class="paragraph">
+<p>Initialement, l&#8217;API <code>Stream</code> propose l&#8217;opération intermédiaire <code>flatMap()</code> pour permettre de transformer un élément du <code>Stream</code> vers zéro, un ou plusieurs éléments en lui appliquant une <code>Function</code>.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Standard en Java 16</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Le JDK 16 propose l&#8217;opération intermédiaire <code>mapMulti()</code> de l&#8217;interface <code>Stream</code> dont l&#8217;objectif est similaire à la méthode <code>flatMap()</code> : elle applique une transformation aux éléments du <code>Stream</code> générant pour chacun 0 à N éléments et les aplatit dans un nouveau <code>Stream</code> en résultat.</p>
+</div>
+<div class="paragraph">
+<p>La méthode <code>mapMulti()</code> propose une autre façon de le faire, où l&#8217;élément est fourni à un <code>Consumer</code>. La signature de la méthode est :</p>
+</div>
+<div class="paragraph">
+<p><code>default &lt;R&gt; Stream&lt;R&gt; mapMulti(BiConsumer&lt;? super T,? super Consumer&lt;R&gt;&gt; mapper)</code></p>
+</div>
+<div class="paragraph">
+<p>Le type <code>R</code> permet de préciser le type des éléments résultant de la transformation.</p>
+</div>
+<div class="paragraph">
+<p>La méthode <code>mapMulti()</code> attend en paramère un <code>BiConsumer</code> dont l&#8217;implémentation va appliquer une transformation sur l&#8217;élément en cours de traitement pour générer zéro à N éléments en résultats. Ces éléments sont consommés par le <code>Consumer</code> fourni en paramètre pour stocker les éléments dans un buffer.</p>
+</div>
+<div class="paragraph">
+<p>Elle retourne, pour chaque élément du <code>Stream</code>, un nouveau <code>Stream</code> qui contient zéro ou plusieurs éléments de type <code>R</code>.</p>
+</div>
+<div class="sect4">
+<h5 id="_lutilisation_de_mapmulti_pour_une_transformation_1_1"><a class="anchor" href="#_lutilisation_de_mapmulti_pour_une_transformation_1_1"></a>1.1. L&#8217;utilisation de <code>mapMulti()</code> pour une transformation 1-1</h5>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>transformer1a1()</code> de la classe fr.sciam.workshop.javase.mapmulti.MainMapMulti` pour utiliser <code>mapMulti()</code> sur un <code>Stream</code> à partir des <code>fruits</code> pour les convertir en majuscules.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">  private static void transformer1a1() {
+    System.out.println("Fruits en maj : ");
+    fruits.stream()
+          .mapMulti((fruit, mapper) -&gt; {
+            mapper.accept(fruit.toUpperCase());
+          })
+          .forEach(System.out::println);
+  }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainMapMulti</code> pour vérifier le résultat de l&#8217;exécution.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>mapMulti 1 a 1
+Fruits en maj :
+ABRICOT
+CITRON
+KIWI
+LITCHI</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lutilisation_de_mapmulti_pour_une_transformation_0_1"><a class="anchor" href="#_lutilisation_de_mapmulti_pour_une_transformation_0_1"></a>1.2. L&#8217;utilisation de <code>mapMulti()</code> pour une transformation 0-1</h5>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>transformer0a1()</code> pour utiliser <code>mapMulti()</code> sur un <code>Stream</code> à partir des <code>fruits</code> afin de ne conserver que ceux ayant 6 lettres et convertis en majuscules.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">  private static void transformer0a1() {
+    System.out.println("Fruits à 6 lettres en maj : ");
+    fruits.stream()
+          .mapMulti((fruit, mapper) -&gt; {
+            if (fruit.length() == 6)
+              mapper.accept(fruit.toUpperCase());
+          })
+          .forEach(System.out::println);
+  }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MapMulti</code> pour vérifier le résultat de l&#8217;exécution.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>mapMulti 0 a 1
+Fruits à 6 lettres en maj :
+CITRON
+LITCHI</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+cette opération aurait pu être réalisée en utilisant les opérations <code>filter()</code> et <code>map()</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lutilisation_de_mapmulti_pour_une_transformation_1_n"><a class="anchor" href="#_lutilisation_de_mapmulti_pour_une_transformation_1_n"></a>1.3. L&#8217;utilisation de <code>mapMulti()</code> pour une transformation 1-N</h5>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>transformer1aN()</code> pour utiliser <code>mapMulti()</code> sur un <code>Stream</code> à partir des <code>fruits</code> afin de produire en résultat le fruit et le fruit concaténé à " bien mûr".</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">  private static void transformer1aN() {
+    System.out.println("Fruits avec bien mûr : ");
+    fruits.stream()
+          .mapMulti((fruit, mapper) -&gt; {
+            mapper.accept(fruit);
+            mapper.accept(fruit + " bien mûr");
+          })
+          .forEach(System.out::println);
+  }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainMapMulti</code> pour vérifier le résultat de l&#8217;exécution.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>mapMulti 1 a N
+Fruits avec bien mûr :
+Abricot
+Abricot bien mûr
+Citron
+Citron bien mûr
+Kiwi
+Kiwi bien mûr
+Litchi
+Litchi bien mûr</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lutilisation_de_mapmulti_pour_une_transformation_vers_un_autre_type"><a class="anchor" href="#_lutilisation_de_mapmulti_pour_une_transformation_vers_un_autre_type"></a>1.4. L&#8217;utilisation de <code>mapMulti()</code> pour une transformation vers un autre type</h5>
+<div class="paragraph">
+<p>Dans les transformations précédentes, le type des instances retournées est <code>Object</code> car le compilateur n&#8217;est pas mesure d&#8217;inférer le type à cause de la signature de la méthode <code>mapMulti()</code>. Si le type n&#8217;est pas <code>Object</code>, il faut préciser le type générique à l&#8217;invocation de la méthode.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>transformerVersAutreType()</code> pour utiliser <code>mapMulti()</code> sur un <code>Stream</code> à partir des <code>fruits</code> afin de produire une <code>Liste&lt;Tarte&gt;</code> avec chacun des fruits.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">  private static void transformerVersAutreType() {
+    record Tarte(String fruit) {
+    }
+
+    System.out.println("Tartes aux fruits : ");
+    List&lt;Tarte&gt; tartes = fruits.stream()
+        .mapMulti((fruit, mapper) -&gt; {
+          mapper.accept(new Tarte(fruit));
+        })
+        .collect(Collectors.toList());
+    System.out.println(tartes);
+  }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Le code ne compile pas avec l&#8217;erreur « <code>Type mismatch: cannot convert from List&lt;Object&gt; to List&lt;Tarte&gt;</code> »</p>
+</div>
+<div class="paragraph">
+<p>Modifier la méthode <code>transformerVersAutreType()</code> pour ajouter le type générique avant l&#8217;invocation de la méthode <code>mapMulti()</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">  private static void transformerVersAutreType() {
+    record Tarte(String fruit) {
+    }
+
+    System.out.println("Tartes aux fruits : ");
+    List&lt;Tarte&gt; tartes = fruits.stream()
+        .&lt;Tarte&gt;mapMulti((fruit, mapper) -&gt; {
+          mapper.accept(new Tarte(fruit));
+        })
+        .collect(Collectors.toList());
+    System.out.println(tartes);
+  }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainMapMulti</code> pour vérifier le résultat de l&#8217;exécution.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>mapMulti vers autre type
+Tartes aux fruits :
+[Tarte[fruit=Abricot], Tarte[fruit=Citron], Tarte[fruit=Kiwi], Tarte[fruit=Litchi]]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>L&#8217;opération <code>mapMulti()</code> peut offrir de meilleures performances dans certaines circonstances. Les traitements internes de <code>mapMulti()</code> permettent d&#8217;éviter la création d&#8217;un nouveau <code>Stream</code> pour chaque élément traité.</p>
+</div>
+<div class="paragraph">
+<p>L&#8217;opération <code>flatMap()</code> peut être utilisée comme une opération à usage général alors que <code>mapMulti()</code> est une opération à utiliser dans des cas d&#8217;usage spécifiques.</p>
+</div>
+<div class="paragraph">
+<p>Trois méthodes de l&#8217;interface <code>Stream</code> sont dédiées aux types primitifs <code>int</code>, <code>long</code> et <code>double</code> sont proposées : <code>mapMultiToInt()</code>, <code>mapMultiToLong()</code> et <code>mapMultiToDouble()</code>.</p>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 18:24:54 +0200
+</div>
+</div>
+</body>
+</html>

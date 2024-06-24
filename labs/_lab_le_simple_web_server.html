@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : le Simple Web Server</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="_lab_le_simple_web_server" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-simple-web-server.html">Lab : le Simple Web Server</a></span></p><ul class="sectlevel3">
+<li><a href="lab-simple-web-server.html#_lab_le_simple_web_server"><span class="toc-current">1. Lab : le Simple Web Server</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="_lab_le_simple_web_server"><a class="anchor" href="#_lab_le_simple_web_server"></a>1. Lab : le Simple Web Server</h4>
+<div class="paragraph">
+<p>Pour combler un manque vis à vis d&#8217;autres plateformes, le JDK 18 fournit un serveur web simple permettant de renvoyer des fichiers statiques contenus dans l&#8217;arborescence d&#8217;un répertoire.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Standard en Java 18</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/408">408: Simple Web Server</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect4">
+<h5 id="_la_commande_jwebserver"><a class="anchor" href="#_la_commande_jwebserver"></a>1.1. La commande <code>jwebserver</code></h5>
+<div class="paragraph">
+<p>Le JDK propose la commande <code>jwebserver</code>. Ces fonctionnalités sont très simples :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>servir uniquement des fichiers statiques, par défaut deux du répertoire courant,</p>
+</li>
+<li>
+<p>en créant une page index au besoin,</p>
+</li>
+<li>
+<p>ne supportant que les requêtes de type GET et HEAD sur le protocole HTTP 1.1,</p>
+</li>
+<li>
+<p>ni de support de HTTPS</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Ce serveur web pourra cependant être pratique pour prototyper ou pour tester.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+il ne devrait pas être utilisé dans un environnement de production.
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Lancer la commande <code>jwebserver</code> dans le sous-répertoire <code>rest</code> du workspace :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">{workdir}\rest>jwebserver
+Binding to loopback by default. For all interfaces use "-b 0.0.0.0" or "-b ::".
+Serving {workdir}\rest and subdirectories on 127.0.0.1 port 8000
+URL http://127.0.0.1:8000/</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>L&#8217;arborescence du sous-répertoire <code>rest</code> contient :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>{workdir}\rest>tree /A /F
+Structure du dossier pour le volume Windows
+Le numéro de série du volume est CECB-1F8A
+C:.
+|   favicon.ico
+|   index.html
+|
++---api
+|   \---personnees
+|           1.json
+|           10.json
+|
+\---images
+        duke.png</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Par défaut, le serveur web écoute sur la boucle locale et le port <code>8000</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Ouvrir l&#8217;url <code><a href="http://localhost:8000" class="bare">http://localhost:8000</a></code> dans un navigateur</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="lab-simple-webserver-001.png" alt="lab simple webserver 001">
+</div>
+</div>
+<div class="paragraph">
+<p>Il sert la page html par défaut, si elle est présente dans le répertoire.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Le serveur peut créer une page d&#8217;index si le fichier par défaut n&#8217;existe pas dans un sous-répertoire.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Ouvrir l&#8217;url <code><a href="http://localhost:8000/api" class="bare">http://localhost:8000/api</a></code> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="lab-simple-webserver-002.png" alt="lab simple webserver 002">
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Le serveur peut servir un fichier en ouvrant son url.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Ouvrir l&#8217;url <code><a href="http://localhost:8000/api/personnes/1.json" class="bare">http://localhost:8000/api/personnes/1.json</a></code> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="lab-simple-webserver-003.png" alt="lab simple webserver 003">
+</div>
+</div>
+<div class="paragraph">
+<p>Ouvrir l&#8217;url <code><a href="http://localhost:8000/images/duke.png" class="bare">http://localhost:8000/images/duke.png</a></code> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="lab-simple-webserver-004.png" alt="lab simple webserver 004">
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La commande propose plusieurs options pour configurer le serveur : l&#8217;interface réseau, le numéro de port, le répertoire où les fichiers seront servis, l&#8217;affichage des informations lors du traitement des requêtes.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Arrêter le serveur en utilisant kbd:[Ctrl + C].</p>
+</div>
+<div class="paragraph">
+<p>Exécuter la commande <code>jwebserver</code> avec l&#8217;option <code>--help</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">jwebserver --help</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>{workdir}\rest>jwebserver --help
+Usage: jwebserver [-b bind address] [-p port] [-d directory]
+                  [-o none|info|verbose] [-h to show options]
+                  [-version to show version information]
+Options:
+-b, --bind-address    - Address to bind to. Default: 127.0.0.1 (loopback).
+                        For all interfaces use "-b 0.0.0.0" or "-b ::".
+-d, --directory       - Directory to serve. Default: current directory.
+-o, --output          - Output format. none|info|verbose. Default: info.
+-p, --port            - Port to listen on. Default: 8000.
+-h, -?, --help        - Prints this help message and exits.
+-version, --version   - Prints version information and exits.
+To stop the server, press Ctrl + C.</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Par défaut, chaque requête est logguée dans la console. L&#8217;option -o permet :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>de ne rien logguer avec la valeur <code>none</code></p>
+</li>
+<li>
+<p>ou d&#8217;être plus verbeux avec la valeur <code>verbose</code> : le chemin du fichier servi et les headers des requêtes et réponses sont affichées</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Lancer la commande <code>jwebserver</code> dans le sous-répertoire <code>rest</code> du workspace avec les options <code>-o verbose -p 8099</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">jwebserver -o verbose -p 8099</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ouvrir l&#8217;url <code><a href="http://localhost:8099/api/personnes/1.json" class="bare">http://localhost:8099/api/personnes/1.json</a></code> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="lab-simple-webserver-005.png" alt="lab simple webserver 005">
+</div>
+</div>
+<div class="paragraph">
+<p>Consulter la console de la commande <code>jwebserver</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">{workdir}\rest>jwebserver -o verbose -p 8099
+Binding to loopback by default. For all interfaces use "-b 0.0.0.0" or "-b ::".
+Serving {workdir}\rest and subdirectories on 127.0.0.1 port 8099
+URL http://127.0.0.1:8099/
+127.0.0.1 - - [26/f├®vr./2024:12:16:21 +0100] "GET /api/personnes/1.json HTTP/1.1" 200 -
+Resource requested: {workdir}\rest\api\personnes\1.json
+> Accept-encoding: gzip, deflate, br
+> Sec-fetch-dest: document
+> Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+> Sec-fetch-user: ?1
+> Connection: keep-alive
+> Sec-fetch-site: none
+> Host: localhost:8099
+> Sec-fetch-mode: navigate
+> User-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0
+> Accept-language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3
+> Upgrade-insecure-requests: 1
+>
+< Date: Mon, 26 Feb 2024 11:16:21 GMT
+< Last-modified: Tue, 9 Jan 2024 11:32:52 GMT
+< Content-type: application/json
+< Content-length: 56
+<</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Arrêter le serveur en utilisant kbd:[Ctrl + C].</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lapi_httpserver"><a class="anchor" href="#_lapi_httpserver"></a>1.2. L&#8217;API HttpServer</h5>
+<div class="paragraph">
+<p>Une API est proposée dans le package <code>com.sun.net.httpserver</code> du module <code>jdk.httpserver</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>main()</code> de la classe <code>fr.sciam.workshop.javase.webserver.MainWebServer</code> :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Pour créer une instance de type <code>com.sun.net.httpserver.HttpServer</code> qui écoute sur le port 8000</p>
+</li>
+<li>
+<p>Invoquer sa méthode <code>createContext()</code> pour associer l&#8217;URI <code>/personnes</code> avec une nouvelle instance de type <code>PersonnesHandler</code></p>
+</li>
+<li>
+<p>Invoquer sa méthode <code>start()</code> pour démarrer le serveur en mode bloquant</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Demarrage du serveur"</span><span class="o">);</span>
+    <span class="nc">HttpServer</span> <span class="n">server</span> <span class="o">=</span> <span class="nc">HttpServer</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="mi">8000</span><span class="o">),</span> <span class="mi">0</span><span class="o">);</span>
+    <span class="n">server</span><span class="o">.</span><span class="na">createContext</span><span class="o">(</span><span class="s">"/personnes"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">PersonnesHandler</span><span class="o">());</span>
+    <span class="n">server</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Compléter la méthode <code>handle()</code> de la classe <code>PersonnesHandler</code> dans le fichier <code>MainWebServer.java</code> :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Pour extraire l&#8217;id de l&#8217;url avec une expression régulière</p>
+</li>
+<li>
+<p>Si valide alors <code>codeStatus</code> = <code>200</code> et <code>body</code> contient un document JSON représentant la personne correspond à l&#8217;id (avec les attributs <code>id</code>, <code>nom</code> et <code>prenom</code>),</p>
+</li>
+<li>
+<p>sinon <code>codeStatus</code> = <code>400</code> et <code>body</code> contient un message d&#8217;erreur</p>
+</li>
+<li>
+<p>Ajouter dans le header le <code>codeStatus</code> et la taille du document JSON comme taille de body avec la méthode <code>sendResponseHeaders()</code></p>
+</li>
+<li>
+<p>Ajouter le header <code>"Content-Type"</code> avec la valeur <code>"application/json"</code>,</p>
+</li>
+<li>
+<p>Et copier le contenu de <code>body</code> sous la forme d&#8217;octets dans le body de la réponse</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="nc">HttpExchange</span> <span class="n">exchange</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">body</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">codeStatus</span> <span class="o">=</span> <span class="mi">200</span><span class="o">;</span>
+    <span class="nc">String</span> <span class="n">path</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getRequestURI</span><span class="o">().</span><span class="na">getPath</span><span class="o">();</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"traitement requete : "</span> <span class="o">+</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getRequestMethod</span><span class="o">()</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">path</span><span class="o">);</span>
+
+    <span class="nc">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="nc">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">"/personnes/([0-9]+)"</span><span class="o">).</span><span class="na">matcher</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">matches</span><span class="o">())</span> <span class="o">{</span>
+      <span class="kt">long</span> <span class="n">id</span> <span class="o">=</span> <span class="nc">Long</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+      <span class="n">body</span> <span class="o">=</span> <span class="s">"""
+          {
+            "</span><span class="n">id</span><span class="s">":"</span><span class="o">%</span><span class="n">d</span><span class="s">",
+            "</span><span class="n">nom</span><span class="s">":"</span><span class="o">%</span><span class="n">s</span><span class="s">",
+            "</span><span class="n">prenom</span><span class="s">":"</span><span class="o">%</span><span class="n">s</span><span class="s">"
+          }"""</span><span class="o">.</span><span class="na">formatted</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="s">"nom"</span> <span class="o">+</span> <span class="n">id</span><span class="o">,</span> <span class="s">"prenom"</span> <span class="o">+</span> <span class="n">id</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+      <span class="n">codeStatus</span><span class="o">=</span><span class="mi">400</span><span class="o">;</span>
+      <span class="n">body</span> <span class="o">=</span> <span class="s">"""
+          {
+            "</span><span class="n">message</span><span class="s">": "</span><span class="nc">Id</span> <span class="n">invalide</span><span class="s">"
+          }
+          """</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="nc">Headers</span> <span class="n">responseHeaders</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getResponseHeaders</span><span class="o">();</span>
+    <span class="n">responseHeaders</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="s">"Content-Type"</span><span class="o">,</span> <span class="s">"application/json"</span><span class="o">);</span>
+
+    <span class="n">exchange</span><span class="o">.</span><span class="na">sendResponseHeaders</span><span class="o">(</span><span class="n">codeStatus</span><span class="o">,</span> <span class="n">body</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+    <span class="k">try</span> <span class="o">(</span><span class="nc">OutputStream</span> <span class="n">os</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getResponseBody</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">os</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">body</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+cette portion de code utilise des text-blocks, détaillés dans ce <a href="partie1.html#text-blocks">lab</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br></p>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe MainWebServer.</p>
+</div>
+<div class="paragraph">
+<p>Ouvrir l&#8217;url <a href="http://localhost:8000/personnes/123" class="bare">http://localhost:8000/personnes/123</a> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="lab-simple-webserver-006.png" alt="lab simple webserver 006">
+</div>
+</div>
+<div class="paragraph">
+<p>Ouvrir l&#8217;url <a href="http://localhost:8000/personnes/123a" class="bare">http://localhost:8000/personnes/123a</a> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="lab-simple-webserver-007.png" alt="lab simple webserver 007">
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Arrêter l&#8217;application.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 18:24:54 +0200
+</div>
+</div>
+</body>
+</html>

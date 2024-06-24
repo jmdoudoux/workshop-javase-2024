@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : les threads virtuels</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="threads-virtuels" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-threads-virtuels.html">Lab : les threads virtuels</a></span></p><ul class="sectlevel3">
+<li><a href="lab-threads-virtuels.html#threads-virtuels"><span class="toc-current">1. Lab : les threads virtuels</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="threads-virtuels"><a class="anchor" href="#threads-virtuels"></a>1. Lab : les threads virtuels</h4>
+<div class="paragraph">
+<p>Un thread virtuel est un nouveau type de thread "léger" géré dans la JVM.
+Contrairement aux threads conventionnels pour lesquels il existe un mapping un-pour-un avec les threads de l&#8217;OS, un thread virtuel n&#8217;est pas spécifiquement lié à un thread de l&#8217;OS.</p>
+</div>
+<div class="paragraph">
+<p>La JVM possède un <code>ForkJoinPool</code> de threads "porteurs" (carrier threads) dont le rôle est d&#8217;exécuter les traitements non bloquants des threads virtuels. Les threads virtuels dont les opérations sont bloquantes peuvent être détachés de leur thread porteur, rendant ce dernier disponible pour exécuter des traitements d&#8217;autres threads virtuels.</p>
+</div>
+<div class="paragraph">
+<p>Ils présentent donc un avantage lorsqu&#8217;ils réalisent majoritairement des opérations non intensives en CPU puisque l&#8217;on mutualise des threads de l&#8217;OS, évitant ainsi d&#8217;en créer de nouveaux.</p>
+</div>
+<div class="paragraph">
+<p>D&#8217;un point de vue utilisateur, les threads virtuels héritent de <code>java.lang.Thread</code> pour des raisons de compatibilité.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Première preview en Java 19 <a href="https://openjdk.org/jeps/425">JEP 425</a>. Standard en Java 21</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/444">444: Virtual Threads</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect4">
+<h5 id="_la_création_et_le_démarrage_dun_thread_virtuel"><a class="anchor" href="#_la_création_et_le_démarrage_dun_thread_virtuel"></a>1.1. La création et le démarrage d&#8217;un thread virtuel</h5>
+<div class="paragraph">
+<p>La classe <code>java.lang.Thread</code> est enrichie de nouvelles méthodes, notamment <code>startVirtualThread()</code> qui permet de créer et démarrer un thread virtuel qui exécute le <code>Runnable</code> passé en paramètre.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>creerEtDemarrerThreadVirtuel</code> de la classe <code>fr.sciam.workshop.javase.virtualthreads.MainThreadsVirtuels</code> afin de créer et démarrer un thread virtuel qui affiche son nom et un message.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">creerEtDemarrerThreadVirtuel</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+    <span class="nc">Runnable</span> <span class="n">runnable</span> <span class="o">=</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">()</span> <span class="o">+</span> <span class="s">" Bonjour depuis un thread virtuel"</span><span class="o">);</span>
+    <span class="nc">Thread</span> <span class="n">monThreadVirtuel</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">startVirtualThread</span><span class="o">(</span><span class="n">runnable</span><span class="o">);</span>
+    <span class="n">monThreadVirtuel</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainThreadsVirtuels</code> et vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>VirtualThread[#30]/runnable@ForkJoinPool-1-worker-1 Bonjour depuis un thread virtuel</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>L&#8217;interface scellée <code>Thread.Builder</code> permet de configurer et obtenir une instance de threads virtuels. Elle possèdent deux interfaces filles <code>Thread.Builder.OfVirtual</code> et <code>Thread.Builder.OfPlatform</code> respectivement pour configurer et obtenir une instance d&#8217;un thread virtuel ou d&#8217;un thread de la plateforme.</p>
+</div>
+<div class="paragraph">
+<p>La classe <code>Thread</code> propose les fabriques :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Thread.ofVirtual()</code> pour obtenir une instance de <code>Thread.Builder.OfVirtual</code></p>
+</li>
+<li>
+<p><code>Thread.ofPlatform()</code> pour obtenir une instance de <code>Thread.Builder.OfPlatform</code>.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>creerThreadsVirtuelsAvecFabrique()</code> afin d&#8217;utiliser la fabrique <code>ofVirtual()</code> pour obtenir un <code>Thread.Builder</code> et invoquer ses méthodes <code>start()</code> et <code>unstarted()</code> pour créer deux threads virtuels dont le premier est démarré.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">creerThreadsVirtuelsAvecFabrique</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+    <span class="nc">Runnable</span> <span class="n">r1</span> <span class="o">=</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">()</span> <span class="o">+</span> <span class="s">" Thread t1 créé et démarré avec ofVirtual()"</span><span class="o">);</span>
+    <span class="nc">Thread</span> <span class="n">t1</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">ofVirtual</span><span class="o">().</span><span class="na">start</span><span class="o">(</span><span class="n">r1</span><span class="o">);</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="nc">Runnable</span> <span class="n">r2</span> <span class="o">=</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">()</span> <span class="o">+</span> <span class="s">" Thread t2 créé avec ofVirtual()"</span><span class="o">);</span>
+    <span class="nc">Thread</span> <span class="n">t2</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">ofVirtual</span><span class="o">().</span><span class="na">unstarted</span><span class="o">(</span><span class="n">r2</span><span class="o">);</span> <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="n">t1</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+    <span class="n">t2</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Crée et démarre un thread virtuel qui exécute le <code>Runnable</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Crée, mais ne démarre pas un thread virtuel avec le <code>Runnable</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainThreadsVirtuels</code> et vérifier que seul le premier thread a été démarré. La console doit afficher dans la console un message de la forme :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>VirtualThread[#33]/runnable@ForkJoinPool-1-worker-1 Thread t1 créé et démarré avec ofVirtual()</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>L&#8217;interface <code>Thread.Builder</code> permet de paramétrer le nommage des threads créés.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la méthode <code>creerThreadsNommesAvecFabrique()</code>, configurer le builder via la méthode <code>name()</code> afin de nommer les threads créés avec celle-ci <code>MonThreadNommé</code>. Démarrer deux threads avec le builder.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">creerThreadsNommesAvecFabrique</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+    <span class="nc">Thread</span><span class="o">.</span><span class="na">Builder</span> <span class="n">builder</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">ofVirtual</span><span class="o">().</span><span class="na">name</span><span class="o">(</span><span class="s">"MonThreadNommé"</span><span class="o">);</span>
+    <span class="n">builder</span><span class="o">.</span><span class="na">start</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Thread 1 "</span> <span class="o">+</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">())).</span><span class="na">join</span><span class="o">();</span>
+    <span class="n">builder</span><span class="o">.</span><span class="na">start</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Thread 2 "</span> <span class="o">+</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">())).</span><span class="na">join</span><span class="o">();</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainThreadsVirtuels</code> pour vérifier que les threads créés avec cette fabrique sont nommés :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Thread 1 VirtualThread[#35,MonThreadNommé]/runnable@ForkJoinPool-1-worker-1
+Thread 2 VirtualThread[#36,MonThreadNommé]/runnable@ForkJoinPool-1-worker-1</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La méthode <code>name(String)</code> nomme tous les threads créés de la même manière. La surcharge <code>name(String, int)</code> permet de nommer en ajoutant un suffixe avec un numéro qui s&#8217;incrémente afin de différencier les threads. La valeur entière passée en paramètre indique le numéro de départ.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>creerThreadsNumerotesAvecFabrique()</code> pour :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>définir l&#8217;implémentation d&#8217;un <code>Runnable</code> qui affiche le thread courant</p>
+</li>
+<li>
+<p>configurer le builder avec le nommage incrémental.</p>
+</li>
+<li>
+<p>démarrer 5 threads qui exécutent le <code>Runnable</code></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">creerThreadsNumerotesAvecFabrique</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+    <span class="nc">Runnable</span> <span class="n">runnable</span> <span class="o">=</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">());</span>
+    <span class="nc">Thread</span><span class="o">.</span><span class="na">Builder</span> <span class="n">builder</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">ofVirtual</span><span class="o">().</span><span class="na">name</span><span class="o">(</span><span class="s">"BaseNom-"</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+      <span class="n">builder</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">runnable</span><span class="o">).</span><span class="na">join</span><span class="o">();</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainThreadsVirtuels</code> pour vérifier que les threads créés avec cette fabrique sont nommés :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>VirtualThread[#36,BaseNom-0]/runnable@ForkJoinPool-1-worker-2
+VirtualThread[#37,BaseNom-1]/runnable@ForkJoinPool-1-worker-2
+VirtualThread[#38,BaseNom-2]/runnable@ForkJoinPool-1-worker-1
+VirtualThread[#39,BaseNom-3]/runnable@ForkJoinPool-1-worker-1
+VirtualThread[#40,BaseNom-4]/runnable@ForkJoinPool-1-worker-1</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La classe utilitaire <code>java.util.concurrent.Executors</code> fournit par l&#8217;intermédiaire de sa fabrique <code>newVirtualThreadPerTaskExecutor()</code> une instance d'<code>ExecutorService</code> permettant de soumettre des tâches qui seront exécutées par des threads virtuels.
+Comme son nom l&#8217;indique, chaque tâche soumise est exécutée dans un nouveau thread virtuel compte tenu de leur faible coût de création.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Depuis le JDK 19, la classe <code>ExecutorService</code> implémente l&#8217;interface <code>AutoCloseable</code> : une instance est gérable par un try-with-resources.
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la méthode <code>creerThreadsVirtuelsAvecExecuteur()</code>, utiliser la fabrique <code>newVirtualThreadPerTaskExecutor()</code> pour soumettre des tâches à exécuter par des threads virtuels.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">creerThreadsVirtuelsAvecExecuteur</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">(</span><span class="nc">ExecutorService</span> <span class="n">executor</span> <span class="o">=</span> <span class="nc">Executors</span><span class="o">.</span><span class="na">newVirtualThreadPerTaskExecutor</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">executor</span><span class="o">.</span><span class="na">submit</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Tache 1 "</span> <span class="o">+</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">()));</span>
+      <span class="n">executor</span><span class="o">.</span><span class="na">submit</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Tache 2 "</span> <span class="o">+</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">()));</span>
+      <span class="n">executor</span><span class="o">.</span><span class="na">submit</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Tache 3 "</span> <span class="o">+</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">()));</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainThreadsVirtuels</code> et vérifier qu&#8217;un thread virtuel dédié a été employé pour chaque tâche.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Tache 1 - VirtualThread[#42]/runnable@ForkJoinPool-1-worker-1
+Tache 2 - VirtualThread[#43]/runnable@ForkJoinPool-1-worker-2
+Tache 3 - VirtualThread[#45]/runnable@ForkJoinPool-1-worker-3</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_propriétés_et_restrictions_des_threads_virtuels"><a class="anchor" href="#_les_propriétés_et_restrictions_des_threads_virtuels"></a>1.2. Les propriétés et restrictions des threads virtuels</h5>
+<div class="paragraph">
+<p>Un thread virtuel est soumis à certaines restrictions :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>il est obligatoirement un thread démon,</p>
+</li>
+<li>
+<p>sa priorité est obligatoirement <code>Thread.NORM_PRIORITY</code>,</p>
+</li>
+<li>
+<p>les méthodes <code>stop()</code>, <code>resume()</code> et <code>suspend()</code> lèvent une <code>UnsupportedOperationException</code>,</p>
+</li>
+<li>
+<p>il ne peut pas être associé à un <code>ThreadGroup</code>,</p>
+</li>
+<li>
+<p>la méthode <code>getThreadGroup()</code> renvoie un groupe fictif vide nommé "VirtualThreads",</p>
+</li>
+<li>
+<p>la méthode <code>getAllStackTraces()</code> renvoie désormais une <code>Map</code> qui ne contient que les threads de la plateforme plutôt que tous les threads.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>testerProprietesDuThreadVirtuel()</code> afin de vérifier un certain nombre des propriétés énoncées.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">testerProprietesDuThreadVirtuel</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+    <span class="nc">Thread</span> <span class="n">thread</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">ofVirtual</span><span class="o">().</span><span class="na">name</span><span class="o">(</span><span class="s">"ThreadVirtuel-"</span><span class="o">,</span> <span class="mi">0</span><span class="o">).</span><span class="na">start</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="k">try</span> <span class="o">{</span>
+        <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1_000</span><span class="o">);</span>
+      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">});</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"isVirtual   : "</span> <span class="o">+</span> <span class="n">thread</span><span class="o">.</span><span class="na">isVirtual</span><span class="o">());</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"priority    : "</span> <span class="o">+</span> <span class="n">thread</span><span class="o">.</span><span class="na">getPriority</span><span class="o">()</span> <span class="o">+</span> <span class="s">" (Thread.NORM_PRIORITY = "</span> <span class="o">+</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">NORM_PRIORITY</span> <span class="o">+</span> <span class="s">")"</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"isDeamon    : "</span> <span class="o">+</span> <span class="n">thread</span><span class="o">.</span><span class="na">isDaemon</span><span class="o">());</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"threadgroup : "</span> <span class="o">+</span> <span class="n">thread</span><span class="o">.</span><span class="na">getThreadGroup</span><span class="o">());</span>
+
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="n">thread</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">UnsupportedOperationException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="n">thread</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainThreadsVirtuels</code> et vérifier les informations affichées :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>isVirtual   : true
+priority    : 5 (Thread.NORM_PRIORITY = 5)
+isDeamon    : true
+threadgroup : java.lang.ThreadGroup[name=VirtualThreads,maxpri=10]
+java.lang.UnsupportedOperationException
+	at java.base/java.lang.Thread.stop(Thread.java:1654)
+	at fr.sciam.workshop.javase.virtualthreads.MainThreadsVirtuels.testerProprietesDuThreadVirtuel(MainThreadsVirtuels.java:83)
+	at fr.sciam.workshop.javase.virtualthreads.MainThreadsVirtuels.main(MainThreadsVirtuels.java:26)</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Les traitements d&#8217;un thread virtuels sont exécutés par un thread du <code>ForkJoinPool</code> dédié de la JVM. Lorsqu&#8217;un thread virtuel réalise une opération bloquante, il est détaché de son thread porteur. Lorsque le traitement bloquant se termine, son exécution pourra être réalisée par un autre thread porteur du pool.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la méthode <code>creerThreadsVirtuelsEtAfficherPorteurs()</code>, créer plusieurs threads virtuels qui effectuent des opérations bloquantes à plusieurs reprises et afficher à chaque fois le thread porteur.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">creerThreadsVirtuelsEtAfficherPorteurs</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+
+    <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;&gt;</span> <span class="n">resultat</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;&gt;();</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="c1">// Démarrage des threads et attente</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Thread</span><span class="o">&gt;</span> <span class="n">threads</span> <span class="o">=</span> <span class="nc">IntStream</span><span class="o">.</span><span class="na">range</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span>
+      <span class="o">.</span><span class="na">mapToObj</span><span class="o">(</span><span class="n">index</span> <span class="o">-&gt;</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">ofVirtual</span><span class="o">().</span><span class="na">start</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">executerTraitement</span><span class="o">(</span><span class="n">resultat</span><span class="o">)))</span>
+      <span class="o">.</span><span class="na">toList</span><span class="o">();</span>
+
+    <span class="k">for</span> <span class="o">(</span><span class="nc">Thread</span> <span class="n">thread</span> <span class="o">:</span> <span class="n">threads</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">thread</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="c1">// Affichage du résultat de l'exécution</span>
+    <span class="n">resultat</span><span class="o">.</span><span class="na">forEach</span><span class="o">((</span><span class="n">threadId</span><span class="o">,</span> <span class="n">list</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"\nThread virtuel #"</span> <span class="o">+</span> <span class="n">threadId</span><span class="o">);</span>
+      <span class="n">list</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">s</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"    "</span> <span class="o">+</span> <span class="n">s</span><span class="o">));</span>
+    <span class="o">});</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">executerTraitement</span><span class="o">(</span><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;&gt;</span> <span class="n">resultat</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+      <span class="kt">long</span> <span class="n">threadId</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">threadId</span><span class="o">();</span>
+      <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">resultat</span><span class="o">.</span><span class="na">computeIfAbsent</span><span class="o">(</span><span class="n">threadId</span><span class="o">,</span> <span class="n">key</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;());</span>
+      <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
+
+      <span class="k">try</span> <span class="o">{</span>
+        <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">500</span><span class="o">);</span>
+      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Utilisation d&#8217;une map pour stocker l&#8217;historique des threads porteurs</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainThreadsVirtuels</code> et vérifier que lorsque le même thread virtuel est exécuté, cela peut être par des threads porteurs différents.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Thread virtuel #32
+    VirtualThread[#32]/runnable@ForkJoinPool-1-worker-2
+    VirtualThread[#32]/runnable@ForkJoinPool-1-worker-3
+    VirtualThread[#32]/runnable@ForkJoinPool-1-worker-2
+    VirtualThread[#32]/runnable@ForkJoinPool-1-worker-3
+    VirtualThread[#32]/runnable@ForkJoinPool-1-worker-1
+    VirtualThread[#32]/runnable@ForkJoinPool-1-worker-2
+
+Thread virtuel #33
+    VirtualThread[#33]/runnable@ForkJoinPool-1-worker-3
+    VirtualThread[#33]/runnable@ForkJoinPool-1-worker-1
+    VirtualThread[#33]/runnable@ForkJoinPool-1-worker-1
+    VirtualThread[#33]/runnable@ForkJoinPool-1-worker-2
+    VirtualThread[#33]/runnable@ForkJoinPool-1-worker-3
+    VirtualThread[#33]/runnable@ForkJoinPool-1-worker-3
+
+Thread virtuel #30
+    VirtualThread[#30]/runnable@ForkJoinPool-1-worker-1
+    VirtualThread[#30]/runnable@ForkJoinPool-1-worker-2
+    VirtualThread[#30]/runnable@ForkJoinPool-1-worker-1
+    VirtualThread[#30]/runnable@ForkJoinPool-1-worker-1
+    VirtualThread[#30]/runnable@ForkJoinPool-1-worker-2
+    VirtualThread[#30]/runnable@ForkJoinPool-1-worker-1</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Cependant, certaines situations laissent le thread virtuel associé (pinned) au même thread porteur :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>l&#8217;exécution de code au sein d&#8217;un block <code>synchronized</code>,</p>
+</li>
+<li>
+<p>l&#8217;exécution d&#8217;une méthode native.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Ajouter le modificateur <code>synchronized</code> sur la méthode <code>executerTraitement()</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">executerTraitement</span><span class="o">(</span><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;&gt;</span> <span class="n">resultat</span><span class="o">)</span> <span class="o">{</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainThreadsVirtuels</code> et constater qu&#8217;ici le même thread porteur est utilisé.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Thread virtuel #32
+    VirtualThread[#32]/runnable@ForkJoinPool-1-worker-2
+    VirtualThread[#32]/runnable@ForkJoinPool-1-worker-2
+    VirtualThread[#32]/runnable@ForkJoinPool-1-worker-2
+    VirtualThread[#32]/runnable@ForkJoinPool-1-worker-2
+    VirtualThread[#32]/runnable@ForkJoinPool-1-worker-2
+    VirtualThread[#32]/runnable@ForkJoinPool-1-worker-2
+
+Thread virtuel #33
+    VirtualThread[#33]/runnable@ForkJoinPool-1-worker-3
+    VirtualThread[#33]/runnable@ForkJoinPool-1-worker-3
+    VirtualThread[#33]/runnable@ForkJoinPool-1-worker-3
+    VirtualThread[#33]/runnable@ForkJoinPool-1-worker-3
+    VirtualThread[#33]/runnable@ForkJoinPool-1-worker-3
+    VirtualThread[#33]/runnable@ForkJoinPool-1-worker-3
+
+Thread virtuel #30
+    VirtualThread[#30]/runnable@ForkJoinPool-1-worker-1
+    VirtualThread[#30]/runnable@ForkJoinPool-1-worker-1
+    VirtualThread[#30]/runnable@ForkJoinPool-1-worker-1
+    VirtualThread[#30]/runnable@ForkJoinPool-1-worker-1
+    VirtualThread[#30]/runnable@ForkJoinPool-1-worker-1
+    VirtualThread[#30]/runnable@ForkJoinPool-1-worker-1</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Ce cas d&#8217;usage fait perdre l&#8217;intérêt de l&#8217;utilisation des threads virtuels : ils restent associés à leurs threads porteurs et les bloquent, car le traitement est bloquant. Il est préférable d&#8217;utiliser si possible un verrou tel que <code>java.util.concurrent.locks.ReentrantLock</code>.</p>
+</div>
+<div class="paragraph">
+<p>La propriété <code>jdk.tracePinnedThreads</code> de la JVM permet d&#8217;identifier les threads bloqués et "épinglés" sur leur thread porteur.
+Deux valeurs sont utilisables avec cette option :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>-Djdk.tracePinnedThreads=short</code> pour un affichage court,</p>
+</li>
+<li>
+<p><code>-Djdk.tracePinnedThreads=full</code> (ou <code>-Djdk.tracePinnedThreads</code>) pour afficher une stacktrace complète.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Exécuter la classe <code>MainThreadsVirtuels</code> avec l&#8217;option <code>-Djdk.tracePinnedThreads=full</code></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Si besoin, se référer à la <a href="index.html#options-jvm">mise en œuvre des options de la JVM</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Constater que l&#8217;on obtient la stacktrace :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Thread : VirtualThread[#48,Virtual-0]/runnable@ForkJoinPool-1-worker-3
+VirtualThread[#58,Virtual-10]/runnable@ForkJoinPool-1-worker-11 reason:MONITOR
+    java.base/java.lang.VirtualThread$VThreadContinuation.onPinned(VirtualThread.java:199)
+    java.base/jdk.internal.vm.Continuation.onPinned0(Continuation.java:393)
+    java.base/java.lang.VirtualThread.parkNanos(VirtualThread.java:635)
+    java.base/java.lang.VirtualThread.sleepNanos(VirtualThread.java:812)
+    java.base/java.lang.Thread.sleepNanos(Thread.java:489)
+    java.base/java.lang.Thread.sleep(Thread.java:522)
+    fr.sciam.workshop.javase.virtualthreads.MainThreadsVirtuels.lambda$creerThreadsVirtuelsEtAfficherPorteurs$10(MainThreadsVirtuels.java:115) &lt;== monitors:1
+    java.base/java.lang.VirtualThread.run(VirtualThread.java:329)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 18:24:54 +0200
+</div>
+</div>
+</body>
+</html>

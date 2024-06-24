@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : le Pattern Matching for switch</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="pattern-matching-switch" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-pattern-matching-switch.html">Lab : le Pattern Matching for switch</a></span></p><ul class="sectlevel3">
+<li><a href="lab-pattern-matching-switch.html#pattern-matching-switch"><span class="toc-current">1. Lab : le Pattern Matching for switch</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="pattern-matching-switch"><a class="anchor" href="#pattern-matching-switch"></a>1. Lab : le Pattern Matching for switch</h4>
+<div class="paragraph">
+<p>Le Pattern Matching for switch a pour but d&#8217;enrichir le langage Java en permettant l&#8217;utilisation du pattern matching dans des instructions <code>switch</code>.
+Cela permet de tester si une expression correspond à un certain nombre de motifs et d&#8217;effectuer une action selon les cas rencontrés, de sorte que les requêtes complexes orientées données puissent être exprimées de manière concise et sûre.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Première preview en Java 17 <a href="https://openjdk.org/jeps/406">JEP 406</a>. Standard en Java 21</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/441">441: Pattern Matching for switch</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+<div class="sect4">
+<h5 id="_les_patterns_utilisables"><a class="anchor" href="#_les_patterns_utilisables"></a>1.1. Les patterns utilisables</h5>
+<div class="paragraph">
+<p>Plusieurs patterns sont utilisables dans une instruction <code>switch</code> : Type Pattern et Record Pattern.</p>
+</div>
+<div class="sect5">
+<h6 id="_le_type_pattern"><a class="anchor" href="#_le_type_pattern"></a>1.1.1. Le Type Pattern</h6>
+<div class="paragraph">
+<p>Ce pattern permet de tester la correspondance de type.
+La syntaxe dans un <code>case</code> est la suivante :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="k">case</span> <span class="nc">Type</span> <span class="nl">variable:</span>
+  <span class="c1">// instruction</span>
+  <span class="k">break</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>ou</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="k">case</span> <span class="nc">Type</span> <span class="n">variable</span> <span class="o">-&gt;</span> <span class="cm">/* instruction */</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Exécuter la classe <code>MainPatternMatchingSwitch</code> du package <code>fr.sciam.workshop.javase.pmswitch</code>.
+Vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Formatter nombres
+entier : 2024
+long : 10000000000
+flottant : 123,000000
+double : 1,618034
+inconnu : java.math.BigDecimal</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Toujours dans la classe <code>MainPatternMatchingSwitch</code>, refactorer la méthode <code>formatterNombre()</code> pour utiliser une instruction <code>switch</code> plutôt que la séquence <code>if</code> / <code>else if</code> / <code>else</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">formatterNombre</span><span class="o">(</span><span class="nc">Number</span> <span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+
+    <span class="nc">String</span> <span class="n">resultat</span> <span class="o">=</span> <span class="k">switch</span> <span class="o">(</span><span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="o">-&gt;</span> <span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"entier : %d"</span><span class="o">,</span> <span class="n">i</span><span class="o">);</span>
+      <span class="k">case</span> <span class="nc">Long</span> <span class="n">l</span> <span class="o">-&gt;</span> <span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"long : %d"</span><span class="o">,</span> <span class="n">l</span><span class="o">);</span>
+      <span class="k">case</span> <span class="nc">Float</span> <span class="n">f</span> <span class="o">-&gt;</span> <span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"flottant : %f"</span><span class="o">,</span> <span class="n">f</span><span class="o">);</span>
+      <span class="k">case</span> <span class="nc">Double</span> <span class="n">d</span> <span class="o">-&gt;</span> <span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"double : %f"</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
+      <span class="k">default</span> <span class="o">-&gt;</span> <span class="s">"inconnu : "</span> <span class="o">+</span> <span class="n">nombre</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">();</span>
+    <span class="o">};</span>
+
+    <span class="k">return</span> <span class="n">resultat</span><span class="o">;</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter à nouveau la classe <code>MainPatternMatchingSwitch</code> et vérifier que l&#8217;on obtient le même résultat dans la console.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Formatter nombres
+entier : 2024
+long : 10000000000
+flottant : 123,000000
+double : 1,618034
+inconnu : java.math.BigDecimal</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_le_record_pattern"><a class="anchor" href="#_le_record_pattern"></a>1.1.2. Le Record Pattern</h6>
+<div class="paragraph">
+<p>Il est possible d&#8217;utiliser le Record Pattern dans une instruction <code>switch</code>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Ce point est traité dans le lab <a href="lab-record-patterns.html#record-patterns">les Records Patterns</a> et plus précisément dans cette <a href="lab-record-patterns.html#record-patterns-switch">mise en pratique</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lutilisation_dun_guarded_case_label"><a class="anchor" href="#_lutilisation_dun_guarded_case_label"></a>1.2. L&#8217;utilisation d&#8217;un guarded case label</h5>
+<div class="paragraph">
+<p>Il est possible de combiner un pattern et une expression booléenne représentant une condition via le nouveau mot clé contextuel <code>when</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la méthode <code>analyserNombre()</code>, utiliser une instruction <code>switch</code> ainsi que des "guarded case label" pour afficher dans la console le paramètre <code>nombre</code> suivi de :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>"Grand entier" si <code>nombre</code> est de type <code>Integer</code> et supérieur à 1000,</p>
+</li>
+<li>
+<p>"Petit entier" si <code>nombre</code> est de type <code>Integer</code>,</p>
+</li>
+<li>
+<p>"Grand double" si <code>nombre</code> est de type <code>Double</code> et supérieur à 1000,</p>
+</li>
+<li>
+<p>"Petit double" si <code>nombre</code> est de type <code>Double</code>,</p>
+</li>
+<li>
+<p>"Autre" sinon.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">analyserNombre</span><span class="o">(</span><span class="nc">Number</span> <span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">message</span> <span class="o">=</span> <span class="k">switch</span> <span class="o">(</span><span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="n">when</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">1_000</span> <span class="o">-&gt;</span> <span class="s">"Grand entier"</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="o">-&gt;</span> <span class="s">"Petit entier"</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Double</span> <span class="n">d</span> <span class="n">when</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="mi">1_000</span> <span class="o">-&gt;</span> <span class="s">"Grand double"</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Double</span> <span class="n">d</span> <span class="o">-&gt;</span> <span class="s">"Petit entier"</span><span class="o">;</span>
+      <span class="k">default</span> <span class="o">-&gt;</span> <span class="s">"Autre"</span><span class="o">;</span>
+    <span class="o">};</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">nombre</span> <span class="o">+</span> <span class="s">" : "</span> <span class="o">+</span> <span class="n">message</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainPatternMatchingSwitch</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Analyser nombre avec when
+5 : Petit entier
+10000 : Grand entier
+3.141592653589793 : Petit entier
+1.0E9 : Grand double</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_dominance_des_patterns"><a class="anchor" href="#_la_dominance_des_patterns"></a>1.3. La dominance des patterns</h5>
+<div class="paragraph">
+<p>L&#8217;ordre des <code>case</code> avec pattern est important.
+En effet, si un <code>case</code> ne peut pas être atteint car un <code>case</code> qui le précède est plus général, alors on considère qu&#8217;il est "dominé" et l&#8217;erreur de compilation "Label is dominated by a preceding case label" est émise. Les patterns les plus restrictifs doivent donc être placés avant ceux qui le sont moins.
+Par exemple, <code>case CharSequence cs</code> domine <code>case String s</code> car <code>String</code> implémente <code>CharSequence</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la méthode <code>analyserObjet()</code>, utiliser une instruction <code>switch</code> avec un Type Pattern <code>Number</code> qui précède un Type Pattern <code>Integer</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">analyserObjet</span><span class="o">(</span><span class="nc">Object</span> <span class="n">objet</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">information</span> <span class="o">=</span> <span class="k">switch</span> <span class="o">(</span><span class="n">objet</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Number</span> <span class="n">nombre</span> <span class="o">-&gt;</span> <span class="s">"Nombre"</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="o">-&gt;</span> <span class="s">"Entier"</span><span class="o">;</span>
+      <span class="k">default</span> <span class="o">-&gt;</span> <span class="s">"Autre"</span><span class="o">;</span>
+    <span class="o">};</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">information</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vérifier que l&#8217;on obtient l&#8217;erreur de compilation :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Label is dominated by a preceding case label 'Number nombre'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>sur la ligne :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="o">-&gt;</span> <span class="s">"Entier"</span><span class="o">;</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est donc nécessaire de respecter l&#8217;ordre des patterns par dominance.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Corriger le code de la méthode <code>analyserObjet()</code> en déplaçant le <code>case Integer i</code> afin que le code compile.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">analyserObjet</span><span class="o">(</span><span class="nc">Object</span> <span class="n">objet</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">information</span> <span class="o">=</span> <span class="k">switch</span> <span class="o">(</span><span class="n">objet</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="o">-&gt;</span> <span class="s">"Entier"</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Number</span> <span class="n">nombre</span> <span class="o">-&gt;</span> <span class="s">"Nombre"</span><span class="o">;</span>
+      <span class="k">default</span> <span class="o">-&gt;</span> <span class="s">"Autre"</span><span class="o">;</span>
+    <span class="o">};</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">information</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainPatternMatchingSwitch</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Analyser objet
+Autre
+Entier
+Nombre</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La dominance concerne également l&#8217;utilisation des "guarded case label" avec <code>when</code>.
+Un "guarded case label" peut être dominé par le même <code>case</code> pattern sans condition.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Toujours dans la méthode <code>analyserObjet()</code> ajouter un <code>case</code> pour traiter le cas spécifique d&#8217;un <code>Integer</code> négatif, après le <code>case Integer i</code> existant.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">analyserObjet</span><span class="o">(</span><span class="nc">Object</span> <span class="n">objet</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">information</span> <span class="o">=</span> <span class="k">switch</span> <span class="o">(</span><span class="n">objet</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="o">-&gt;</span> <span class="s">"Entier"</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="n">when</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">-&gt;</span> <span class="s">"Entier négatif"</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Number</span> <span class="n">nombre</span> <span class="o">-&gt;</span> <span class="s">"Nombre"</span><span class="o">;</span>
+      <span class="k">default</span> <span class="o">-&gt;</span> <span class="s">"Autre"</span><span class="o">;</span>
+    <span class="o">};</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">information</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vérifier que l&#8217;on obtient l&#8217;erreur de compilation :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Label is dominated by a preceding case label 'Integer i'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Déplacer ensuite ce <code>case</code> afin qu&#8217;il soit positionné avant le <code>case Integer i</code> et vérifier que le code compile à nouveau.</p>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainPatternMatchingSwitch</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Analyser objet
+Autre
+Entier négatif
+Nombre</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lexhaustivité_des_cas"><a class="anchor" href="#_lexhaustivité_des_cas"></a>1.4. L&#8217;exhaustivité des cas</h5>
+<div class="paragraph">
+<p>Le pattern matching dans une instruction <code>switch</code> impose que l&#8217;exhaustivité des cas soit couverte.
+Pour cela, deux cas de figure s&#8217;offrent à nous :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>pour un type scellé, les types de la clause <code>permits</code> doivent être couverts,</p>
+</li>
+<li>
+<p>ou bien il doit y avoir un (et un seul) cas "match all" : soit <code>default</code> soit un type pattern qui correspond de manière inconditionnelle à l&#8217;expression du sélecteur.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Cela est vérifié :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>par le compilateur : une erreur est levée si l&#8217;exhaustivité n&#8217;est pas assurée,</p>
+</li>
+<li>
+<p>au runtime par la JVM : une <code>MatchException</code> est levée. Cela peut se produire lorsqu&#8217;une classe contenant une expression ou une instruction <code>switch</code> exhaustive a été compilée, mais qu&#8217;une hiérarchie scellée utilisée a été modifiée ultérieurement et recompilée.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+La notion de classes scellées est abordée dans le lab <a href="lab-classes-scellees.html#classes-scellees">les classes scellées</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>verifierExhaustivite()</code> en ajoutant une instruction <code>switch</code> qui ne couvre que le type pattern <code>Integer</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">verifierExhaustivite</span><span class="o">(</span><span class="nc">Number</span> <span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">switch</span> <span class="o">(</span><span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Entier"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que l&#8217;erreur de compilation "'switch' statement does not cover all possible input values" est levée.</p>
+</div>
+<div class="paragraph">
+<p>Ajouter le Type Pattern inconditionnel <code>Number</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">verifierExhaustivite</span><span class="o">(</span><span class="nc">Number</span> <span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">switch</span> <span class="o">(</span><span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Entier"</span><span class="o">);</span>
+      <span class="k">case</span> <span class="nc">Number</span> <span class="n">n</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Nombre"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que le code compile et exécuter la classe <code>MainPatternMatchingSwitch</code> pour vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Vérifier exhaustivité
+Entier</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ajouter le cas <code>default</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">verifierExhaustivite</span><span class="o">(</span><span class="nc">Number</span> <span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">switch</span> <span class="o">(</span><span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Entier"</span><span class="o">);</span>
+      <span class="k">case</span> <span class="nc">Number</span> <span class="n">n</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Nombre"</span><span class="o">);</span>
+      <span class="k">default</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Défaut"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que l&#8217;erreur de compilation "'switch' has both an unconditional pattern and a default label" est levée.</p>
+</div>
+<div class="paragraph">
+<p>Enfin, supprimer le cas <code>default</code> afin que le code compile à nouveau.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_valeur_null"><a class="anchor" href="#_la_valeur_null"></a>1.5. La valeur <code>null</code></h5>
+<div class="paragraph">
+<p>Historiquement, les instructions et expressions de type <code>switch</code> lèvent une <code>NullPointerException</code> si l&#8217;expression du sélecteur vaut <code>null</code>, nécessitant ainsi de tester la nullité au préalable, en dehors du <code>switch</code> pour s&#8217;en prémunir.</p>
+</div>
+<div class="paragraph">
+<p>Il est désormais possible de définir un <code>case null</code> dont le contenu sera exécuté sans lever de <code>NullPointerException</code>.
+Pour des raisons de compatibilité, s&#8217;il n&#8217;est pas présent et que l&#8217;expression du sélecteur est <code>null</code>, une <code>NullPointerException</code> sera toujours levée.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>utiliserSwitchAvecNull()</code> afin d&#8217;afficher en fonction du paramètre <code>nombre</code> :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>"Entier" s&#8217;il est de type <code>Integer</code></p>
+</li>
+<li>
+<p>"null" s&#8217;il est <code>null</code></p>
+</li>
+<li>
+<p>"défaut" sinon</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">utiliserSwitchAvecNull</span><span class="o">(</span><span class="nc">Number</span> <span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">switch</span> <span class="o">(</span><span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Entier"</span><span class="o">);</span>
+      <span class="k">case</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null"</span><span class="o">);</span>
+      <span class="k">default</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"défaut"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainPatternMatchingSwitch</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Utiliser switch avec null
+null
+Entier</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il n&#8217;est pas possible de combiner <code>null</code> avec autre chose que <code>default</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier à nouveau la méthode <code>utiliserSwitchAvecNull()</code> pour tenter de combiner le Type Pattern <code>Double</code> avec <code>null</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">utiliserSwitchAvecNull</span><span class="o">(</span><span class="nc">Number</span> <span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">switch</span> <span class="o">(</span><span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Entier"</span><span class="o">);</span>
+      <span class="k">case</span> <span class="nc">Double</span> <span class="n">d</span><span class="o">,</span> <span class="kc">null</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null"</span><span class="o">);</span>
+      <span class="k">default</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"défaut"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vérifier que l&#8217;on obtient l&#8217;erreur de compilation suivante :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Invalid case label combination: 'null' can only be used as a single case label or paired only with 'default'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Supprimer la ligne qui est en erreur et combiner les cas <code>null</code> et <code>default</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">utiliserSwitchAvecNull</span><span class="o">(</span><span class="nc">Number</span> <span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">switch</span> <span class="o">(</span><span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Integer</span> <span class="n">i</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Entier"</span><span class="o">);</span>
+      <span class="k">case</span> <span class="kc">null</span><span class="o">,</span> <span class="k">default</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null ou défaut"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainPatternMatchingSwitch</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Utiliser switch avec null
+null ou défaut
+Entier</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_constantes_dénumération_qualifiées"><a class="anchor" href="#_les_constantes_dénumération_qualifiées"></a>1.6. Les constantes d&#8217;énumération qualifiées</h5>
+<div class="paragraph">
+<p>Il est désormais possible d&#8217;utiliser des constantes d&#8217;énumérations qualifiées, ceci afin d&#8217;éviter de devoir recourir à un "guarded case label".
+Cela permet au sein d&#8217;un même <code>switch</code> de tester l&#8217;expression du sélecteur avec différents types d&#8217;énumérations.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Consulter l&#8217;interface <code>Vehicule</code>, les <code>enum</code> <code>VehiculeAerien</code> et <code>VehiculeTerrestre</code>, et la classe <code>VehiculePrototype</code>.</p>
+</div>
+<div class="paragraph">
+<p>Compléter la méthode <code>analyserVehicule()</code> afin de tester si le paramètre <code>vehicule</code> correspond à :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>VehiculeAerien.AVION</code></p>
+</li>
+<li>
+<p><code>VehiculeAerien.MONGOLFIERE</code></p>
+</li>
+<li>
+<p><code>VehiculeTerrestre.VOITURE</code></p>
+</li>
+<li>
+<p><code>VehiculeTerrestre.TRAIN</code></p>
+</li>
+<li>
+<p><code>VehiculePrototype</code></p>
+</li>
+<li>
+<p>autre chose</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Afficher pour chaque cas un message unique.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">analyserVehicule</span><span class="o">(</span><span class="nc">Vehicule</span> <span class="n">vehicule</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">message</span> <span class="o">=</span> <span class="k">switch</span> <span class="o">(</span><span class="n">vehicule</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">VehiculeAerien</span><span class="o">.</span><span class="na">AVION</span> <span class="o">-&gt;</span> <span class="s">"Avion"</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">VehiculeAerien</span><span class="o">.</span><span class="na">MONGOLFIERE</span> <span class="o">-&gt;</span> <span class="s">"Montgolfière"</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">VehiculeTerrestre</span><span class="o">.</span><span class="na">VOITURE</span> <span class="o">-&gt;</span> <span class="s">"Voiture"</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">VehiculeTerrestre</span><span class="o">.</span><span class="na">TRAIN</span> <span class="o">-&gt;</span> <span class="s">"Train"</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">VehiculePrototype</span> <span class="n">vp</span> <span class="o">-&gt;</span> <span class="s">"Véhicule"</span><span class="o">;</span>
+      <span class="k">default</span> <span class="o">-&gt;</span> <span class="s">"Autre véhicule"</span><span class="o">;</span>
+    <span class="o">};</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainPatternMatchingSwitch</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Analyser véhicule
+Avion
+Montgolfière
+Voiture
+Train
+Véhicule
+Autre véhicule</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 18:24:58 +0200
+</div>
+</div>
+</body>
+</html>

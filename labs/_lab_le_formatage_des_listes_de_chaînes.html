@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : le formatage des listes de chaînes</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="_lab_le_formatage_des_listes_de_chaînes" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-list-format.html">Lab : le formatage des listes de chaînes</a></span></p><ul class="sectlevel3">
+<li><a href="lab-list-format.html#_lab_le_formatage_des_listes_de_chaînes"><span class="toc-current">1. Lab : le formatage des listes de chaînes</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="_lab_le_formatage_des_listes_de_chaînes"><a class="anchor" href="#_lab_le_formatage_des_listes_de_chaînes"></a>1. Lab : le formatage des listes de chaînes</h4>
+<div class="paragraph">
+<p>La classe <code>java.text.ListFormat</code>, qui hérite de <code>java.text.Format</code>, formate ou analyse une liste de chaînes de caractères en tenant compte des spécificités locales, d&#8217;un type et d&#8217;un style.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Standard en Java 22</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>OpenJDK Issue</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://bugs.openjdk.org/browse/JDK-8041488">JDK-8041488</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Le type détermine la ponctuation entre les chaînes et les mots de liaison, le cas échéant. Trois types de formatage sont proposés via l&#8217;énumération <code>java.text.ListFormat.Type</code> qui contient trois valeurs :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>STANDARD</code> : pour une liste avec "et" (par défaut)</p>
+</li>
+<li>
+<p><code>OR</code> : pour une liste avec  "ou"</p>
+</li>
+<li>
+<p><code>UNIT</code> : pour une liste unitaire soit avec "et" soit avec seulement des virgules selon la Locale</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Le style détermine la façon dont les chaînes sont abrégées ou non. Trois styles de formatage sont également proposés pour chaque type via l&#8217;énumération <code>java.text.ListFormat.Style</code> qui contient trois valeurs :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>FULL</code> : les mots de liaison tels que "et" et "ou" sont écrits en toutes lettres (par défaut)</p>
+</li>
+<li>
+<p><code>SHORT</code> : les mots de liaison sont écrits en entier ou en abrégé, selon la Locale</p>
+</li>
+<li>
+<p><code>NARROW</code> : selon la langue, les mots de liaison sont écrits ou omis et les virgules peuvent également être omises</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>La surcharge de la méthode <code>getInstance()</code> sans paramètre permet d&#8217;obtenir une instance pour la Locale, le type et le style par défaut.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>formaterParDefaut()</code> de la classe <code>fr.sciam.workshop.javase.listformat.MainListFormat</code> pour obtenir une instance de type <code>ListFormat</code> configurée par défaut pour formatter la liste <code>couleurs</code> et l&#8217;afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">formaterParDefaut</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ListFormat</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">format</span><span class="o">(</span><span class="n">couleurs</span><span class="o">));</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainListFormat</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Formatage par défaut
+vert, orange et rouge</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La surcharge <code>getInstance(Locale locale, ListFormat.Type type, ListFormat.Style style)</code> permet de préciser la <code>Locale</code>, le type et le style à utiliser.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>formaterAvecLocaleFr()</code> de la classe <code>MainListFormat</code> pour obtenir des instances de type <code>ListFormat</code> configurées avec la <code>Locale.FRANCE</code> et différents types et styles pour formatter la liste <code>couleurs</code> et l&#8217;afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">formaterAvecLocaleFr</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ListFormat</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">FRANCE</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">STANDARD</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">FULL</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">couleurs</span><span class="o">));</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ListFormat</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">FRANCE</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">STANDARD</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">NARROW</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">couleurs</span><span class="o">));</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ListFormat</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">FRANCE</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">OR</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">FULL</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">couleurs</span><span class="o">));</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ListFormat</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">FRANCE</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">UNIT</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">NARROW</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">couleurs</span><span class="o">));</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainListFormat</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Formatage avec Locale FR
+vert, orange et rouge
+vert, orange, rouge
+vert, orange ou rouge
+vert orange rouge</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Le formatage dépend de la <code>Locale</code> utilisée et s&#8217;y adapte.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>formaterAvecLocaleUs()</code> de la classe <code>MainListFormat</code> pour obtenir une instance de type <code>ListFormat</code> configurée avec <code>Locale.US</code> pour formatter la liste <code>couleurs</code> aux formats <code>STANDARD/FULL</code>, <code>STANDARD/SHORT</code> et <code>OR/FULL</code> et les afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">formaterAvecLocaleUs</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ListFormat</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">US</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">STANDARD</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">FULL</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">couleurs</span><span class="o">));</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ListFormat</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">US</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">STANDARD</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">SHORT</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">couleurs</span><span class="o">));</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ListFormat</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="nc">Locale</span><span class="o">.</span><span class="na">US</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">OR</span><span class="o">,</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">FULL</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">couleurs</span><span class="o">));</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainListFormat</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Formatage avec Locale US
+vert, orange, and rouge
+vert, orange, &amp; rouge
+vert, orange, or rouge</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est également possible d&#8217;obtenir une instance indépendante de la Locale, du type et du style à l&#8217;aide de la surcharge <code>getInstance(String[])</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>formaterAvecPatterns()</code> de la classe <code>MainListFormat</code> pour obtenir une instance de type <code>ListFormat</code> configurée pour formater la liste <code>couleurs</code> avec des patterns dédiés et l&#8217;afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">formaterAvecPatterns</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ListFormat</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="k">new</span> <span class="nc">String</span><span class="o">[]{</span><span class="s">"{0} et {1}"</span><span class="o">,</span> <span class="s">"{0} puis {1}"</span><span class="o">,</span> <span class="s">"{0} et finalement {1}"</span><span class="o">,</span> <span class="s">""</span><span class="o">,</span> <span class="s">"{0} puis {1} et finalement {2}"</span><span class="o">})</span>
+        <span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">couleurs</span><span class="o">));</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainListFormat</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Formatage avec patterns
+vert puis orange et finalement rouge</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Pour le détail du contenu des patterns dans le tableau de chaîne de caractères, il faut consulter la {javadoc}/java.base/java/text/ListFormat.Style.html[Javadoc de la classe <code>java.text.ListFormat</code>].
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>La classe <code>ListFormat</code> peut aussi analyser une chaîne formatée selon la Locale, le type et le style fournis pour extraire une <code>List&lt;String&gt;</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>parser()</code> de la classe <code>MainListFormat</code> pour obtenir une instance de type <code>ListFormat</code> configurée par défaut pour analyser une chaîne et en extraire les différentes chaînes  et les afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">parser</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">elements</span> <span class="o">=</span> <span class="nc">ListFormat</span><span class="o">.</span><span class="na">getInstance</span><span class="o">()</span>
+          <span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="s">"Ni, Cu, Zn et Fe"</span><span class="o">);</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">elements</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">ParseException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainListFormat</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Parser
+4 élements dans la liste : [Ni, Cu, Zn, Fe]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 18:24:54 +0200
+</div>
+</div>
+</body>
+</html>

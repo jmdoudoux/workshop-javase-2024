@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : les Records</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="records" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-records.html">Lab : les Records</a></span></p><ul class="sectlevel3">
+<li><a href="lab-records.html#records"><span class="toc-current">1. Lab : les Records</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="records"><a class="anchor" href="#records"></a>1. Lab : les Records</h4>
+<div class="paragraph">
+<p>La création d&#8217;une classe immuable est un besoin fréquent en Java.
+Une façon de répondre à ce besoin est de créer une classe dont les attributs sont <code>final</code>, d&#8217;écrire un constructeur permettant d&#8217;initialiser leurs valeurs et de définir des accesseurs.
+On peut aussi avoir besoin d&#8217;une implémentation des méthodes <code>toString()</code>, ainsi qu'<code>hashcode()</code> et <code>equals()</code>, que l&#8217;on peut générer avec son IDE.</p>
+</div>
+<div class="paragraph">
+<p>Ceci est très verbeux et potentiellement source d&#8217;erreur, pour un besoin simple de représentation de données immuables.</p>
+</div>
+<div class="paragraph">
+<p>Les Records ont été ajoutés au langage afin de faciliter cette tâche.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Première preview en Java 14 <a href="https://openjdk.org/jeps/359">JEP 359</a>. Standard en Java 16</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/395">395: Records</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect4">
+<h5 id="_la_syntaxe"><a class="anchor" href="#_la_syntaxe"></a>1.1. La syntaxe</h5>
+<div class="paragraph">
+<p>Un nouveau type <code>record</code> fait son apparition et est défini via l&#8217;emploi du mot clé contextuel <code>record</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la classe <code>fr.sciam.workshop.javase.records.Point</code> pour la convertir en un record, via la syntaxe :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="n">record</span> <span class="nf">Point</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Cette déclaration crée pour nous les éléments suivants :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>une classe immuable avec deux composants <code>x</code> et <code>y</code> de type <code>int</code> qui sont <code>final</code>,</p>
+</li>
+<li>
+<p>un constructeur canonique pour initialiser leurs valeurs,</p>
+</li>
+<li>
+<p>des accesseurs <code>x()</code> et <code>y()</code></p>
+</li>
+<li>
+<p>une implémentation des méthodes <code>toString()</code>, <code>hashcode()</code> et <code>equals()</code></p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Dans le cas d&#8217;un record, on parle de "composants" pour <code>x</code> et <code>y</code> et non de champs ou d&#8217;attributs.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Les accesseurs ne respectent pas la convention JavaBeans. Ils ne sont pas préfixés par "get" (ni "is" pour les booléens), ils reprennent exactement le nom du composant correspondant.
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>afficherPoint()</code> de la classe <code>fr.sciam.workshop.javase.records.MainRecord</code> pour créer une nouvelle instance de <code>Point</code> en invoquant son constructeur canonique puis l&#8217;afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">afficherPoint</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">Point</span> <span class="n">point</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">point</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter le programme et constater qu&#8217;il affiche :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Afficher point
+Point[x=1, y=2]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Il s&#8217;agit du résultat de l&#8217;appel à la méthode <code>toString()</code> qui a été générée pour nous.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La méthode <code>toString()</code> générée affiche le nom du record ainsi que les valeurs de ses composants.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la méthode <code>afficherEgalite()</code>, créer 3 instances de <code>Point</code> et tester leur égalité :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">testerEgalites</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">Point</span> <span class="n">p1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">7</span><span class="o">,</span> <span class="mi">8</span><span class="o">);</span>
+    <span class="nc">Point</span> <span class="n">p2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">11</span><span class="o">,</span> <span class="mi">9</span><span class="o">);</span>
+    <span class="nc">Point</span> <span class="n">p3</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">7</span><span class="o">,</span> <span class="mi">8</span><span class="o">);</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">p1</span> <span class="o">+</span> <span class="s">" equals "</span> <span class="o">+</span> <span class="n">p2</span> <span class="o">+</span> <span class="s">" : "</span> <span class="o">+</span> <span class="n">p1</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">p2</span><span class="o">));</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">p1</span> <span class="o">+</span> <span class="s">" equals "</span> <span class="o">+</span> <span class="n">p3</span> <span class="o">+</span> <span class="s">" : "</span> <span class="o">+</span> <span class="n">p1</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">p3</span><span class="o">));</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que la première égalité est fausse, tandis que la seconde est vraie.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Tester égalités
+Point[x=7, y=8] equals Point[x=11, y=9] : false
+Point[x=7, y=8] equals Point[x=7, y=8] : true</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Une implémentation de la méthode <code>equals()</code> a été générée, se basant sur l&#8217;égalité de ses composants.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est possible d&#8217;ajouter des méthodes au sein d&#8217;un record, aussi bien statiques que d&#8217;instances.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans le record <code>Point</code>, ajouter deux méthodes <code>calculerDistance()</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">public</span> <span class="kt">double</span> <span class="nf">calculerDistance</span><span class="o">(</span><span class="nc">Point</span> <span class="n">point</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">dx</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="na">x</span><span class="o">()</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="na">x</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="na">y</span><span class="o">()</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="na">y</span><span class="o">;</span>
+
+    <span class="k">return</span> <span class="nc">Math</span><span class="o">.</span><span class="na">hypot</span><span class="o">(</span><span class="n">dx</span><span class="o">,</span> <span class="n">dy</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">double</span> <span class="nf">calculerDistance</span><span class="o">(</span><span class="nc">Point</span> <span class="n">point1</span><span class="o">,</span> <span class="nc">Point</span> <span class="n">point2</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">point1</span><span class="o">.</span><span class="na">calculerDistance</span><span class="o">(</span><span class="n">point2</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que la syntaxe est valide : aussi bien pour l&#8217;ajout de la méthode que la présence des accesseurs <code>x()</code> et <code>y()</code>.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est également possible d&#8217;implémenter des interfaces.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier <code>Point</code> afin qu&#8217;il implémente l&#8217;interface <code>Comparable&lt;Point&gt;</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="n">record</span> <span class="nf">Point</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="kd">implements</span> <span class="nc">Comparable</span><span class="o">&lt;</span><span class="nc">Point</span><span class="o">&gt;</span> <span class="o">{</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compareTo</span><span class="o">(</span><span class="nc">Point</span> <span class="n">point</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">xc</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">x</span><span class="o">,</span> <span class="n">point</span><span class="o">.</span><span class="na">x</span><span class="o">());</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">xc</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">xc</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">y</span><span class="o">,</span> <span class="n">point</span><span class="o">.</span><span class="na">y</span><span class="o">());</span>
+    <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Modifier la méthode <code>comparerPoint()</code> de <code>MainRecord</code> afin de comparer deux points :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">comparerPoint</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">comparaison</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">).</span><span class="na">compareTo</span><span class="o">(</span><span class="k">new</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">));</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Comparaison : "</span> <span class="o">+</span> <span class="n">comparaison</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter le programme et vérifier qu&#8217;il affiche :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Comparer point
+Comparaison : 1</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_limitations"><a class="anchor" href="#_les_limitations"></a>1.2. Les limitations</h5>
+<div class="paragraph">
+<p>Plusieurs limitations s&#8217;appliquent aux records :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>il n&#8217;est pas possible pour un record d&#8217;étendre une classe : un record hérite déjà de la classe <code>java.lang.Record</code>,</p>
+</li>
+<li>
+<p>il n&#8217;est pas non plus possible d&#8217;étendre un record, car il est <code>final</code>. Il ne pourra contenir que des méthodes concrètes,</p>
+</li>
+<li>
+<p>il n&#8217;est pas possible de définir un bloc d&#8217;initialisation (<code>{ &#8230;&#8203; }</code> dans le corps du record)</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br></p>
+</div>
+<div class="paragraph">
+<p>Créer un nouveau record <code>PointInvalide</code> de la manière suivante :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+</pre></td><td class="code"><pre><span class="kn">import</span> <span class="nn">java.awt.Dimension</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.Serializable</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="n">record</span> <span class="nf">PointInvalide</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span>
+    <span class="kd">extends</span> <span class="nc">Dimension</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="kd">implements</span> <span class="nc">Serializable</span> <span class="o">{</span>
+
+    <span class="kt">int</span> <span class="n">z</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="o">{</span> <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que des erreurs sont levées au niveau des puces 1, 2 et 3, puis supprimer ce record.</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Créer la classe <code>Point3D</code> qui étend le record <code>Point</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Point3D</span> <span class="kd">extends</span> <span class="nc">Point</span> <span class="o">{</span>
+
+    <span class="kt">int</span> <span class="n">z</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">Point3D</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">z</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que l&#8217;on obtient l&#8217;erreur de compilation :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Cannot inherit from final 'fr.sciam.workshop.javase.records.Point'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Supprimer cette classe invalide.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_constructeurs"><a class="anchor" href="#_les_constructeurs"></a>1.3. Les constructeurs</h5>
+<div class="paragraph">
+<p>Le constructeur canonique est automatiquement généré.
+Il peut être utile de redéfinir le constructeur canonique pour par exemple procéder à des contrôles au sein de ce dernier. Les records proposent une syntaxe simplifiée dénommée "constructeur compact".
+Ce constructeur compact ne déclare pas les paramètres dans sa syntaxe : ils seront automatiquement ajoutés par le compilateur.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Ajouter un constructeur compact qui vérifie que les valeurs de <code>x</code> et <code>y</code> sont comprises entre -100 et 100.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="nc">Point</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="o">&gt;</span> <span class="mi">100</span> <span class="o">||</span> <span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">y</span><span class="o">)</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Les valeurs de x et y doivent être comprises entre -100 et 100"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dans <code>MainRecord</code>, modifier la méthode <code>utiliserConstructeurAvecControles()</code> pour tenter de créer une instance de <code>Point</code>, puis exécuter le programme.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">utiliserConstructeurAvecControles</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">Point</span> <span class="n">ptInvalide</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">150</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ptInvalide</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que le code de contrôle est bien exécuté :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Constructeur avec contrôles
+Exception in thread "main" java.lang.IllegalArgumentException: Les valeurs de x et y doivent être comprises entre -100 et 100</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est également possible d&#8217;affecter une valeur modifiée aux composants du record dans son constructeur.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Réécrire le code du constructeur compact pour forcer les valeurs de <code>x</code> et <code>y</code> entre -100 et 100 grâce à la méthode <code>Math::clamp</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+La méthode <code>Math::clamp</code> a été ajoutée dans le JDK 21, son rôle est de contraindre la valeur passée en premier paramètre entre une borne min et une borne max.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="nc">Point</span> <span class="o">{</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">clamp</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="o">-</span><span class="mi">100</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">clamp</span><span class="o">(</span><span class="n">y</span><span class="o">,</span> <span class="o">-</span><span class="mi">100</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter à nouveau <code>MainRecord</code> et constater que le programme affiche :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Constructeur avec contrôles
+Point[x=100, y=0]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Il n&#8217;est pas possible de préfixer les composants par <code>this</code> dans les surcharges de constructeur.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Il est possible de fournir des surcharges de constructeur, pourvu que l&#8217;appel au constructeur canonique soit effectué.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br></p>
+</div>
+<div class="paragraph">
+<p>Ajouter un constructeur qui prend un seul entier en paramètre et qui affecte cette valeur à <code>x</code> et <code>y</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="nf">Point</span><span class="o">(</span><span class="kt">int</span> <span class="n">xy</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">(</span><span class="n">xy</span><span class="o">,</span> <span class="n">xy</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dans <code>MainRecord</code>, modifier la méthode <code>utiliserAutreConstructeur</code> pour utiliser ce constructeur.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">utiliserAutreConstructeur</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">Point</span> <span class="n">ptIdent</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Point</span><span class="o">(-</span><span class="mi">20</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ptIdent</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter le programme et constater qu&#8217;il affiche :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Autre constructeur
+Point[x=-20, y=-20]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Il n&#8217;est pas obligatoire que soit directement appelé le constructeur canonique. Un autre constructeur peut être appelé, mais à la fin de la chaîne d&#8217;appels le constructeur canonique doit être appelé.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_records_locaux"><a class="anchor" href="#_les_records_locaux"></a>1.4. Les records locaux</h5>
+<div class="paragraph">
+<p>Il est possible de définir un record local. Cela peut être utile pour définir une structure de données, éventuellement des comportements, pour un besoin local à une méthode.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>utiliserRecordLocal()</code> de <code>MainRecord</code> afin de déclarer et utiliser un record local. Puis exécuter le programme.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">utiliserRecordLocal</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="n">record</span> <span class="nf">PointNomme</span><span class="o">(</span><span class="nc">String</span> <span class="n">nom</span><span class="o">,</span> <span class="nc">Point</span> <span class="n">p</span><span class="o">)</span> <span class="o">{}</span>
+
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">PointNomme</span><span class="o">&gt;</span> <span class="n">points</span> <span class="o">=</span> <span class="nc">List</span><span class="o">.</span><span class="na">of</span><span class="o">(</span>
+      <span class="k">new</span> <span class="nf">PointNomme</span><span class="o">(</span><span class="s">"Alpha"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">)),</span>
+      <span class="k">new</span> <span class="nf">PointNomme</span><span class="o">(</span><span class="s">"Beta"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Point</span><span class="o">(-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">)),</span>
+      <span class="k">new</span> <span class="nf">PointNomme</span><span class="o">(</span><span class="s">"Gamma"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">7</span><span class="o">,</span> <span class="mi">8</span><span class="o">))</span>
+    <span class="o">);</span>
+
+    <span class="n">points</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vérifier que le code compile et que l&#8217;on affiche :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Record local
+PointNomme[nom=Alpha, p=Point[x=0, y=0]]
+PointNomme[nom=Beta, p=Point[x=-1, y=1]]
+PointNomme[nom=Gamma, p=Point[x=7, y=8]]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_sérialisation"><a class="anchor" href="#_la_sérialisation"></a>1.5. La sérialisation</h5>
+<div class="paragraph">
+<p>Un record peut être sérialisé s&#8217;il implémente l&#8217;interface <code>Serializable</code>.
+Contrairement aux classes standard, certaines règles spécifiques lui sont appliquées.
+Il n&#8217;est pas possible de définir des comportements particuliers lors de la sérialisation, par exemple par le biais des méthodes <code>writeObject()</code> ou <code>readObject()</code> ou par l&#8217;implémentation de l&#8217;interface <code>Externalisable</code>.
+Lors du processus de désérialisation, le constructeur canonique est toujours appelé.
+Cela apporte l&#8217;assurance que les éventuels contrôles implémentés sont exécutés.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier le record <code>Point</code> en commentant son constructeur compact et le rendre sérialisable en lui faisant implémenter l&#8217;interface <code>Serializable</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="n">record</span> <span class="nf">Point</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="kd">implements</span> <span class="nc">Serializable</span><span class="o">,</span> <span class="nc">Comparable</span><span class="o">&lt;</span><span class="nc">Point</span><span class="o">&gt;</span> <span class="o">{</span>
+<span class="c1">//    public Point {</span>
+<span class="c1">//        x = Math.clamp(x, -100, 100);</span>
+<span class="c1">//        y = Math.clamp(y, -100, 100);</span>
+<span class="c1">//    }</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ajouter également une implémentation des méthodes <code>readObject()</code> et <code>writeObject()</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">readObject</span><span class="o">(</span><span class="nc">ObjectInputStream</span> <span class="n">stream</span><span class="o">)</span>
+    <span class="kd">throws</span> <span class="nc">IOException</span><span class="o">,</span> <span class="nc">ClassNotFoundException</span> <span class="o">{</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Point.readObject()"</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">writeObject</span><span class="o">(</span><span class="nc">ObjectOutputStream</span> <span class="n">stream</span><span class="o">)</span>
+    <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Point.writeObject()"</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dans la méthode <code>serialiserPoint()</code> de <code>MainRecord</code>, ajouter le code suivant pour sérialiser une instance de <code>Point</code> dans un fichier, puis exécuter le programme.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">serialiserPoint</span><span class="o">()</span> <span class="o">{</span>
+
+  <span class="nc">Point</span> <span class="n">point</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Point</span><span class="o">(-</span><span class="mi">4096</span><span class="o">,</span> <span class="mi">4096</span><span class="o">);</span>
+
+  <span class="k">try</span> <span class="o">(</span><span class="nc">FileOutputStream</span> <span class="n">fileOutputStream</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FileOutputStream</span><span class="o">(</span><span class="no">FILE</span><span class="o">);</span>
+    <span class="nc">ObjectOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ObjectOutputStream</span><span class="o">(</span><span class="n">fileOutputStream</span><span class="o">))</span> <span class="o">{</span>
+
+    <span class="n">out</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">point</span><span class="o">);</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Point "</span> <span class="o">+</span> <span class="n">point</span> <span class="o">+</span> <span class="s">" sérialisé dans "</span> <span class="o">+</span> <span class="no">FILE</span><span class="o">.</span><span class="na">getAbsolutePath</span><span class="o">());</span>
+
+  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vérifier que le fichier <code>point.bin</code> a été créé.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Sérialiser
+Point Point[x=-4096, y=4096] sérialisé dans "{workdir}\point.bin"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Afficher son contenu avec la commande <code>more</code> par exemple ou l&#8217;ouvrir avec un éditeur de texte pour constater qu&#8217;il contient des données binaires, dont le nom pleinement qualifié du record en toutes lettres : <code>fr.sciam.workshop.javase.records.Point</code>.</p>
+</div>
+<div class="paragraph">
+<p>Constater également que la méthode <code>writeObject()</code> n&#8217;a pas été invoquée : le texte "Point.writeObject()" n&#8217;a pas été affiché.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Vérifions le processus de désérialisation.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br></p>
+</div>
+<div class="paragraph">
+<p>Modifier la méthode <code>deserialiserPoint()</code> de <code>MainRecord</code> afin de désérialiser l&#8217;instance de <code>Point</code> à partir du fichier précédemment créé.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">deserialiserPoint</span><span class="o">()</span> <span class="o">{</span>
+  <span class="k">try</span> <span class="o">(</span><span class="nc">FileInputStream</span> <span class="n">fileInputStream</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FileInputStream</span><span class="o">(</span><span class="no">FILE</span><span class="o">))</span> <span class="o">{</span>
+
+    <span class="nc">ObjectInputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ObjectInputStream</span><span class="o">(</span><span class="n">fileInputStream</span><span class="o">);</span>
+
+    <span class="nc">Point</span> <span class="n">point</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Point</span><span class="o">)</span> <span class="n">in</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Point lu dans le fichier : "</span> <span class="o">+</span> <span class="n">point</span><span class="o">);</span>
+
+  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="o">|</span> <span class="nc">ClassNotFoundException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que le programme affiche :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Désérialiser
+Point lu dans le fichier : Point[x=-4096, y=4096]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater également que la méthode <code>readObject()</code> n&#8217;a pas été invoquée : le texte "Point.readObject()" n&#8217;a pas été affiché.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Enfin, vérifions que le constructeur est bel et bien invoqué lors du processus de désérialisation.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br></p>
+</div>
+<div class="paragraph">
+<p>De-commenter le constructeur compact de <code>Point</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="nc">Point</span> <span class="o">{</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">clamp</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="o">-</span><span class="mi">100</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">clamp</span><span class="o">(</span><span class="n">y</span><span class="o">,</span> <span class="o">-</span><span class="mi">100</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Puis commenter dans la méthode <code>main()</code> de <code>MainRecord</code> l&#8217;appel de la sérialization, en laissant la désérialisation :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Sérialiser"</span><span class="o">);</span>
+<span class="c1">//    serialiserPoint();</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Désérialiser"</span><span class="o">);</span>
+    <span class="n">deserialiserPoint</span><span class="o">();</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Enfin, exécuter le programme <code>MainRecord</code> et constater qu&#8217;il affiche :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Point lu dans le fichier : Point[x=-100, y=100]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Le constructeur a été invoqué lors du processus de désérialisation, garantissant l&#8217;exécution de nos contrôles et traitements.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_records_et_lapi_reflection"><a class="anchor" href="#_les_records_et_lapi_reflection"></a>1.6. Les records et l&#8217;API Reflection</h5>
+<div class="paragraph">
+<p>Le type <code>Class</code> se voit enrichi de nouvelles méthodes dédiées aux records :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>isRecord()</code> permet de savoir si le type est un record,</p>
+</li>
+<li>
+<p><code>getRecordComponents()</code> renvoie un tableau de <code>RecordComponent</code> permettant d&#8217;introspecter les composants du record, ou <code>null</code> si le type n&#8217;est pas un record.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>instrospecterPoint()</code> de <code>MainRecord</code>, en y ajoutant le code suivant :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kt">boolean</span> <span class="n">estRecord</span> <span class="o">=</span> <span class="nc">Point</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isRecord</span><span class="o">();</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Point est un record : "</span> <span class="o">+</span> <span class="n">estRecord</span><span class="o">);</span>
+
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Composants :"</span><span class="o">);</span>
+<span class="k">for</span> <span class="o">(</span><span class="nc">RecordComponent</span> <span class="n">rc</span> <span class="o">:</span> <span class="nc">Point</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getRecordComponents</span><span class="o">())</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"\t"</span> <span class="o">+</span> <span class="n">rc</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">", type : "</span> <span class="o">+</span> <span class="n">rc</span><span class="o">.</span><span class="na">getType</span><span class="o">());</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter le programme puis constater qu&#8217;il affiche :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Introspecter
+Point est un record : true
+Composants :
+	x, type : int
+	y, type : int</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 18:24:58 +0200
+</div>
+</div>
+</body>
+</html>

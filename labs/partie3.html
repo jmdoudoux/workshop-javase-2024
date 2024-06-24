@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<meta name="author" content="Par Clément de Tastes et J.M. Doudoux">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<title>Workshop Java SE en 2024</title>
+<link rel="stylesheet" href="./styles/styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./styles/rouge-github.css">
+<script src="script/clipboard.min.js"></script>
+<style>
+    .listingblock:hover .clipboard {
+        display: block;
+    }
+
+    .clipboard {
+        display: none;
+        border: 0;
+        font-size: .75em;
+        text-transform: uppercase;
+        font-weight: 500;
+        padding: 6px;
+        color: #999;
+        position: absolute;
+        top: .425rem;
+        right: .5rem;
+        background: transparent;
+    }
+
+    code + .clipboard {
+        top: 2rem !important;
+    }
+
+    .clipboard:hover, .clipboard:focus, .clipboard:active {
+        outline: 0;
+        background-color: #eee9e6;
+    }
+</style>
+<script >
+    window.onload = function() {
+        // var pre = document.getElementsByTagName('pre');
+        var pre = document.querySelectorAll("pre.rouge");
+        for (var i = 0; i < pre.length; i++) {
+            var b = document.createElement('button');
+            b.className = 'clipboard';
+            b.textContent = 'Copier';
+            if (pre[i].childNodes.length === 1 && pre[i].childNodes[0].nodeType === 3) {
+                var div = document.createElement('div');
+                div.textContent = pre[i].textContent;
+                pre[i].textContent = '';
+                pre[i].appendChild(div);
+            }
+            pre[i].appendChild(b);
+        }
+        var clipboard = new ClipboardJS('.clipboard', {
+           target: function(b) {
+                var p = b.parentNode;
+                if (p.className.includes("rouge highlight")) {
+                    var elems = p.getElementsByTagName("code");
+                    if (elems.length > 0)
+                        return elems[0];
+                }
+                return p.childNodes[0];
+            }
+        });
+        clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.textContent = 'Copié';
+            setTimeout(function() {
+                e.trigger.textContent = 'Copier';
+            }, 2000);
+        });
+        clipboard.on('error', function(e) {
+            console.error('Action:', e.action, e);
+            console.error('Trigger:', e.trigger);
+        });
+    };
+</script>
+</head>
+<body id="partie3" class="book toc2 toc-left">
+<div id="header">
+<h1>Workshop Java SE en 2024</h1>
+<div class="details">
+<span id="author" class="author">Par Clément de Tastes et J.M. Doudoux</span><br>
+<span id="revnumber">version 1.0.0-SNAPSHOT,</span>
+<span id="revdate">2024-06-23</span>
+<br><span id="revremark">Version RC1</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table des matières</div>
+<p><span class="toc-root"><a href="index.html">Workshop Java SE en 2024</a></span></p><ul class="sectlevel1">
+<li><a href="introduction.html">1. Introduction</a>
+</li>
+<li><a href="requis.html">2. Les requis</a>
+</li>
+<li><a href="deroulement.html">3. Le déroulement du workshop</a>
+</li>
+<li><a href="partie1.html">4. Partie 1 : les évolutions dans la syntaxe</a>
+</li>
+<li><a href="partie2.html">5. Partie 2 : les évolutions dans les API</a>
+</li>
+<li><a href="partie3.html"><span class="toc-current">6. Partie 3 : l&#8217;outillage du JDK</span></a>
+<ul class="sectlevel2">
+<li><a href="partie3.html#_la_jvm">6.1. La JVM</a>
+<ul class="sectlevel3">
+<li><a href="partie3.html#_lab_launch_multi_file_source_code_programs">6.1.1. Lab : Launch Multi-File Source-Code Programs</a>
+</li>
+</ul>
+</li>
+<li><a href="partie3.html#_la_javadoc">6.2. La JavaDoc</a>
+<ul class="sectlevel3">
+<li><a href="partie3.html#_lab_les_code_snippets">6.2.1. Lab : les Code Snippets</a>
+</li>
+</ul>
+</li>
+<li><a href="partie3.html#_les_autres_outils_du_jdk">6.3. Les autres outils du JDK</a>
+<ul class="sectlevel3">
+<li><a href="partie3.html#_lab_le_simple_web_server">6.3.1. Lab : le Simple Web Server</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="conclusion.html">7. Conclusion</a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="partie3"><a class="anchor" href="#partie3"></a>6. Partie 3 : l&#8217;outillage du JDK</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Cette partie détaille et met en œuvre des fonctionnalités relatives à l&#8217;outillage.</p>
+</div>
+<div class="sect2">
+<h3 id="_la_jvm"><a class="anchor" href="#_la_jvm"></a>6.1. La JVM</h3>
+<div class="paragraph">
+<p>Cette section détaille et met en œuvre des fonctionnalités relatives à la JVM.</p>
+</div>
+<div class="sect3">
+<h4 id="_lab_launch_multi_file_source_code_programs"><a class="anchor" href="#_lab_launch_multi_file_source_code_programs"></a>6.1.1. Lab : Launch Multi-File Source-Code Programs</h4>
+<div class="paragraph">
+<p>Dans le JDK 11, la <a href="https://openjdk.org/jeps/330">JEP 330</a> permet à la JVM de pouvoir exécuter directement un unique fichier source .java, sans requérir de compilation explicite préalable.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Consulter le fichier Hello.java dans le sous-répertoire <code>src\main\java</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Le fichier Hello.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+</pre></td><td class="code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Hello</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Utils</span><span class="o">.</span><span class="na">saluer</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">interface</span> <span class="nc">Utils</span> <span class="o">{</span>
+    <span class="kd">static</span> <span class="kt">void</span> <span class="nf">saluer</span><span class="o">()</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Exécuter cette application en passant le fichier <code>Hello.java</code> en paramètre de la JVM avec la commande :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">java Hello.java</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="title">Résultat d&#8217;exécution</div>
+<div class="content">
+<pre>C:\workshop-javase\src\main\java&gt;java Hello.java
+Hello</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La JVM compile à la volée le fichier source et exécute le bytecode.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+En Java 11, le fichier .class ne doit pas exister sinon une erreur qui arrête la JVM «
+error: class found on application class path » est émise au lancement de l&#8217;application
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>À partir de Java 22, la JVM a été améliorée pour permettre d&#8217;exécuter une application composée de plusieurs fichiers source toujours sans aucune compilation préalable.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Standard en Java 22</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/458">458: Launch Multi-File Source-Code Programs</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Refactorer le code pour ne plus imbriquer l&#8217;interface <code>Utils</code> mais pour la définir dans son propre fichier <code>Utils.java</code> :</p>
+</div>
+<div class="listingblock">
+<div class="title">Le fichier Hello.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Hello</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Utils</span><span class="o">.</span><span class="na">saluer</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Le fichier Utils.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="kd">interface</span> <span class="nc">Utils</span> <span class="o">{</span>
+  <span class="kd">static</span> <span class="kt">void</span> <span class="nf">saluer</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Exécuter cette application en passant le fichier <code>Hello.java</code> en paramètre de la JVM avec la commande :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">java Hello.java</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="title">Résultat d&#8217;exécution</div>
+<div class="content">
+<pre>C:\workshop-javase\src\main\java&gt;java Hello.java
+Hello</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La JVM recherche le fichier <code>Utils.java</code> et le compile à la volée.</p>
+</div>
+<div class="paragraph">
+<p>Si une classe utilisée est dans le même fichier .java alors elle n&#8217;est pas recherchée et est compilée et utilisée.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Modifier le fichier <code>Hello.java</code> pour ajouter l&#8217;interface imbriquée <code>Utils</code></p>
+</div>
+<div class="listingblock">
+<div class="title">Le fichier Hello.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+</pre></td><td class="code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Hello</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Utils</span><span class="o">.</span><span class="na">saluer</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">interface</span> <span class="nc">Utils</span> <span class="o">{</span>
+    <span class="kd">static</span> <span class="kt">void</span> <span class="nf">saluer</span><span class="o">()</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello interne"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Exécuter cette application en passant le fichier <code>Hello.java</code> en paramètre de la JVM avec la commande :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">java Hello.java</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="title">Résultat d&#8217;exécution</div>
+<div class="content">
+<pre>C:\workshop-javase\src\main\java&gt;java Hello.java
+Hello interne</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il n&#8217;est pas possible d&#8217;avoir un même type déclaré dans plusieurs fichiers source de l&#8217;application.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Retirer l&#8217;interface imbriquée <code>Utils</code> dans le fichier <code>Hello.java</code> et ajouter une classe <code>Affichage</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">class</span> <span class="nc">Affichage</span> <span class="o">{}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>dans les fichiers <code>Hello.java</code> et <code>Utils.java</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Le fichier Hello.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Hello</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Utils</span><span class="o">.</span><span class="na">saluer</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Affichage</span> <span class="o">{}</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Le fichier Utils.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre><span class="kd">interface</span> <span class="nc">Utils</span> <span class="o">{</span>
+  <span class="kd">static</span> <span class="kt">void</span> <span class="nf">saluer</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Hello"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Affichage</span> <span class="o">{}</span>
+</pre></td></tr></tbody></table></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Exécuter l&#8217;application en passant le fichier <code>Hello.java</code> en paramètre de la JVM avec la commande :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">java Hello.java</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="title">Résultat d&#8217;exécution</div>
+<div class="content">
+<pre>C:\workshop-javase\src\main\java&gt;java Hello.java
+C:\workshop-javase\src\main\java\Utils.java:7: error: duplicate class: Affichage
+class Affichage {}
+^
+1 error
+error: compilation failed</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Une erreur est émise par la JVM.</p>
+</div>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_la_javadoc"><a class="anchor" href="#_la_javadoc"></a>6.2. La JavaDoc</h3>
+<div class="paragraph">
+<p>Cette section détaille et met en œuvre des fonctionnalités relatives à la JavaDoc.</p>
+</div>
+<div class="sect3">
+<h4 id="_lab_les_code_snippets"><a class="anchor" href="#_lab_les_code_snippets"></a>6.2.1. Lab : les Code Snippets</h4>
+<div class="paragraph">
+<p>Historiquement jusqu&#8217;à Java 18, l&#8217;inclusion de fragment de code dans la Javadoc requérait l&#8217;utilisation des balises HTML <code>&lt;pre&gt;</code> et <code>&lt;code&gt;</code>, le tag <code>{@code}</code> depuis Java 5, parfois en combinaison, selon la nécessité :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>de conserver l&#8217;indentation et les sauts de lignes,</p>
+</li>
+<li>
+<p>d&#8217;échapper ou non les caractères HTML,</p>
+</li>
+<li>
+<p>de la nécessité de l&#8217;évaluation ou non du caractère <code>@</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Java 18 introduit le tag <code>{@snippet}</code> dans le Doclet standard de la Javadoc pour offrir de puissantes fonctionnalités concernant l&#8217;inclusion de fragment de code dans la documentation générée.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Standard en Java 18</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/413">413: Code Snippets in Java API Documentation</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect4">
+<h5 id="_linclusion_dun_fragment_en_ligne"><a class="anchor" href="#_linclusion_dun_fragment_en_ligne"></a>6.2.1.1. L&#8217;inclusion d&#8217;un fragment en ligne</h5>
+<div class="paragraph">
+<p>Le fragment de code peut être déclaré en ligne : dans ce cas, il est inclus dans le tag lui-même.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Modifier l&#8217;interface <code>fr.sciam.workshop.javase.codesnippet.MonUtil</code> pour ajouter un fragment de code dans la documentation de l&#8217;interface avec le tag <code>{@snippet}</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"> <span class="o">*</span>
+ <span class="o">*</span> <span class="o">{</span><span class="nd">@snippet</span> <span class="o">:</span>
+ <span class="o">*</span>   <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+ <span class="o">*</span>       <span class="kt">var</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Exemple"</span><span class="o">;</span>
+ <span class="o">*</span>       <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+ <span class="o">*</span>       <span class="kt">long</span> <span class="n">valeur</span> <span class="o">=</span> <span class="nc">MonUtil</span><span class="o">.</span><span class="na">additionner</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span><span class="mi">4</span><span class="o">);</span>
+ <span class="o">*</span>   <span class="o">}</span>
+ <span class="o">*</span> <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Pour obtenir :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>/**
+ * Propose des utilitaires.
+ *
+ * {@snippet :
+ *   public static void main(String[] args) {
+ *       var message = "Exemple";
+ *       System.out.println(message);
+ *       long valeur = MonUtil.additionner(3,4);
+ *   }
+ * }
+ */
+ public interface MonUtil {</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+dans <code>@snippet</code>, tout comme dans <code>@code</code>, les accolades <code>{</code> <code>}</code> doivent s&#8217;équilibrer
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+le caractère <code>:</code> à la fin de la ligne contenant <code>@snippet</code> est important car il marque après le retour chariot qui le suit le début du fragment
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+comme dans toute JavaDoc, il n&#8217;est pas possible d&#8217;avoir des commentaires multilignes <code>/*</code> <code>*/</code> car le <code>*/</code> fermerait de bloc de commentaires JavaDoc. En Java, les commentaires ne s&#8217;emboîtent pas et JavaDoc ne peut pas modifier le traitement des commentaires.
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Construire la documentation JavaDoc en exécutant la commande dans le répertoire du projet :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">javadoc -d target\doc -sourcepath .\src\main\java --snippet-path .\src\test\java -subpackages fr.sciam --enable-preview --source 22 -Xdoclint:all,-missing</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>L&#8217;exécution de la commande affiche des messages dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{workdir}&gt;javadoc -d target\doc -sourcepath .\src\main\java --snippet-path .\src\test\java -subpackages fr.sciam --enable-preview --source 22 -Xdoclint:all,-missing
+Loading source files for package fr.sciam...
+Constructing Javadoc information...
+Creating destination directory: "target\doc\"
+Building index for all the packages and classes...
+Standard Doclet version 22+36-2370
+Building tree for all the packages and classes...
+Generating target\doc\fr\sciam\workshop\javase\structuredconcurrency\AbstractServiceMeteo.html...
+Generating target\doc\fr\sciam\workshop\javase\sealedclasses\BrassageMain.html...
+...
+Generating target\doc\serialized-form.html...
+Generating target\doc\overview-tree.html...
+Generating target\doc\index.html...
+Generating target\doc\allclasses-index.html...
+Building index for all classes...
+Generating target\doc\allpackages-index.html...
+Generating target\doc\index-all.html...
+Generating target\doc\search.html...
+Generating target\doc\overview-summary.html...
+Generating target\doc\help-doc.html...
+
+{workdir}&gt;</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Consulter la documentation générée en ouvrant le fichier <code>target/doc/fr/sciam/workshop/javase/codesnippet/MonUtil.html</code> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/lab-code-snippets-001.png" alt="lab code snippets 001">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_linclusion_dun_fragment_externe"><a class="anchor" href="#_linclusion_dun_fragment_externe"></a>6.2.1.2. L&#8217;inclusion d&#8217;un fragment externe</h5>
+<div class="paragraph">
+<p>Le fragment peut aussi être externe : dans ce cas, il est lu à partir d&#8217;un fichier source distinct précisé avec l&#8217;attribut <code>file</code>.</p>
+</div>
+<div class="paragraph">
+<p>Les fichiers externes contenant des fragments peuvent être placés :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>dans le sous-répertoire <code>snippet-files</code> du package de la classe documentée</p>
+</li>
+<li>
+<p>dans un sous-répertoire précisé grâce à l&#8217;option <code>--snippet-path</code> de l&#8217;outil <code>javadoc</code></p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+l&#8217;utilisation de fichiers externes permet d&#8217;inclure des fragments de code par exemple des tests automatisés, ce qui permet garantir leur fiabilité.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Il est possible de définir une région particulière du fichier à inclure en précisant son nom comme valeur de l&#8217;attribut <code>region</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Modifier la méthode <code>additionnerDevrait_avec2et3_renvoyer5()</code> de la classe de test <code>fr.sciam.workshop.javase.codesnippet.MonUtilTest</code> pour définir une région nommée <code>exemple</code> contenant une portion de code :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ajouter avant l&#8217;invocation de la méthode <code>additionner()</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">		<span class="c1">// @start region="exemple"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>ajouter après l&#8217;invocation de la méthode <code>additionner()</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">		<span class="c1">// @end</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Pour obtenir :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>	@Test
+	void additionnerDevrait_avec2et3_renvoyer5() {
+		// @start region="exemple"
+		long resultat = MonUtil.additionner(2,3);
+		// @end
+		assertEquals(5, resultat, "Valeur attendue différente");
+	}</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Modifier le commentaire de documentation de la méthode <code>additionner()</code> de la classe <code>fr.sciam.workshop.javase.codesnippet.MonUtil</code> pour ajouter un fragment de code correspondant à la région <code>exemple</code> de la classe <code>fr.sciam.workshop.javase.codesnippet.MonUtilTest</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">   <span class="o">*</span> <span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="nc">Exemple</span> <span class="o">:</span>
+   <span class="o">*</span> <span class="o">{</span><span class="nd">@snippet</span> <span class="kd">class</span><span class="err">="</span><span class="nc">fr</span><span class="o">.</span><span class="na">sciam</span><span class="o">.</span><span class="na">workshop</span><span class="o">.</span><span class="na">javase</span><span class="o">.</span><span class="na">codesnippet</span><span class="o">.</span><span class="na">MonUtilTest</span><span class="s">" region="</span><span class="n">exemple</span><span class="err">"</span><span class="o">}</span>
+   <span class="o">*</span> <span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Pour obtenir :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>    /**
+     * Additionner deux entiers.
+     *
+     * &lt;p&gt;Exemple :
+     * {@snippet class="fr.sciam.workshop.javase.codesnippet.MonUtilTest" region="exemple"}
+     * &lt;/p&gt;
+     *
+     * @param a premier entier
+     * @param b second entier
+     * @return la valeur calculée
+     */</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Construire la documentation JavaDoc en exécutant la commande dans le répertoire du projet :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">javadoc -d target\doc -sourcepath .\src\main\java --snippet-path .\src\test\java -subpackages fr.sciam --enable-preview --source 22 -Xdoclint:all,-missing</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Consulter la documentation générée en rafraîchissant le fichier <code>target/doc/fr/sciam/workshop/javase/codesnippet/MonUtil.html</code> dans le navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/lab-code-snippets-002.png" alt="lab code snippets 002">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_mise_en_évidence_dune_portion_de_code"><a class="anchor" href="#_la_mise_en_évidence_dune_portion_de_code"></a>6.2.1.3. La mise en évidence d&#8217;une portion de code</h5>
+<div class="paragraph">
+<p>Le tag <code>@highlight</code> permet de mettre en évidence une ou plusieurs portions de texte du fragment.</p>
+</div>
+<div class="paragraph">
+<p>L&#8217;attribut <code>type</code> permet d&#8217;indiquer le type de mise en évidence : <code>bold</code> pour une mise en gras, <code>italic</code> pour une mise en italique ou <code>highlighted</code> pour une mise en surbrillance.</p>
+</div>
+<div class="paragraph">
+<p>La mise en évidence s&#8217;applique :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>par défaut, sur la ligne suivante</p>
+</li>
+<li>
+<p>sur la région précisée avec l&#8217;attribut <code>region</code></p>
+</li>
+<li>
+<p>sur les sous-chaines précisées avec l&#8217;attribut <code>substring</code></p>
+</li>
+<li>
+<p>sur les correspondances d&#8217;expressions régulières avec l&#8217;attribut <code>regexp</code></p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Modifier la documentation de l&#8217;interface <code>fr.sciam.workshop.javase.codesnippet.MonUtil</code> pour mettre en évidence la variable <code>valeur</code> dans le fragment de code :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ajouter avant l&#8217;invocation de la méthode <code>additionner()</code> pour affecter la variable <code>valeur</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"> <span class="o">*</span>       <span class="c1">// @highlight substring="valeur" type="highlighted" :</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+le caractère <code>:</code> à la fin du commentaire est obligatoire
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Pour obtenir :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre> *       System.out.println(message);
+ *       // @highlight substring="valeur" type="highlighted" :
+ *       long valeur = MonUtil.additionner(3,4);</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Construire la documentation JavaDoc en exécutant la commande dans le répertoire du projet :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">javadoc -d target\doc -sourcepath .\src\main\java --snippet-path .\src\test\java -subpackages fr.sciam --enable-preview --source 22 -Xdoclint:all,-missing</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Consulter la documentation générée en rafraîchissant le fichier <code>target/doc/fr/sciam/workshop/javase/codesnippet/MonUtil.html</code> dans le navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/lab-code-snippets-003.png" alt="lab code snippets 003">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_le_remplacement_dune_ou_plusieurs_portions_de_texte"><a class="anchor" href="#_le_remplacement_dune_ou_plusieurs_portions_de_texte"></a>6.2.1.4. Le remplacement d&#8217;une ou plusieurs portions de texte</h5>
+<div class="paragraph">
+<p>Le tag <code>@replace</code> permet de remplacer une ou plusieurs portions de texte, par exemple pour raccourcir quelque chose avec une ellipse.</p>
+</div>
+<div class="paragraph">
+<p>L&#8217;attribut <code>replacement</code> permet d&#8217;indiquer le texte de remplacement.</p>
+</div>
+<div class="paragraph">
+<p>La sélection de la portion de texte peut se faire :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>sur la région précisée avec l&#8217;attribut <code>region</code></p>
+</li>
+<li>
+<p>sur les sous-chaines précisées avec l&#8217;attribut <code>substring</code></p>
+</li>
+<li>
+<p>sur les correspondances d&#8217;expressions régulières avec l&#8217;attribut <code>regexp</code></p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Modifier la documentation de l&#8217;interface <code>fr.sciam.workshop.javase.codesnippet.MonUtil</code> pour remplacer la valeur de la variable <code>message</code> dans le fragment de code :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ajouter avant la définition de la variable <code>message</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"> <span class="o">*</span>       <span class="c1">// @replace substring='"Exemple"' replacement='"..."' :</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+le caractère <code>:</code> à la fin du commentaire est obligatoire
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Pour obtenir :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre> *   public static void main(String[] args) {
+ *       // @replace substring='"Exemple"' replacement='"..."' :
+ *       var message = "Exemple";....</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Construire la documentation JavaDoc en exécutant la commande dans le répertoire du projet :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">javadoc -d target\doc -sourcepath .\src\main\java --snippet-path .\src\test\java -subpackages fr.sciam --enable-preview --source 22 -Xdoclint:all,-missing</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Consulter la documentation générée en rafraîchissant le fichier <code>target/doc/fr/sciam/workshop/javase/codesnippet/MonUtil.html</code> dans le navigateur</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/lab-code-snippets-004.png" alt="lab code snippets 004">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_liaison_dune_portion_de_code_à_un_élément_de_la_documentation"><a class="anchor" href="#_la_liaison_dune_portion_de_code_à_un_élément_de_la_documentation"></a>6.2.1.5. La liaison d&#8217;une portion de code à un élément de la documentation</h5>
+<div class="paragraph">
+<p>Le tag <code>@link</code> permet de lier une portion de texte, comme des appels de méthode ou des noms de type, à d&#8217;autres éléments de la documentation.</p>
+</div>
+<div class="paragraph">
+<p>L&#8217;attribut <code>target</code> permet d&#8217;indiquer la cible dans la documentation.</p>
+</div>
+<div class="paragraph">
+<p>La sélection de la portion de texte peut se faire :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>sur la région précisée avec l&#8217;attribut <code>region</code></p>
+</li>
+<li>
+<p>sur les sous-chaines précisées avec l&#8217;attribut <code>substring</code></p>
+</li>
+<li>
+<p>sur les correspondances d&#8217;expressions régulières avec l&#8217;attribut <code>regexp</code></p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Modifier la documentation de l&#8217;interface <code>fr.sciam.workshop.javase.codesnippet.MonUtil</code> pour mettre un lien sur <code>System.out</code> vers la documentation en ligne dans le fragment de code :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ajouter avant l&#8217;affichage de la variable <code>message</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"> <span class="o">*</span>       <span class="c1">// @link substring="System.out" target="System#out" :</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+le caractère <code>:</code> à la fin du commentaire est obligatoire
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Pour obtenir :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre> *       var message = "Exemple";
+ *       // @link substring="System.out" target="System#out" :
+ *       System.out.println(message);</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Construire la documentation JavaDoc en exécutant la commande dans le répertoire du projet :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">javadoc -d target\doc -sourcepath .\src\main\java --snippet-path .\src\test\java -subpackages fr.sciam --enable-preview --source 22 -Xdoclint:all,-missing</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Consulter la documentation générée en rafraîchissant le fichier <code>target/doc/fr/sciam/workshop/javase/codesnippet/MonUtil.html</code> dans le navigateur</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/lab-code-snippets-005.png" alt="lab code snippets 005">
+</div>
+</div>
+<div class="paragraph">
+<p>Cliquer sur le lien pour vérifier que la documentation Javadoc en ligne de <code>System.out</code> s&#8217;affiche.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/lab-code-snippets-006.png" alt="lab code snippets 006">
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_les_autres_outils_du_jdk"><a class="anchor" href="#_les_autres_outils_du_jdk"></a>6.3. Les autres outils du JDK</h3>
+<div class="paragraph">
+<p>Cette section détaille et met en œuvre des fonctionnalités relatives aux outils du JDK.</p>
+</div>
+<div class="sect3">
+<h4 id="_lab_le_simple_web_server"><a class="anchor" href="#_lab_le_simple_web_server"></a>6.3.1. Lab : le Simple Web Server</h4>
+<div class="paragraph">
+<p>Pour combler un manque vis à vis d&#8217;autres plateformes, le JDK 18 fournit un serveur web simple permettant de renvoyer des fichiers statiques contenus dans l&#8217;arborescence d&#8217;un répertoire.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Standard en Java 18</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/408">408: Simple Web Server</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect4">
+<h5 id="_la_commande_jwebserver"><a class="anchor" href="#_la_commande_jwebserver"></a>6.3.1.1. La commande <code>jwebserver</code></h5>
+<div class="paragraph">
+<p>Le JDK propose la commande <code>jwebserver</code>. Ces fonctionnalités sont très simples :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>servir uniquement des fichiers statiques, par défaut deux du répertoire courant,</p>
+</li>
+<li>
+<p>en créant une page index au besoin,</p>
+</li>
+<li>
+<p>ne supportant que les requêtes de type GET et HEAD sur le protocole HTTP 1.1,</p>
+</li>
+<li>
+<p>ni de support de HTTPS</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Ce serveur web pourra cependant être pratique pour prototyper ou pour tester.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+il ne devrait pas être utilisé dans un environnement de production.
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Lancer la commande <code>jwebserver</code> dans le sous-répertoire <code>rest</code> du workspace :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">C:\workshop\rest>jwebserver
+Binding to loopback by default. For all interfaces use "-b 0.0.0.0" or "-b ::".
+Serving C:\workshop\rest and subdirectories on 127.0.0.1 port 8000
+URL http://127.0.0.1:8000/</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>L&#8217;arborescence du sous-répertoire <code>rest</code> contient :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>C:\workshop\rest>tree /A /F
+Structure du dossier pour le volume Windows
+Le numéro de série du volume est CECB-1F8A
+C:.
+|   favicon.ico
+|   index.html
+|
++---api
+|   \---personnees
+|           1.json
+|           10.json
+|
+\---images
+        duke.png</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Par défaut, le serveur web écoute sur la boucle locale et le port <code>8000</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Ouvrir l&#8217;url <code><a href="http://localhost:8000" class="bare">http://localhost:8000</a></code> dans un navigateur</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/lab-simple-webserver-001.png" alt="lab simple webserver 001">
+</div>
+</div>
+<div class="paragraph">
+<p>Il sert la page html par défaut, si elle est présente dans le répertoire.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Le serveur peut créer une page d&#8217;index si le fichier par défaut n&#8217;existe pas dans un sous-répertoire.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Ouvrir l&#8217;url <code><a href="http://localhost:8000/api" class="bare">http://localhost:8000/api</a></code> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/lab-simple-webserver-002.png" alt="lab simple webserver 002">
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Le serveur peut servir un fichier en ouvrant son url.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Ouvrir l&#8217;url <code><a href="http://localhost:8000/api/personnes/1.json" class="bare">http://localhost:8000/api/personnes/1.json</a></code> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/lab-simple-webserver-003.png" alt="lab simple webserver 003">
+</div>
+</div>
+<div class="paragraph">
+<p>Ouvrir l&#8217;url <code><a href="http://localhost:8000/images/duke.png" class="bare">http://localhost:8000/images/duke.png</a></code> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/lab-simple-webserver-004.png" alt="lab simple webserver 004">
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La commande propose plusieurs options pour configurer le serveur : l&#8217;interface réseau, le numéro de port, le répertoire où les fichiers seront servis, l&#8217;affichage des informations lors du traitement des requêtes.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Arrêter le serveur en utilisant <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>C</kbd></span>.</p>
+</div>
+<div class="paragraph">
+<p>Exécuter la commande <code>jwebserver</code> avec l&#8217;option <code>--help</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">jwebserver --help</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>C:\workshop\rest>jwebserver --help
+Usage: jwebserver [-b bind address] [-p port] [-d directory]
+                  [-o none|info|verbose] [-h to show options]
+                  [-version to show version information]
+Options:
+-b, --bind-address    - Address to bind to. Default: 127.0.0.1 (loopback).
+                        For all interfaces use "-b 0.0.0.0" or "-b ::".
+-d, --directory       - Directory to serve. Default: current directory.
+-o, --output          - Output format. none|info|verbose. Default: info.
+-p, --port            - Port to listen on. Default: 8000.
+-h, -?, --help        - Prints this help message and exits.
+-version, --version   - Prints version information and exits.
+To stop the server, press Ctrl + C.</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Par défaut, chaque requête est logguée dans la console. L&#8217;option -o permet :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>de ne rien logguer avec la valeur <code>none</code></p>
+</li>
+<li>
+<p>ou d&#8217;être plus verbeux avec la valeur <code>verbose</code> : le chemin du fichier servi et les headers des requêtes et réponses sont affichées</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Lancer la commande <code>jwebserver</code> dans le sous-répertoire <code>rest</code> du workspace avec les options <code>-o verbose -p 8099</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">jwebserver -o verbose -p 8099</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ouvrir l&#8217;url <code><a href="http://localhost:8099/api/personnes/1.json" class="bare">http://localhost:8099/api/personnes/1.json</a></code> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/lab-simple-webserver-005.png" alt="lab simple webserver 005">
+</div>
+</div>
+<div class="paragraph">
+<p>Consulter la console de la commande <code>jwebserver</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">C:\workshop\rest>jwebserver -o verbose -p 8099
+Binding to loopback by default. For all interfaces use "-b 0.0.0.0" or "-b ::".
+Serving C:\workshop\rest and subdirectories on 127.0.0.1 port 8099
+URL http://127.0.0.1:8099/
+127.0.0.1 - - [26/f├®vr./2024:12:16:21 +0100] "GET /api/personnes/1.json HTTP/1.1" 200 -
+Resource requested: C:\workshop\rest\api\personnes\1.json
+> Accept-encoding: gzip, deflate, br
+> Sec-fetch-dest: document
+> Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+> Sec-fetch-user: ?1
+> Connection: keep-alive
+> Sec-fetch-site: none
+> Host: localhost:8099
+> Sec-fetch-mode: navigate
+> User-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0
+> Accept-language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3
+> Upgrade-insecure-requests: 1
+>
+< Date: Mon, 26 Feb 2024 11:16:21 GMT
+< Last-modified: Tue, 9 Jan 2024 11:32:52 GMT
+< Content-type: application/json
+< Content-length: 56
+<</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Arrêter le serveur en utilisant <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>C</kbd></span>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lapi_httpserver"><a class="anchor" href="#_lapi_httpserver"></a>6.3.1.2. L&#8217;API HttpServer</h5>
+<div class="paragraph">
+<p>Une API est proposée dans le package <code>com.sun.net.httpserver</code> du module <code>jdk.httpserver</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Compléter la méthode <code>main()</code> de la classe <code>fr.sciam.workshop.javase.webserver.MainWebServer</code> :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Pour créer une instance de type <code>com.sun.net.httpserver.HttpServer</code> qui écoute sur le port 8000</p>
+</li>
+<li>
+<p>Invoquer sa méthode <code>createContext()</code> pour associer l&#8217;URI <code>/personnes</code> avec une nouvelle instance de type <code>PersonnesHandler</code></p>
+</li>
+<li>
+<p>Invoquer sa méthode <code>start()</code> pour démarrer le serveur en mode bloquant</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Demarrage du serveur"</span><span class="o">);</span>
+    <span class="nc">HttpServer</span> <span class="n">server</span> <span class="o">=</span> <span class="nc">HttpServer</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="mi">8000</span><span class="o">),</span> <span class="mi">0</span><span class="o">);</span>
+    <span class="n">server</span><span class="o">.</span><span class="na">createContext</span><span class="o">(</span><span class="s">"/personnes"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">PersonnesHandler</span><span class="o">());</span>
+    <span class="n">server</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Compléter la méthode <code>handle()</code> de la classe <code>PersonnesHandler</code> dans le fichier <code>MainWebServer.java</code> :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Pour extraire l&#8217;id de l&#8217;url avec une expression régulière</p>
+</li>
+<li>
+<p>Si valide alors <code>codeStatus</code> = <code>200</code> et <code>body</code> contient un document JSON représentant la personne correspond à l&#8217;id (avec les attributs <code>id</code>, <code>nom</code> et <code>prenom</code>),</p>
+</li>
+<li>
+<p>sinon <code>codeStatus</code> = <code>400</code> et <code>body</code> contient un message d&#8217;erreur</p>
+</li>
+<li>
+<p>Ajouter dans le header le <code>codeStatus</code> et la taille du document JSON comme taille de body avec la méthode <code>sendResponseHeaders()</code></p>
+</li>
+<li>
+<p>Ajouter le header <code>"Content-Type"</code> avec la valeur <code>"application/json"</code>,</p>
+</li>
+<li>
+<p>Et copier le contenu de <code>body</code> sous la forme d&#8217;octets dans le body de la réponse</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="nc">HttpExchange</span> <span class="n">exchange</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">body</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">codeStatus</span> <span class="o">=</span> <span class="mi">200</span><span class="o">;</span>
+    <span class="nc">String</span> <span class="n">path</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getRequestURI</span><span class="o">().</span><span class="na">getPath</span><span class="o">();</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"traitement requete : "</span> <span class="o">+</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getRequestMethod</span><span class="o">()</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">path</span><span class="o">);</span>
+
+    <span class="nc">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="nc">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">"/personnes/([0-9]+)"</span><span class="o">).</span><span class="na">matcher</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">matches</span><span class="o">())</span> <span class="o">{</span>
+      <span class="kt">long</span> <span class="n">id</span> <span class="o">=</span> <span class="nc">Long</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+      <span class="n">body</span> <span class="o">=</span> <span class="s">"""
+          {
+            "</span><span class="n">id</span><span class="s">":"</span><span class="o">%</span><span class="n">d</span><span class="s">",
+            "</span><span class="n">nom</span><span class="s">":"</span><span class="o">%</span><span class="n">s</span><span class="s">",
+            "</span><span class="n">prenom</span><span class="s">":"</span><span class="o">%</span><span class="n">s</span><span class="s">"
+          }"""</span><span class="o">.</span><span class="na">formatted</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="s">"nom"</span> <span class="o">+</span> <span class="n">id</span><span class="o">,</span> <span class="s">"prenom"</span> <span class="o">+</span> <span class="n">id</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+      <span class="n">codeStatus</span><span class="o">=</span><span class="mi">400</span><span class="o">;</span>
+      <span class="n">body</span> <span class="o">=</span> <span class="s">"""
+          {
+            "</span><span class="n">message</span><span class="s">": "</span><span class="nc">Id</span> <span class="n">invalide</span><span class="s">"
+          }
+          """</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="nc">Headers</span> <span class="n">responseHeaders</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getResponseHeaders</span><span class="o">();</span>
+    <span class="n">responseHeaders</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="s">"Content-Type"</span><span class="o">,</span> <span class="s">"application/json"</span><span class="o">);</span>
+
+    <span class="n">exchange</span><span class="o">.</span><span class="na">sendResponseHeaders</span><span class="o">(</span><span class="n">codeStatus</span><span class="o">,</span> <span class="n">body</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+    <span class="k">try</span> <span class="o">(</span><span class="nc">OutputStream</span> <span class="n">os</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getResponseBody</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">os</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">body</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+cette portion de code utilise des text-blocks, détaillés dans ce <a href="partie1.html#text-blocks">lab</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br></p>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe MainWebServer.</p>
+</div>
+<div class="paragraph">
+<p>Ouvrir l&#8217;url <a href="http://localhost:8000/personnes/123" class="bare">http://localhost:8000/personnes/123</a> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/lab-simple-webserver-006.png" alt="lab simple webserver 006">
+</div>
+</div>
+<div class="paragraph">
+<p>Ouvrir l&#8217;url <a href="http://localhost:8000/personnes/123a" class="bare">http://localhost:8000/personnes/123a</a> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/lab-simple-webserver-007.png" alt="lab simple webserver 007">
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span><br>
+Arrêter l&#8217;application.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p>← : <a href="partie2.html">Partie 2 : les évolutions dans les API</a> | ↑ : <a href="index.html">Workshop Java SE en 2024</a> | : <a href="conclusion.html">Conclusion</a> →</p>
+</div>
+</div>
+<div id="footer">
+    <p class="footer-text" >© 2024 Clément de Tastes et J.M. Doudoux | Licence Creative Commons BY-NC-ND 4.0 DEED <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.fr" target="_blank"><img src="images/by-nc-nd.png" width="100"></a> </p>
+</div>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<meta name="author" content="Par Clément de Tastes et J.M. Doudoux">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<title>Workshop Java SE en 2024</title>
+<link rel="stylesheet" href="./styles/styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="script/clipboard.min.js"></script>
+<style>
+    .listingblock:hover .clipboard {
+        display: block;
+    }
+
+    .clipboard {
+        display: none;
+        border: 0;
+        font-size: .75em;
+        text-transform: uppercase;
+        font-weight: 500;
+        padding: 6px;
+        color: #999;
+        position: absolute;
+        top: .425rem;
+        right: .5rem;
+        background: transparent;
+    }
+
+    code + .clipboard {
+        top: 2rem !important;
+    }
+
+    .clipboard:hover, .clipboard:focus, .clipboard:active {
+        outline: 0;
+        background-color: #eee9e6;
+    }
+</style>
+<script >
+    window.onload = function() {
+        // var pre = document.getElementsByTagName('pre');
+        var pre = document.querySelectorAll("pre.rouge");
+        for (var i = 0; i < pre.length; i++) {
+            var b = document.createElement('button');
+            b.className = 'clipboard';
+            b.textContent = 'Copier';
+            if (pre[i].childNodes.length === 1 && pre[i].childNodes[0].nodeType === 3) {
+                var div = document.createElement('div');
+                div.textContent = pre[i].textContent;
+                pre[i].textContent = '';
+                pre[i].appendChild(div);
+            }
+            pre[i].appendChild(b);
+        }
+        var clipboard = new ClipboardJS('.clipboard', {
+           target: function(b) {
+                var p = b.parentNode;
+                if (p.className.includes("rouge highlight")) {
+                    var elems = p.getElementsByTagName("code");
+                    if (elems.length > 0)
+                        return elems[0];
+                }
+                return p.childNodes[0];
+            }
+        });
+        clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.textContent = 'Copié';
+            setTimeout(function() {
+                e.trigger.textContent = 'Copier';
+            }, 2000);
+        });
+        clipboard.on('error', function(e) {
+            console.error('Action:', e.action, e);
+            console.error('Trigger:', e.trigger);
+        });
+    };
+</script>
+</head>
+<body id="_todo" class="book toc2 toc-left">
+<div id="header">
+<h1>Workshop Java SE en 2024</h1>
+<div class="details">
+<span id="author" class="author">Par Clément de Tastes et J.M. Doudoux</span><br>
+<span id="revnumber">version 1.0.0-SNAPSHOT,</span>
+<span id="revdate">2024-06-23</span>
+<br><span id="revremark">Version RC1</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table des matières</div>
+<p><span class="toc-root"><a href="index.html">Workshop Java SE en 2024</a></span></p><ul class="sectlevel1">
+<li><a href="introduction.html">1. Introduction</a>
+</li>
+<li><a href="requis.html">2. Les requis</a>
+</li>
+<li><a href="deroulement.html">3. Le déroulement du workshop</a>
+</li>
+<li><a href="partie1.html">4. Partie 1 : les évolutions dans la syntaxe</a>
+</li>
+<li><a href="partie2.html">5. Partie 2 : les évolutions dans les API</a>
+</li>
+<li><a href="partie3.html">6. Partie 3 : l&#8217;outillage du JDK</a>
+</li>
+<li><a href="conclusion.html">7. Conclusion</a>
+</li>
+<li><a href="exemples.html">8. Exemples : aide-mémoire à retirer à la fin</a>
+</li>
+<li><a href="_todo.html"><span class="toc-current">9. TODO</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_todo"><a class="anchor" href="#_todo"></a>9. TODO</h2>
+<div class="sectionbody">
+<div class="ulist checklist">
+<ul class="checklist">
+<li>
+<p><i class="fa fa-square-o"></i> Trouver comment mettre --snippet-path dans IntelliJ</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> mettre le nom des exercices dans toutes les sorties à la console pour faciliter les vérifications</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Harmoniser les sorties dans la console des exceptions</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> nom des packages à revoir ??</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> faire les slides</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> préparer 5 clés USB (avec lab, code, outils)</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> définir où déployer les livrables (quelle repo ?)</p>
+</li>
+<li>
+<p><i class="fa fa-check-square-o"></i> uniformiser les apostrophes : ' vs ’</p>
+</li>
+<li>
+<p><i class="fa fa-check-square-o"></i> ^ ou pas dans les liens ? &#8594; plutôt enlever pour laisser le choix du comportement à l&#8217;utilisateur</p>
+</li>
+<li>
+<p><i class="fa fa-check-square-o"></i> Définir et afficher la licence d&#8217;utilisation</p>
+</li>
+<li>
+<p><i class="fa fa-check-square-o"></i> Définir et utiliser une variable pour le chemin du workspace</p>
+</li>
+<li>
+<p><i class="fa fa-check-square-o"></i> <span class="line-through">Applanir les fichiers du sous-répertoire labs</span></p>
+</li>
+<li>
+<p><i class="fa fa-check-square-o"></i> Supprimer l&#8217;image sunset</p>
+</li>
+<li>
+<p><i class="fa fa-check-square-o"></i> Harmoniser pour ajouter la première preview si elle existe</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p>← : <a href="exemples.html">Exemples : aide-mémoire à retirer à la fin</a> | ↑ : <a href="index.html">Workshop Java SE en 2024</a></p>
+</div>
+</div>
+<div id="footer">
+    <p class="footer-text" >© 2024 Clément de Tastes et J.M. Doudoux | Licence Creative Commons BY-NC-ND 4.0 DEED <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.fr" target="_blank"><img src="images/by-nc-nd.png" width="100"></a> </p>
+</div>
+</body>
+</html>
