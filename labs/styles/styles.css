@@ -863,9 +863,12 @@ body.toc2 #header>h1:nth-last-child(2) {
   color: rgba(0, 0, 0, .85)
 }
 
+/*
+Utile pour suffixer la version (retiré en l'état)
 #header .details br+span#revremark::before {
   content: "\00a0|\00a0"
 }
+*/
 
 #header #revnumber {
   text-transform: capitalize
