@@ -167,30 +167,17 @@ Toulon : 17.0</pre>
 Modifier à nouveau la méthode <code>creerBulletinMeteo()</code> pour utiliser un timeout de 20 secondes et afficher la stacktrace en cas de <code>TimeoutException</code>.</p>
 </div>
 <div class="listingblock">
+<div class="title">Ajout d&#8217;un timeout</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">creerBulletinMeteo</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
-
-    <span class="k">try</span> <span class="o">(</span><span class="nc">StructuredTaskScope</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">scope</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StructuredTaskScope</span><span class="o">&lt;&gt;())</span> <span class="o">{</span>
-
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">nice</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoPrincipal</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">NICE</span><span class="o">));</span>
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">paris</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoPrincipal</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">PARIS</span><span class="o">));</span>
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">pontAMousson</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoPrincipal</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">PONT_A_MOUSSON</span><span class="o">));</span>
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">toulon</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoPrincipal</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">TOULON</span><span class="o">));</span>
-
-      <span class="n">scope</span><span class="o">.</span><span class="na">joinUntil</span><span class="o">(</span><span class="nc">Instant</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">plusSeconds</span><span class="o">(</span><span class="mi">20</span><span class="o">));</span>
-
-      <span class="n">serviceMeteoPrincipal</span><span class="o">.</span><span class="na">afficherBulletin</span><span class="o">(</span>
-        <span class="nc">Map</span><span class="o">.</span><span class="na">of</span><span class="o">(</span>
-          <span class="nc">Villes</span><span class="o">.</span><span class="na">NICE</span><span class="o">,</span> <span class="n">nice</span><span class="o">.</span><span class="na">get</span><span class="o">(),</span>
-          <span class="nc">Villes</span><span class="o">.</span><span class="na">PARIS</span><span class="o">,</span> <span class="n">paris</span><span class="o">.</span><span class="na">get</span><span class="o">(),</span>
-          <span class="nc">Villes</span><span class="o">.</span><span class="na">PONT_A_MOUSSON</span><span class="o">,</span> <span class="n">pontAMousson</span><span class="o">.</span><span class="na">get</span><span class="o">(),</span>
-          <span class="nc">Villes</span><span class="o">.</span><span class="na">TOULON</span><span class="o">,</span> <span class="n">toulon</span><span class="o">.</span><span class="na">get</span><span class="o">()</span>
-        <span class="o">)</span>
-      <span class="o">);</span>
-    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">TimeoutException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
-    <span class="o">}</span>
-  <span class="o">}</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="n">scope</span><span class="o">.</span><span class="na">joinUntil</span><span class="o">(</span><span class="nc">Instant</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">plusSeconds</span><span class="o">(</span><span class="mi">20</span><span class="o">));</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Gestion de l&#8217;exception</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">TimeoutException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -213,21 +200,29 @@ Modifier à nouveau la méthode <code>creerBulletinMeteo()</code> pour réduire 
 </div>
 </div>
 <div class="paragraph">
-<p>Exécuter la classe <code>MainStructuredConcurrency</code> et constater qu&#8217;il s&#8217;affiche dans la console :</p>
+<p>Exécuter la classe <code>MainStructuredConcurrency</code> et constater que l&#8217;on obtient dans la console :</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre>Création du bulletin météo
-ServiceMeteoPrincipal : interruption lors de l'obtention de la température de Pont-à-Mousson
 ServiceMeteoPrincipal : interruption lors de l'obtention de la température de Paris
-ServiceMeteoPrincipal : interruption lors de l'obtention de la température de Nice
 ServiceMeteoPrincipal : interruption lors de l'obtention de la température de Toulon
+ServiceMeteoPrincipal : interruption lors de l'obtention de la température de Nice
+ServiceMeteoPrincipal : interruption lors de l'obtention de la température de Pont-à-Mousson
 java.util.concurrent.TimeoutException
 	at java.base/jdk.internal.misc.ThreadFlock.awaitAll(ThreadFlock.java:362)
 	at java.base/java.util.concurrent.StructuredTaskScope.implJoin(StructuredTaskScope.java:616)
 	at java.base/java.util.concurrent.StructuredTaskScope.joinUntil(StructuredTaskScope.java:682)
-	at fr.sciam.workshop.javase.structuredconcurrency.MainStructuredConcurrency.creerBulletinMeteo(MainStructuredConcurrency.java:45)
-	at fr.sciam.workshop.javase.structuredconcurrency.MainStructuredConcurrency.main(MainStructuredConcurrency.java:25)</pre>
+	at fr.sciam.workshop.javase.structuredconcurrency.MainStructuredConcurrency.creerBulletinMeteo(MainStructuredConcurrency.java:53)
+	at fr.sciam.workshop.javase.structuredconcurrency.MainStructuredConcurrency.main(MainStructuredConcurrency.java:29)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Rétablir le timeout à 20 secondes :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="n">scope</span><span class="o">.</span><span class="na">joinUntil</span><span class="o">(</span><span class="nc">Instant</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">plusSeconds</span><span class="o">(</span><span class="mi">20</span><span class="o">));</span></code></pre>
 </div>
 </div>
 </div>
@@ -260,24 +255,24 @@ java.util.concurrent.TimeoutException
 <div class="content">
 <div class="paragraph">
 <p>{kb}<br>
-Toujours dans la méthode <code>creerBulletinMeteo()</code> :</p>
+Compléter la méthode <code>creerBulletinMeteoShutdownOnFailure()</code> pour :</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Utiliser le scope <code>ShutdownOnFailure</code> au lieu du <code>StructuredTaskScope</code> précédemment utilisé</p>
+<p>utiliser le scope <code>ShutdownOnFailure</code> au lieu du <code>StructuredTaskScope</code> précédemment utilisé</p>
 </li>
 <li>
-<p>Réaliser l&#8217;attente via la méthode <code>joinUntil()</code> avec un timeout de 20 secondes</p>
+<p>réaliser l&#8217;attente via la méthode <code>joinUntil()</code> avec un timeout de 20 secondes</p>
 </li>
 <li>
-<p>Effectuer un appel à <code>throwIfFailed()</code> et afficher l&#8217;exception dans le bloc <code>catch</code> en cas d&#8217;erreur</p>
+<p>effectuer un appel à <code>throwIfFailed()</code> et afficher l&#8217;exception dans le bloc <code>catch</code> en cas d&#8217;erreur</p>
 </li>
 </ul>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">creerBulletinMeteo</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">creerBulletinMeteoShutdownOnFailure</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
 
     <span class="k">try</span> <span class="o">(</span><span class="nc">ShutdownOnFailure</span> <span class="n">scope</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ShutdownOnFailure</span><span class="o">())</span> <span class="o">{</span>
 
@@ -311,11 +306,11 @@ Toujours dans la méthode <code>creerBulletinMeteo()</code> :</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>Création du bulletin météo
-Paris : 16.0
-Nice : 18.0
+<pre>Création du bulletin météo avec ShutdownOnFailure
+Toulon : 17.0
 Pont-à-Mousson : 13.0
-Toulon : 17.0</pre>
+Nice : 18.0
+Paris : 16.0</pre>
 </div>
 </div>
 </div>
@@ -324,34 +319,15 @@ Toulon : 17.0</pre>
 <div class="content">
 <div class="paragraph">
 <p>{kb}<br>
-Toujours dans la méthode <code>creerBulletinMeteo()</code>, utiliser l&#8217;instance <code>serviceMeteoRestreint</code> en lieu et place de <code>serviceMeteoPrincipal</code>. Cette implémentation lève une erreur lorsqu&#8217;une ville contient le caractère "-".</p>
+Toujours dans la méthode <code>creerBulletinMeteoShutdownOnFailure()</code>, utiliser l&#8217;instance <code>serviceMeteoRestreint</code> en lieu et place de <code>serviceMeteoPrincipal</code>.
+Cette implémentation lève une erreur lorsqu&#8217;une ville contient le caractère "-".</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">creerBulletinMeteo</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
-
-    <span class="k">try</span> <span class="o">(</span><span class="nc">ShutdownOnFailure</span> <span class="n">scope</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ShutdownOnFailure</span><span class="o">())</span> <span class="o">{</span>
-
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">nice</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">NICE</span><span class="o">));</span>
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">paris</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">PARIS</span><span class="o">));</span>
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">pontAMousson</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">PONT_A_MOUSSON</span><span class="o">));</span>
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">toulon</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">TOULON</span><span class="o">));</span>
-
-      <span class="n">scope</span><span class="o">.</span><span class="na">joinUntil</span><span class="o">(</span><span class="nc">Instant</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">plusSeconds</span><span class="o">(</span><span class="mi">20</span><span class="o">));</span>
-      <span class="n">scope</span><span class="o">.</span><span class="na">throwIfFailed</span><span class="o">();</span>
-
-      <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">afficherBulletin</span><span class="o">(</span>
-        <span class="nc">Map</span><span class="o">.</span><span class="na">of</span><span class="o">(</span>
-          <span class="nc">Villes</span><span class="o">.</span><span class="na">NICE</span><span class="o">,</span> <span class="n">nice</span><span class="o">.</span><span class="na">get</span><span class="o">(),</span>
-          <span class="nc">Villes</span><span class="o">.</span><span class="na">PARIS</span><span class="o">,</span> <span class="n">paris</span><span class="o">.</span><span class="na">get</span><span class="o">(),</span>
-          <span class="nc">Villes</span><span class="o">.</span><span class="na">PONT_A_MOUSSON</span><span class="o">,</span> <span class="n">pontAMousson</span><span class="o">.</span><span class="na">get</span><span class="o">(),</span>
-          <span class="nc">Villes</span><span class="o">.</span><span class="na">TOULON</span><span class="o">,</span> <span class="n">toulon</span><span class="o">.</span><span class="na">get</span><span class="o">()</span>
-        <span class="o">)</span>
-      <span class="o">);</span>
-    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">TimeoutException</span> <span class="o">|</span> <span class="nc">ExecutionException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
-    <span class="o">}</span>
-  <span class="o">}</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">nice</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">NICE</span><span class="o">));</span>
+<span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">paris</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">PARIS</span><span class="o">));</span>
+<span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">pontAMousson</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">PONT_A_MOUSSON</span><span class="o">));</span>
+<span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">toulon</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">TOULON</span><span class="o">));</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -359,12 +335,8 @@ Toujours dans la méthode <code>creerBulletinMeteo()</code>, utiliser l&#8217;in
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>Création du bulletin météo
+<pre>Création du bulletin météo avec ShutdownOnFailure
 java.util.concurrent.ExecutionException: java.lang.IllegalArgumentException: ServiceMeteoRestreint : le service ne sait pas traiter les villes contenant un trait d'union : Pont-à-Mousson
-	at java.base/java.util.concurrent.StructuredTaskScope$ShutdownOnFailure.throwIfFailed(StructuredTaskScope.java:1323)
-	at java.base/java.util.concurrent.StructuredTaskScope$ShutdownOnFailure.throwIfFailed(StructuredTaskScope.java:1300)
-	at fr.sciam.workshop.javase.structuredconcurrency.MainStructuredConcurrency.creerBulletinMeteo(MainStructuredConcurrency.java:46)
-	at fr.sciam.workshop.javase.structuredconcurrency.MainStructuredConcurrency.main(MainStructuredConcurrency.java:25)
 [...]</pre>
 </div>
 </div>
@@ -386,34 +358,20 @@ La méthode <code>throwIfFailed()</code> possède une surcharge qui lève l&#821
 <div class="content">
 <div class="paragraph">
 <p>{kb}<br>
-Toujours dans la méthode <code>creerBulletinMeteo()</code>, faire appel à la méthode <code>throwIfFailed()</code> qui accepte une <code>Function</code> afin de lever une exception de type <code>ExceptionCustom</code>.</p>
+Toujours dans la méthode <code>creerBulletinMeteoShutdownOnFailure()</code>, faire appel à la méthode <code>throwIfFailed()</code> qui accepte une <code>Function</code> afin de lever une exception de type <code>ExceptionCustom</code>.</p>
 </div>
 <div class="listingblock">
+<div class="title">Configuration de l&#8217;exception à lever</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">creerBulletinMeteo</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
-
-    <span class="k">try</span> <span class="o">(</span><span class="nc">ShutdownOnFailure</span> <span class="n">scope</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ShutdownOnFailure</span><span class="o">())</span> <span class="o">{</span>
-
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">nice</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">NICE</span><span class="o">));</span>
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">paris</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">PARIS</span><span class="o">));</span>
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">pontAMousson</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">PONT_A_MOUSSON</span><span class="o">));</span>
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">toulon</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">TOULON</span><span class="o">));</span>
-
-      <span class="n">scope</span><span class="o">.</span><span class="na">joinUntil</span><span class="o">(</span><span class="nc">Instant</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">plusSeconds</span><span class="o">(</span><span class="mi">20</span><span class="o">));</span>
-      <span class="n">scope</span><span class="o">.</span><span class="na">throwIfFailed</span><span class="o">(</span><span class="nl">ExceptionCustom:</span><span class="o">:</span><span class="k">new</span><span class="o">);</span>
-
-      <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">afficherBulletin</span><span class="o">(</span>
-        <span class="nc">Map</span><span class="o">.</span><span class="na">of</span><span class="o">(</span>
-          <span class="nc">Villes</span><span class="o">.</span><span class="na">NICE</span><span class="o">,</span> <span class="n">nice</span><span class="o">.</span><span class="na">get</span><span class="o">(),</span>
-          <span class="nc">Villes</span><span class="o">.</span><span class="na">PARIS</span><span class="o">,</span> <span class="n">paris</span><span class="o">.</span><span class="na">get</span><span class="o">(),</span>
-          <span class="nc">Villes</span><span class="o">.</span><span class="na">PONT_A_MOUSSON</span><span class="o">,</span> <span class="n">pontAMousson</span><span class="o">.</span><span class="na">get</span><span class="o">(),</span>
-          <span class="nc">Villes</span><span class="o">.</span><span class="na">TOULON</span><span class="o">,</span> <span class="n">toulon</span><span class="o">.</span><span class="na">get</span><span class="o">()</span>
-        <span class="o">)</span>
-      <span class="o">);</span>
-    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">TimeoutException</span> <span class="o">|</span> <span class="nc">ExceptionCustom</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
-    <span class="o">}</span>
-  <span class="o">}</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="n">scope</span><span class="o">.</span><span class="na">throwIfFailed</span><span class="o">(</span><span class="nl">ExceptionCustom:</span><span class="o">:</span><span class="k">new</span><span class="o">);</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Gestion de l&#8217;exception</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">TimeoutException</span> <span class="o">|</span> <span class="nc">ExceptionCustom</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -421,11 +379,8 @@ Toujours dans la méthode <code>creerBulletinMeteo()</code>, faire appel à la m
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>Création du bulletin météo
+<pre>Création du bulletin météo avec ShutdownOnFailure
 fr.sciam.workshop.javase.structuredconcurrency.ExceptionCustom: java.lang.IllegalArgumentException: ServiceMeteoRestreint : le service ne sait pas traiter les villes contenant un trait d'union : Pont-à-Mousson
-	at java.base/java.util.concurrent.StructuredTaskScope$ShutdownOnFailure.throwIfFailed(StructuredTaskScope.java:1323)
-	at fr.sciam.workshop.javase.structuredconcurrency.MainStructuredConcurrency.creerBulletinMeteo(MainStructuredConcurrency.java:46)
-	at fr.sciam.workshop.javase.structuredconcurrency.MainStructuredConcurrency.main(MainStructuredConcurrency.java:25)
 [...]</pre>
 </div>
 </div>
@@ -470,7 +425,7 @@ Compléter la méthode <code>obtenirTemperatureShutdownOnSuccess()</code> afin d
 </div>
 </div>
 <div class="paragraph">
-<p>Constater que l&#8217;appel via l&#8217;instance <code>serviceMeteoRestreint</code> a abouti en premier (elle n&#8217;a pas de délai contrairement à <code>serviceMeteoPrincipal</code>, dont l&#8217;appel a été interrompu).</p>
+<p>Exécuter la classe <code>MainStructuredConcurrency</code> et constater que l&#8217;appel via l&#8217;instance <code>serviceMeteoRestreint</code> a abouti en premier (elle n&#8217;a pas de délai contrairement à <code>serviceMeteoPrincipal</code>, dont l&#8217;appel a été interrompu).</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -497,22 +452,8 @@ Modifier à nouveau la méthode <code>obtenirTemperatureShutdownOnSuccess()</cod
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">obtenirTemperatureShutdownOnSuccess</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
-
-    <span class="k">try</span> <span class="o">(</span><span class="nc">ShutdownOnSuccess</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">scope</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ShutdownOnSuccess</span><span class="o">&lt;&gt;())</span> <span class="o">{</span>
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">principal</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoPrincipal</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">PONT_A_MOUSSON</span><span class="o">));</span>
-      <span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">restreint</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">PONT_A_MOUSSON</span><span class="o">));</span>
-
-      <span class="n">scope</span><span class="o">.</span><span class="na">joinUntil</span><span class="o">(</span><span class="nc">Instant</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">plusSeconds</span><span class="o">(</span><span class="mi">20</span><span class="o">));</span>
-
-      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Principal "</span> <span class="o">+</span> <span class="n">principal</span><span class="o">.</span><span class="na">state</span><span class="o">());</span>
-      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Restreint "</span> <span class="o">+</span> <span class="n">restreint</span><span class="o">.</span><span class="na">state</span><span class="o">());</span>
-      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Temperature : "</span> <span class="o">+</span> <span class="n">scope</span><span class="o">.</span><span class="na">result</span><span class="o">());</span>
-
-    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">TimeoutException</span> <span class="o">|</span> <span class="nc">ExecutionException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-    <span class="o">}</span>
-  <span class="o">}</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">principal</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoPrincipal</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">PONT_A_MOUSSON</span><span class="o">));</span>
+<span class="nc">Subtask</span><span class="o">&lt;</span><span class="nc">Double</span><span class="o">&gt;</span> <span class="n">restreint</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">PONT_A_MOUSSON</span><span class="o">));</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -608,10 +549,12 @@ Modifier la classe <code>ScopePlusHauteTemperature</code> de manière à ce qu&#
       <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">PONT_A_MOUSSON</span><span class="o">));</span>
       <span class="n">scope</span><span class="o">.</span><span class="na">fork</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">serviceMeteoRestreint</span><span class="o">.</span><span class="na">obtenirTemperature</span><span class="o">(</span><span class="nc">Villes</span><span class="o">.</span><span class="na">TOULON</span><span class="o">));</span>
 
-      <span class="n">scope</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+      <span class="n">scope</span><span class="o">.</span><span class="na">joinUntil</span><span class="o">(</span><span class="nc">Instant</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">plusSeconds</span><span class="o">(</span><span class="mi">20</span><span class="o">));</span>
 
-      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Temperature la plus haute : "</span> <span class="o">+</span> <span class="n">scope</span><span class="o">.</span><span class="na">max</span><span class="o">());</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Température la plus haute : "</span> <span class="o">+</span> <span class="n">scope</span><span class="o">.</span><span class="na">max</span><span class="o">());</span>
       <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Exceptions rencontrées : "</span> <span class="o">+</span> <span class="n">scope</span><span class="o">.</span><span class="na">exceptions</span><span class="o">());</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">TimeoutException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
     <span class="o">}</span>
   <span class="o">}</span></code></pre>
 </div>
@@ -622,7 +565,7 @@ Modifier la classe <code>ScopePlusHauteTemperature</code> de manière à ce qu&#
 <div class="listingblock">
 <div class="content">
 <pre>Obtenir plus haute température
-Temperature la plus haute : 18.0
+Température la plus haute : 18.0
 Exceptions rencontrées : [java.lang.IllegalArgumentException: ServiceMeteoRestreint : le service ne sait pas traiter les villes contenant un trait d'union : Pont-à-Mousson]</pre>
 </div>
 </div>
@@ -636,7 +579,7 @@ Exceptions rencontrées : [java.lang.IllegalArgumentException: ServiceMeteoRestr
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-06-23 18:24:54 +0200
+Last updated 2024-06-26 13:58:57 +0200
 </div>
 </div>
 </body>
