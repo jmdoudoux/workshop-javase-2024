@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : l&#8217;API Sequenced Collections</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="_lab_lapi_sequenced_collections" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-sequenced-collections.html">Lab : l&#8217;API Sequenced Collections</a></span></p><ul class="sectlevel3">
+<li><a href="lab-sequenced-collections.html#_lab_lapi_sequenced_collections"><span class="toc-current">1. Lab : l&#8217;API Sequenced Collections</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="_lab_lapi_sequenced_collections"><a class="anchor" href="#_lab_lapi_sequenced_collections"></a>1. Lab : l&#8217;API Sequenced Collections</h4>
+<div class="paragraph">
+<p>L&#8217;API Collection souffre de quelques manques concernant les collections qui ont un ordre de parcours :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>il n&#8217;existe pas de super-type commun,</p>
+</li>
+<li>
+<p>il n&#8217;existe pas de méthode uniforme pour accéder au premier et au dernier élément d&#8217;une collection, ou pour parcourir ses éléments dans l&#8217;ordre inverse.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Trois nouvelles interfaces (<code>SequencedCollection</code>, <code>SequencedSet</code> et <code>SequencedMap</code>) sont intégrées dans la hiérarchie des types existants de l&#8217;API Collections afin de résoudre ces problèmes. Leur implémentation est un compromis qui privilégie la rétrocompatibilité.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Standard en Java 21</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/431">431: Sequenced collections</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect4">
+<h5 id="_linterface_sequencedcollection"><a class="anchor" href="#_linterface_sequencedcollection"></a>1.1. L&#8217;interface <code>SequencedCollection</code></h5>
+<div class="paragraph">
+<p>L&#8217;interface <code>SequencedCollection</code> hérite de l&#8217;interface <code>Collection</code>.</p>
+</div>
+<div class="paragraph">
+<p>Elle concerne un type de collection qui représente une séquence d&#8217;éléments possédant un ordre de parcours défini et simplifie la gestion des données ordonnées d&#8217;une collection, en offrant un accès facile et uniforme pour manipuler les éléments aux deux extrémités et en fournissant une méthode pour obtenir une vue de la collection dans l&#8217;ordre inverse.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>sequencedCollection()</code> de la classe <code>MainSequencedCollections</code> pour utiliser les méthodes de l&#8217;interface <code>SequencedCollection</code> pour ajouter, obtenir et retirer des éléments dans une <code>List</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sequencedCollection</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">nombres</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+    <span class="n">nombres</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+    <span class="n">nombres</span><span class="o">.</span><span class="na">addFirst</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+    <span class="n">nombres</span><span class="o">.</span><span class="na">addLast</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">nombres</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">nombres</span><span class="o">.</span><span class="na">getFirst</span><span class="o">());</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">nombres</span><span class="o">.</span><span class="na">getLast</span><span class="o">());</span>
+    <span class="n">nombres</span><span class="o">.</span><span class="na">removeLast</span><span class="o">();</span>
+    <span class="n">nombres</span><span class="o">.</span><span class="na">removeFirst</span><span class="o">();</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">nombres</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainSequencedCollections</code> pour vérifier le résultat de l&#8217;exécution.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Sequenced collection
+[1, 2, 3]
+1
+3
+[2]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>L&#8217;interface <code>SequencedCollection</code> propose la méthode <code>reversed()</code> qui renvoie une <code>SequencedCollection</code> pour obtenir une vue inversée des éléments de la collection d&#8217;origine. L&#8217;ordre de parcours des éléments dans la vue renvoyée est l&#8217;inverse de l&#8217;ordre de parcours des éléments dans cette collection.</p>
+</div>
+<div class="paragraph">
+<p>Les modifications apportées à la collection sous-jacente peuvent ou non être visibles dans la vue inversée, en fonction de l&#8217;implémentation. Si elles sont autorisées, les modifications apportées à la vue modifient la collection d&#8217;origine.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>reversedSequencedCollection()</code> de la classe <code>MainSequencedCollections</code> pour manipuler une collection et sa collection inverse.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">reversedSequencedCollection</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="n">elements</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">"1"</span><span class="o">,</span> <span class="s">"2"</span><span class="o">,</span> <span class="s">"3"</span><span class="o">,</span> <span class="s">"4"</span><span class="o">));</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"elements : "</span> <span class="o">+</span> <span class="n">elements</span><span class="o">);</span>
+    <span class="kt">var</span> <span class="n">inverse</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="na">reversed</span><span class="o">();</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"inverse  : "</span> <span class="o">+</span> <span class="n">inverse</span><span class="o">);</span>
+
+    <span class="n">elements</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="s">"5"</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"\nelements : "</span> <span class="o">+</span> <span class="n">elements</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"inverse  : "</span> <span class="o">+</span> <span class="n">inverse</span><span class="o">);</span>
+
+    <span class="n">inverse</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="s">"6"</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"\ninverse  : "</span> <span class="o">+</span> <span class="n">inverse</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"elements : "</span> <span class="o">+</span> <span class="n">elements</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainSequencedCollections</code> pour vérifier le résultat de l&#8217;exécution.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Reversed sequenced collection
+elements : [1, 2, 3, 4]
+inverse  : [4, 3, 2, 1]
+
+elements : [1, 2, 5, 3, 4]
+inverse  : [4, 3, 5, 2, 1]
+
+inverse  : [4, 6, 3, 5, 2, 1]
+elements : [1, 2, 5, 3, 6, 4]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_linterface_sequencedset"><a class="anchor" href="#_linterface_sequencedset"></a>1.2. L&#8217;interface <code>SequencedSet</code></h5>
+<div class="paragraph">
+<p>Un <code>SequencedSet</code> peut être considéré soit comme un <code>Set</code> qui possède également un ordre de parcours bien défini, soit comme une <code>SequencedCollection</code> qui possède des éléments uniques.</p>
+</div>
+<div class="paragraph">
+<p>L&#8217;interface <code>SequencedSet&lt;E&gt;</code> hérite des interfaces <code>Set&lt;E&gt;</code> et <code>SequencedCollection&lt;E&gt;</code>. Elle n&#8217;offre aucune méthode supplémentaire, mais contient une redéfinition covariante de la méthode <code>reversed()</code> qui renvoie une instance de type <code>SequenceSet&lt;E&gt;</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>sequencedSet()</code> de la classe <code>MainSequencedCollections</code> pour utiliser les méthodes de l&#8217;interface <code>SequencedSet</code> pour ajouter et obtenir des éléments dans une <code>LinkedHashSet</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sequencedSet</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="n">nombres</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedHashSet</span><span class="o">&lt;&gt;(</span><span class="nc">List</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">));</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">nombres</span><span class="o">);</span>
+
+    <span class="nc">Integer</span> <span class="n">premier</span> <span class="o">=</span> <span class="n">nombres</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
+    <span class="nc">Integer</span> <span class="n">dernier</span> <span class="o">=</span> <span class="n">nombres</span><span class="o">.</span><span class="na">getLast</span><span class="o">();</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">premier</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dernier</span><span class="o">);</span>
+
+    <span class="n">nombres</span><span class="o">.</span><span class="na">addFirst</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+    <span class="n">nombres</span><span class="o">.</span><span class="na">addLast</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">nombres</span><span class="o">);</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">nombres</span><span class="o">.</span><span class="na">reversed</span><span class="o">());</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainSequencedCollections</code> pour vérifier le résultat de l&#8217;exécution.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>SequencedSet
+[2, 3, 4]
+2
+4
+[1, 2, 3, 4, 5]
+[5, 4, 3, 2, 1]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_linterface_sequencedmap"><a class="anchor" href="#_linterface_sequencedmap"></a>1.3. L&#8217;interface <code>SequencedMap</code></h5>
+<div class="paragraph">
+<p>L&#8217;interface <code>SequencedMap</code> est une interface spécialisée conçue pour les <code>Map</code> dont les clés, les valeurs et les entrées ont un ordre de parcours défini tout comme <code>LinkedHashMap</code>, qui introduit une nouvelle approche de la gestion des données ordonnées dans les Maps.</p>
+</div>
+<div class="paragraph">
+<p>L&#8217;interface <code>SequencedMap&lt;K, V&gt;</code> hérite de l&#8217;interface <code>Map&lt;K, V&gt;</code> et fournit des méthodes pour accéder à ses entrées et les manipuler en tenant compte de leur ordre de parcours :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Map.Entry&lt;K, V&gt;</code> <code>firstEntry()</code> / <code>lastEntry()</code> : renvoyer la première / dernière entrée de la Map</p>
+</li>
+<li>
+<p><code>Map.Entry&lt;K, V&gt;</code> <code>pollFirstEntry()</code> / <code>pollLastEntry()</code> : supprimer et renvoyer la première / dernière entrée de la Map</p>
+</li>
+<li>
+<p><code>Map.Entry&lt;K, V&gt;</code> <code>putFirst(K k, V v)</code> / <code>putLast(K k, V v)</code> : insérer une entrée au début / à la fin de la <code>Map</code></p>
+</li>
+<li>
+<p><code>SequencedMap&lt;K, V&gt;</code> <code>reversed()</code> : obtenir une vue inversée de la <code>Map</code></p>
+</li>
+<li>
+<p><code>SequencedSet&lt;Map.Entry&lt;K,V&gt;&gt;</code> <code>sequencedEntrySet()</code> : renvoyer un <code>SequencedSet</code> des entrées de la <code>Map</code>, en conservant l&#8217;ordre de parcours</p>
+</li>
+<li>
+<p><code>SequencedSet&lt;K&gt;</code> <code>sequencedKeySet()</code> : renvoyer un <code>SequencedSet</code> des clés de la <code>Map</code>, en conservant l&#8217;ordre de parcours</p>
+</li>
+<li>
+<p><code>SequencedCollection&lt;V&gt;</code> <code>sequencedValues()</code> : renvoyer une <code>SequencedCollection</code> des valeurs <code>Map</code>, en conservant l&#8217;ordre de parcours</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>sequencedMap()</code> de la classe <code>MainSequencedCollections</code> pour utiliser les méthodes de l&#8217;interface <code>SequencedMap</code> pour ajouter et obtenir des éléments dans une <code>LinkedHashMap</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sequencedMap</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">SequencedMap</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedHashMap</span><span class="o">&lt;&gt;();</span>
+
+    <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="s">"Valeur1"</span><span class="o">);</span>
+    <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="s">"Valeur2"</span><span class="o">);</span>
+    <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="s">"Valeur3"</span><span class="o">);</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">map</span><span class="o">);</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">map</span><span class="o">.</span><span class="na">firstEntry</span><span class="o">());</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">map</span><span class="o">.</span><span class="na">lastEntry</span><span class="o">());</span>
+
+    <span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">premier</span> <span class="o">=</span> <span class="n">map</span><span class="o">.</span><span class="na">pollFirstEntry</span><span class="o">();</span>
+    <span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">dernier</span> <span class="o">=</span> <span class="n">map</span><span class="o">.</span><span class="na">pollLastEntry</span><span class="o">();</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"\n"</span><span class="o">+</span><span class="n">premier</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dernier</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">map</span><span class="o">);</span>
+
+    <span class="n">map</span><span class="o">.</span><span class="na">putFirst</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="s">"Valeur1"</span><span class="o">);</span>
+    <span class="n">map</span><span class="o">.</span><span class="na">putLast</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="s">"Valeur3"</span><span class="o">);</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"\n"</span><span class="o">+</span><span class="n">map</span><span class="o">);</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"\n"</span><span class="o">+</span><span class="n">map</span><span class="o">.</span><span class="na">reversed</span><span class="o">());</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainSequencedCollections</code> pour vérifier le résultat de l&#8217;exécution.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>SequencedMap
+{1=Valeur1, 2=Valeur2, 3=Valeur3}
+1=Valeur1
+3=Valeur3
+
+1=Valeur1
+3=Valeur3
+{2=Valeur2}
+
+{1=Valeur1, 2=Valeur2, 3=Valeur3}
+
+{3=Valeur3, 2=Valeur2, 1=Valeur1}</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Les objets retournés par les méthodes <code>firstEntry()</code>, <code>lastEntry()</code>, <code>pollFirstEntry()</code> et <code>pollLastEntry()</code> de l&#8217;interface <code>SequencedMap</code> ne prennent pas en charge la mutation de la <code>Map</code> sous-jacente en utilisant leur méthode optionnelle <code>setValue()</code>. L&#8217;invocation de la méthode setValue() dans ce contexte lève une exception de type <code>UnsupportedOperationException</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>majSequencedMap()</code> de la classe <code>MainSequencedCollections</code> pour tenter de modifier le premier élément d&#8217;une <code>LinkedHashMap</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">majSequencedMap</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">SequencedMap</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedHashMap</span><span class="o">&lt;&gt;();</span>
+    <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="s">"Valeur1"</span><span class="o">);</span>
+    <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="s">"Valeur2"</span><span class="o">);</span>
+    <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="s">"Valeur3"</span><span class="o">);</span>
+
+    <span class="k">try</span>  <span class="o">{</span>
+    <span class="nc">Entry</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">=</span> <span class="n">map</span><span class="o">.</span><span class="na">firstEntry</span><span class="o">();</span>
+    <span class="n">entry</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="s">"Valeur1 modifiee"</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainSequencedCollections</code> pour vérifier le résultat de l&#8217;exécution.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Maj SequencedMap
+java.lang.UnsupportedOperationException: not supported
+	at java.base/jdk.internal.util.NullableKeyValueHolder.setValue(NullableKeyValueHolder.java:126)
+	at fr.sciam.workshop.javase.sequencedcollections.MainSequencedCollections.majSequencedMap(MainSequencedCollections.java:118)
+	at fr.sciam.workshop.javase.sequencedcollections.MainSequencedCollections.main(MainSequencedCollections.java:19)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_exceptions_levées_par_certaines_méthodes"><a class="anchor" href="#_les_exceptions_levées_par_certaines_méthodes"></a>1.4. Les exceptions levées par certaines méthodes</h5>
+<div class="paragraph">
+<p>L&#8217;invocation des nouvelles méthodes <code>addXxx()</code> ou <code>removeXxx()</code> sur une collection non modifiable lève une exception de type <code>UnsupportedOperationException</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>collectionNonModifiable()</code> de la classe <code>MainSequencedCollections</code> pour tenter d&#8217;ajouter un élément dans une liste non modifiable.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">collectionNonModifiable</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">nombres</span> <span class="o">=</span> <span class="nc">List</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+      <span class="n">nombres</span><span class="o">.</span><span class="na">addFirst</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainSequencedCollections</code> pour vérifier le résultat de l&#8217;exécution.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Collection non modifiable
+java.lang.UnsupportedOperationException
+	at java.base/java.util.ImmutableCollections.uoe(ImmutableCollections.java:142)
+	at java.base/java.util.ImmutableCollections$AbstractImmutableList.add(ImmutableCollections.java:258)
+	at java.base/java.util.List.addFirst(List.java:794)
+	at fr.sciam.workshop.javase.sequencedcollections.MainSequencedCollections.collectionNonModifiable(MainSequencedCollections.java:129)
+	at fr.sciam.workshop.javase.sequencedcollections.MainSequencedCollections.main(MainSequencedCollections.java:20)</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Dans les collections qui ont déjà un ordre de tri défini, l&#8217;invocation des méthodes forçant l&#8217;ordre, par exemple <code>addFirst()</code>, <code>addLast()</code>, …​, n&#8217;a pas de sens et lève une exception de type <code>UnsupportedOperationException</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>collectionTriee()</code> de la classe <code>MainSequencedCollections</code> pour ajouter un nouvel élément en première position dans un collection de type <code>TreeSet</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">collectionTriee</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">nombres</span> <span class="o">=</span> <span class="nc">List</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+      <span class="n">nombres</span><span class="o">.</span><span class="na">addFirst</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainSequencedCollections</code> pour vérifier le résultat de l&#8217;exécution.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Collection triee
+java.lang.UnsupportedOperationException
+	at java.base/java.util.ImmutableCollections.uoe(ImmutableCollections.java:142)
+	at java.base/java.util.ImmutableCollections$AbstractImmutableList.add(ImmutableCollections.java:258)
+	at java.base/java.util.List.addFirst(List.java:794)
+	at fr.sciam.workshop.javase.sequencedcollections.MainSequencedCollections.collectionTriee(MainSequencedCollections.java:145)</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Toute tentative d&#8217;utiliser une méthode des interfaces séquencées sur une collection vide lève une exception de type NoSuchElementException.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>collectionVide()</code> de la classe <code>MainSequencedCollections</code> pour obtenir le premier élément d&#8217;une collection vide.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">collectionVide</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="nc">SequencedCollection</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">elements</span> <span class="o">=</span> <span class="nc">List</span><span class="o">.</span><span class="na">of</span><span class="o">();</span>
+      <span class="n">elements</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainSequencedCollections</code> pour vérifier le résultat de l&#8217;exécution.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Collection vide
+java.util.NoSuchElementException
+	at java.base/java.util.List.getFirst(List.java:823)
+	at fr.sciam.workshop.javase.sequencedcollections.MainSequencedCollections.collectionVide(MainSequencedCollections.java:154)
+	at fr.sciam.workshop.javase.sequencedcollections.MainSequencedCollections.main(MainSequencedCollections.java:23)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_collections_séquencées_immutables"><a class="anchor" href="#_les_collections_séquencées_immutables"></a>1.5. Les collections séquencées immutables</h5>
+<div class="paragraph">
+<p>Trois nouvelles fabriques ont été ajoutées dans la classe <code>java.util.Collections</code> pour obtenir des collections non modifiables sur les collections séquencées passées en paramètre :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>SequencedCollection&lt;T&gt;</code> <code>unmodifiableSequencedCollection(SequencedCollection&lt;? extends T&gt;)</code></p>
+</li>
+<li>
+<p><code>SequencedSet&lt;T&gt;</code> <code>unmodifiableSequencedSet(SequencedSet&lt;? extends T&gt;)</code></p>
+</li>
+<li>
+<p><code>&lt;K, V&gt; SequencedMap&lt;K, V&gt;</code> <code>unmodifiableSequencedMap(SequencedMap&lt;? extends K, ? extends V&gt;)</code></p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>unmodifiableSequenced()</code> de la classe <code>MainSequencedCollections</code> pour tenter d&#8217;obtenir et retirer le premier élément d&#8217;une collection de type <code>LinkedHashMap</code> non modifiable.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">unmodifiableSequenced</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">SequencedMap</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedHashMap</span><span class="o">&lt;&gt;();</span>
+    <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="s">"Valeur1"</span><span class="o">);</span>
+    <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="s">"Valeur2"</span><span class="o">);</span>
+    <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="s">"Valeur3"</span><span class="o">);</span>
+
+    <span class="nc">SequencedMap</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">unmodifiableSequencedMap</span> <span class="o">=</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">unmodifiableSequencedMap</span><span class="o">(</span><span class="n">map</span><span class="o">);</span>
+
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="n">unmodifiableSequencedMap</span><span class="o">.</span><span class="na">pollFirstEntry</span><span class="o">();</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">UnsupportedOperationException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainSequencedCollections</code> pour vérifier le résultat de l&#8217;exécution.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>UnmodifiableSequenced
+java.lang.UnsupportedOperationException
+	at java.base/java.util.Collections$UnmodifiableSequencedMap.pollFirstEntry(Collections.java:2019)
+	at fr.sciam.workshop.javase.sequencedcollections.MainSequencedCollections.unmodifiableSequenced(MainSequencedCollections.java:175)
+	at fr.sciam.workshop.javase.sequencedcollections.MainSequencedCollections.main(MainSequencedCollections.java:26)</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 17:53:25 +0200
+</div>
+</div>
+</body>
+</html>

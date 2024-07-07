@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : les classes scellées</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="classes-scellees" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-classes-scellees.html">Lab : les classes scellées</a></span></p><ul class="sectlevel3">
+<li><a href="lab-classes-scellees.html#classes-scellees"><span class="toc-current">1. Lab : les classes scellées</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="classes-scellees"><a class="anchor" href="#classes-scellees"></a>1. Lab : les classes scellées</h4>
+<div class="paragraph">
+<p>Le concept de classes et interfaces scellées permet de restreindre les classes et interfaces qui peuvent les étendre ou les implémenter.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Première preview en Java 15 <a href="https://openjdk.org/jeps/360">JEP 360</a>. Standard en Java 17</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/409">409: Sealed Classes</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect4">
+<h5 id="_la_définition_dune_hiérarchie_de_classes_scellées"><a class="anchor" href="#_la_définition_dune_hiérarchie_de_classes_scellées"></a>1.1. La définition d&#8217;une hiérarchie de classes scellées</h5>
+<div class="paragraph">
+<p>Un nouveau modificateur fait son apparition : <code>sealed</code>. En conjonction avec la clause <code>permits</code>, il est possible de restreindre la liste des classes ou interfaces que peuvent étendre ou implémenter une classe ou une interface.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la classe <code>fr.sciam.workshop.javase.sealedclasses.Ingredient</code> pour la rendre scellée en y ajoutant le modificateur <code>sealed</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="n">sealed</span> <span class="kd">class</span> <span class="nc">Ingredient</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que le code est en erreur :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Error: sealed class must have subclasses</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Une classe scellée doit définir explicitement la liste des classes qui l&#8217;étendent en utilisant une clause <code>permits</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier à nouveau la classe <code>Ingredient</code> pour lui spécifier que désormais ses seules sous-classes permises sont :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Malt</code></p>
+</li>
+<li>
+<p><code>Houblon</code></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="n">sealed</span> <span class="kd">class</span> <span class="nc">Ingredient</span> <span class="n">permits</span> <span class="nc">Houblon</span><span class="o">,</span> <span class="nc">Malt</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que la classe <code>Ingredient</code> affiche l&#8217;erreur :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>All sealed class subclasses must either be final, sealed or non-sealed</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Et que chaque classe de la clause <code>permits</code> est en erreur :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Error: sealed, non-sealed or final modifiers expected</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est nécessaire que la hiérarchie permise précise comment le scellement initié par la classe mère se propage en utilisant un des trois modificateurs : <code>final</code>, <code>sealed</code> ou <code>non-sealed</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Ajouter le modificateur <code>final</code> sur chacune des sous-classes afin de sceller complètement la hiérarchie.</p>
+</div>
+<div class="listingblock">
+<div class="title">Malt.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Malt</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Houblon.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Houblon</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>À ce stade, seules les classes <code>Malt</code> et <code>Houblon</code> peuvent étendre <code>Ingredient</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Ajouter une nouvelle classe <code>Eau</code> qui étend <code>Ingredient</code></p>
+</div>
+<div class="listingblock">
+<div class="title">Eau.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Eau</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que nous obtenons une erreur de compilation :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>'Eau' is not allowed in the sealed hierarchy</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>A ce stade, la classe <code>Ingredient</code> ne permet pas d&#8217;être étendue par cette classe <code>Eau</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Rendre la classe <code>Eau</code> <code>final</code> et l&#8217;ajouter à la liste des sous-classes permises par <code>Ingredient</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Eau.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Eau</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Ingredient.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="n">sealed</span> <span class="kd">class</span> <span class="nc">Ingredient</span> <span class="n">permits</span> <span class="nc">Eau</span><span class="o">,</span> <span class="nc">Malt</span><span class="o">,</span> <span class="nc">Houblon</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que la hiérarchie est à nouveau cohérente et le code compile.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est également possible de rendre ouverte pour extension une partie de la hiérarchie. Pour cela, le modificateur <code>non-sealed</code> a été ajouté au langage. Son utilisation permet ainsi une certaine souplesse sur la définition de la hiérarchie en permettant à une sous-partie seulement d&#8217;être étendue librement.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>non-sealed</code> est le premier mot clé contenant un trait d&#8217;union introduit dans le langage Java.
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Ajouter la classe abstraite <code>Levure</code> comme sous-classe non-scellée de <code>Ingredient</code>, ainsi que la classe <code>LevureHaute</code> comme sous-classe <code>final</code> de <code>Levure</code>.
+Les déclarer dans la clause <code>permits</code> de <code>Ingredient</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Levure.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">abstract</span> <span class="n">non</span><span class="o">-</span><span class="n">sealed</span> <span class="kd">class</span> <span class="nc">Levure</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">LevureHaute.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">LevureHaute</span> <span class="kd">extends</span> <span class="nc">Levure</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Ingredient.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="n">sealed</span> <span class="kd">class</span> <span class="nc">Ingredient</span> <span class="n">permits</span> <span class="nc">Eau</span><span class="o">,</span> <span class="nc">Malt</span><span class="o">,</span> <span class="nc">Houblon</span><span class="o">,</span> <span class="nc">Levure</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que la branche <code>Levure</code> de la hiérarchie est belle et bien à nouveau ouverte pour extension. Il est possible d&#8217;ajouter librement des sous-classes de <code>Levure</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Il n&#8217;a pas été nécessaire d&#8217;ajouter <code>LevureHaute</code> dans la clause <code>permits</code> : cela aurait d&#8217;ailleurs été une erreur puisque seules les sous-classes directes sont déclarées.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Il est possible de répéter ce schéma récursivement dans la hiérarchie fille, en y ajoutant des branches scellées tout comme non-scellées.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Les classes filles permises doivent être "proches" de la super-classe, c&#8217;est-à-dire :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>dans le même module si la super-classe est dans un module nommé,</p>
+</li>
+<li>
+<p>ou bien dans le même package si la super-classe est dans un module "unnamed".</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Jusqu&#8217;à présent, chaque sous-classe a été déclarée dans son propre fichier, ce qui constitue un choix judicieux pour bon nombre d&#8217;applications. Dans certains cas de figure, il peut être fait le choix de regrouper les classes au sein du même fichier .java.</p>
+</div>
+<div class="paragraph">
+<p>Dans ce cas d&#8217;usage précis, il est possible de retirer la clause <code>permits</code> : le compilateur s&#8217;en chargera pour nous.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Déplacer les sous-classes créées jusqu&#8217;à présent au sein du fichier Ingredient.java puis retirer la clause <code>permits</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="n">sealed</span> <span class="kd">class</span> <span class="nc">Ingredient</span> <span class="o">{</span>
+<span class="o">}</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="nc">Eau</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+<span class="kd">final</span> <span class="kd">class</span> <span class="nc">Malt</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+<span class="kd">final</span> <span class="kd">class</span> <span class="nc">Houblon</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+<span class="kd">abstract</span> <span class="n">non</span><span class="o">-</span><span class="n">sealed</span> <span class="kd">class</span> <span class="nc">Levure</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+<span class="kd">final</span> <span class="kd">class</span> <span class="nc">LevureHaute</span> <span class="kd">extends</span> <span class="nc">Levure</span> <span class="o">{}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que cette syntaxe est valide et que le code compile.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est aussi possible de convertir ces classes en classes internes de <code>Ingredient</code>, sans avoir à définir la clause <code>permits</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Convertir les sous-classes en classes internes de <code>Ingredient</code> en les déplaçant dans le corps de la classe.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="n">sealed</span> <span class="kd">class</span> <span class="nc">Ingredient</span> <span class="o">{</span>
+  <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Eau</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+  <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Malt</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+  <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Houblon</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+  <span class="kd">abstract</span> <span class="n">non</span><span class="o">-</span><span class="n">sealed</span> <span class="kd">class</span> <span class="nc">Levure</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+  <span class="kd">final</span> <span class="kd">class</span> <span class="nc">LevureHaute</span> <span class="kd">extends</span> <span class="nc">Levure</span> <span class="o">{}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que cette syntaxe est valide et que le code compile.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Nous avons jusqu&#8217;à présent manipulé une hiérarchie de classes, mais il est tout aussi possible de définir des interfaces scellées de manière analogue.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Créer une interface scellée <code>ElementBrassage</code> dont l&#8217;implémentation possible est <code>Ingredient</code> puis modifier la classe <code>Ingredient</code> afin qu&#8217;elle l&#8217;implémente.</p>
+</div>
+<div class="listingblock">
+<div class="title">ElementBrassage.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="n">sealed</span> <span class="kd">interface</span> <span class="nc">ElementBrassage</span> <span class="n">permits</span> <span class="nc">Ingredient</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Ingredient.java</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="n">sealed</span> <span class="kd">class</span> <span class="nc">Ingredient</span> <span class="kd">implements</span> <span class="nc">ElementBrassage</span> <span class="o">{</span>
+  <span class="c1">// Reste du code</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que cette nouvelle hiérarchie est valide : le code compile avec succès.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_classes_scellées_et_la_réflexion"><a class="anchor" href="#_les_classes_scellées_et_la_réflexion"></a>1.2. Les classes scellées et la réflexion</h5>
+<div class="paragraph">
+<p>La classe <code>java.lang.Class</code> se voit enrichie de nouvelles méthodes propres aux classes scellées :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>isSealed()</code> : indique si la classe est scellée ou non</p>
+</li>
+<li>
+<p><code>getPermittedSubclasses()</code> : renvoie la liste des sous-interfaces ou sous-classes qui implémentent directement la classe, si elle est scellée</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la méthode <code>afficherReflexion()</code> de la classe <code>fr.sciam.workshop.javase.sealedclasses.MainBrassage</code>, utiliser ces APIs afin d&#8217;obtenir des informations sur <code>Ingredient</code> et sa hiérarchie par réflexion. Puis exécuter le programme afin d&#8217;afficher ces informations.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">afficherReflexion</span><span class="o">()</span> <span class="o">{</span>
+
+  <span class="kt">boolean</span> <span class="n">scellee</span> <span class="o">=</span> <span class="nc">Ingredient</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isSealed</span><span class="o">();</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"La classe Ingredient est scellée : "</span> <span class="o">+</span> <span class="n">scellee</span><span class="o">);</span>
+
+  <span class="k">if</span> <span class="o">(</span><span class="n">scellee</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Sous classes permises :"</span><span class="o">);</span>
+    <span class="nc">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">sousClassesPermises</span> <span class="o">=</span> <span class="nc">Ingredient</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getPermittedSubclasses</span><span class="o">();</span>
+    <span class="k">for</span> <span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">cls</span> <span class="o">:</span> <span class="n">sousClassesPermises</span><span class="o">)</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"  "</span> <span class="o">+</span> <span class="n">cls</span><span class="o">.</span><span class="na">getSimpleName</span><span class="o">());</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainBrassage</code> et vérifie que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Afficher réflexion
+La classe Ingredient est scellée : true
+Sous classes permises :
+  Eau
+  Malt
+  Houblon
+  Levure</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_classes_scellées_et_le_pattern_matching"><a class="anchor" href="#_les_classes_scellées_et_le_pattern_matching"></a>1.3. les classes scellées et le pattern matching</h5>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Ce chapitre fait intervenir le concept de Pattern Matching for switch, qui fait l&#8217;objet du lab <a href="lab-pattern-matching-switch.html#pattern-matching-switch">Pattern Matching for switch</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>La définition d&#8217;une hiérarchie de types scellés permet d&#8217;utiliser l&#8217;instruction <code>switch</code> en bénéficiant de la couverture de l&#8217;exhaustivité des branches.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la hiérarchie de <code>Ingredient</code> pour que seules <code>Eau</code>, <code>Malt</code>, <code>Houblon</code> et <code>Levure</code> soient permises. Rendre également <code>Ingredient</code> abstraite.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">abstract</span> <span class="n">sealed</span> <span class="kd">class</span> <span class="nc">Ingredient</span> <span class="kd">implements</span> <span class="nc">ElementBrassage</span> <span class="o">{</span>
+  <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Eau</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+  <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Malt</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+  <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Houblon</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+  <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Levure</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ainsi, toute instance de <code>Ingredient</code> est forcément du type de l&#8217;une des quatre classes : <code>Eau</code>, <code>Malt</code>, <code>Houblon</code> ou <code>Levure</code>.</p>
+</div>
+<div class="paragraph">
+<p>Modifier la classe <code>Ingredient</code> en y ajoutant la méthode <code>estFermentescible()</code> qui renvoie <code>true</code> si l&#8217;ingrédient fourni en paramètre est de type <code>Malt</code>, en utilisant une expression <code>switch</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">estFermentescible</span><span class="o">(</span><span class="nc">Ingredient</span> <span class="n">ingredient</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nf">switch</span> <span class="o">(</span><span class="n">ingredient</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Eau</span> <span class="n">eau</span> <span class="o">-&gt;</span> <span class="kc">false</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Malt</span> <span class="n">malt</span> <span class="o">-&gt;</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Houblon</span> <span class="n">houblon</span> <span class="o">-&gt;</span> <span class="kc">false</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Levure</span> <span class="n">levure</span> <span class="o">-&gt;</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">};</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On note qu&#8217;il n&#8217;est pas nécessaire de définir le cas <code>default</code> : l&#8217;exhaustivité des cas est assurée.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Ceci offre un certain avantage en apportant de la robustesse à notre code.</p>
+</div>
+<div class="paragraph">
+<p>Pour illustrer cela, ajouter un nouveau type d&#8217;ingrédient et voyons l&#8217;impact sur notre code.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Ajouter un nouvel ingrédient au travers de la classe <code>Sucre</code> qui hérite de la classe <code>Ingredient</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Eau</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+  <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Malt</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+  <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Houblon</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+  <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Levure</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span>
+  <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Sucre</span> <span class="kd">extends</span> <span class="nc">Ingredient</span> <span class="o">{}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que la méthode <code>estFermentescible</code> est désormais en erreur :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Error : 'switch' expression does not cover all possible input values</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>En effet, l&#8217;expression <code>switch</code> ne couvre plus tous les cas possibles.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Le fait d&#8217;avoir une erreur dès la compilation plutôt qu&#8217;au runtime nous permet de détecter et traiter en amont les impacts sur notre application plutôt que de les découvrir potentiellement tardivement.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Ajouter le cas manquant dans le bloc <code>switch</code>, pour lequel il faut renvoyer <code>true</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">estFermentescible</span><span class="o">(</span><span class="nc">Ingredient</span> <span class="n">ingredient</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nf">switch</span> <span class="o">(</span><span class="n">ingredient</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Eau</span> <span class="n">eau</span> <span class="o">-&gt;</span> <span class="kc">false</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Malt</span> <span class="n">malt</span> <span class="o">-&gt;</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Houblon</span> <span class="n">houblon</span> <span class="o">-&gt;</span> <span class="kc">false</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Levure</span> <span class="n">levure</span> <span class="o">-&gt;</span> <span class="kc">false</span><span class="o">;</span>
+      <span class="k">case</span> <span class="nc">Sucre</span> <span class="n">sucre</span> <span class="o">-&gt;</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">};</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que notre code est à nouveau valide : l&#8217;exhaustivité des cas est couverte.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_vérifications_faites_par_la_jvm_au_runtime_optionnel"><a class="anchor" href="#_les_vérifications_faites_par_la_jvm_au_runtime_optionnel"></a>1.4. Les vérifications faites par la JVM au runtime [Optionnel]</h5>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Cette dernière partie présente des concepts avancés et revêt un caractère facultatif.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Nous avons pu voir que le compilateur effectue les vérifications nécessaires, afin de garantir l&#8217;intégrité de la hiérarchie. Que se passe-t-il au runtime si l&#8217;on essaie de créer dynamiquement une instance de <code>Ingredient</code> en ayant recours à un <code>Proxy</code> ?</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>creerProxy()</code> dans la classe <code>MainBrassage`pour ajouter la création d&#8217;un proxy dynamique sur l&#8217;interface `ElementBrassage</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">creerProxy</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">Object</span> <span class="n">proxyInstance</span> <span class="o">=</span> <span class="nc">Proxy</span><span class="o">.</span><span class="na">newProxyInstance</span><span class="o">(</span>
+      <span class="nc">ElementBrassage</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getClassLoader</span><span class="o">(),</span>
+      <span class="k">new</span> <span class="nc">Class</span><span class="o">[]</span> <span class="o">{</span> <span class="nc">ElementBrassage</span><span class="o">.</span><span class="na">class</span> <span class="o">},</span>
+      <span class="o">(</span><span class="n">proxy</span><span class="o">,</span> <span class="n">method</span><span class="o">,</span> <span class="n">params</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="kc">null</span>
+    <span class="o">);</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Le type est "</span> <span class="o">+</span> <span class="n">proxyInstance</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter le programme et constater qu&#8217;une exception de type <code>IllegalArgumentException</code> est levée.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Exception in thread "main" java.lang.IllegalArgumentException: fr.sciam.workshop.javase.sealedclasses.ElementBrassage is a sealed interface</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>La JVM procède donc aux contrôles au runtime, garantissant ainsi l&#8217;intégrité de notre hiérarchie à tout moment.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-26 13:58:54 +0200
+</div>
+</div>
+</body>
+</html>

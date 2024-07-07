@@ -1,0 +1,52 @@
+= Workshop Java SE en 2024
+
+Ce workshop ou "hands on lab" concerne l'utilisation de Java SE en 2024.
+Son but est de vous fournir une introduction pratique aux évolutions de Java.
+
+== Les objectifs
+
+* Connaitre les récentes évolutions syntaxiques, dans les API et dans l'outillage
+* Découvrir les fonctionnalités en preview et les API en incubation
+* Par la pratique dans des labs guidés
+* Afin d’enrichir ses connaissances de la plateforme Java
+
+== Requis
+
+* JDK 22
+* un IDE Java de votre choix (Eclipse, Intellij IDEA, VS Code, NetBeans, …) … ou vi
+
+
+== Le contenu du workshop
+
+Il est composé de 3 grandes parties :
+
+. les évolutions dans la syntaxe
+. les évolutions dans les API
+. l’outillage du JDK
+
+Chaque partie est composée de labs abordant chacun une fonctionnalité particulière.
+
+== Le déroulement du workshop
+
+Ouvrir le fichier .\labs\index.hml dans un navigateur
+ou exécuter le script lirelabs.bat
+
+Chaque lab est autonome, liberté de choix des labs à réaliser :   
+
+* soit dans l’ordre fourni dans le workshop
+* soit dans l’ordre de votre choix en fonction de vos préférences ou connaissances
+
+Parfois un lab utilise une fonctionnalité détaillée dans un autre lab : dans ce cas, un lien vers ce lab est fourni.
+
+== License
+
+©2024 - Jean-Michel Doudoux & Clément de Tastes
+
+License Creative Commons 4.0 +
+CC BY-NC-ND 4.0 Deed +
+Attribution-NonCommercial-NoDerivs 4.0 International 
+
+https://creativecommons.org/licenses/by-nc-nd/4.0/deed.en
+
+[#by-cc-nd,link=https://creativecommons.org/licenses/by-nc-nd/4.0/deed.en]
+image::https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-nd.png[CC BY-NC-ND 4.0 Deed | Attribution,150]

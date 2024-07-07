@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : les String Templates</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="_lab_les_string_templates" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-string-templates.html">Lab : les String Templates</a></span></p><ul class="sectlevel3">
+<li><a href="lab-string-templates.html#_lab_les_string_templates"><span class="toc-current">1. Lab : les String Templates</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="_lab_les_string_templates"><a class="anchor" href="#_lab_les_string_templates"></a>1. Lab : les String Templates</h4>
+<div class="paragraph">
+<p>Il est courant de devoir composer des chaînes de caractères à partir d&#8217;une combinaison de textes littéraux et de valeurs ou d&#8217;expressions.</p>
+</div>
+<div class="paragraph">
+<p>Pour cela, diverses possibilités s&#8217;offrent aux développeurs : concaténation avec l&#8217;opérateur <code>+</code>, méthode <code>String::format</code> ou <code>String::formatted</code>, <code>MessageFormat</code>, <code>StringBuilder</code>, &#8230;&#8203; qui présentent certaines lourdeurs en termes de lisibilité et verbosité.</p>
+</div>
+<div class="paragraph">
+<p>Le but des String Templates est d&#8217;enrichir le langage avec le concept d&#8217;interpolation, déjà présent dans d&#8217;autres langages, en complément des chaînes de caractères et blocs de texte.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+La fonctionnalité étant en preview et soumise à débats, son contenu va changer de manière importante dans la prochaine preview. Il est déjà planifié que la fonctionnalité ne soit pas disponible en preview en Java 23.
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Première preview en Java 21 <a href="https://openjdk.org/jeps/430">JEP 430</a>. Second preview en Java 22</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/459">459: String Templates (Second Preview)</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+{preview}
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Les String Templates combinent un texte littéral avec des expressions intégrées et un processeur de templates pour construire des chaînes de caractères dynamiquement avec la clarté de l&#8217;interpolation et un résultat plus sûr.</p>
+</div>
+<div class="paragraph">
+<p>Pour cela, un nouveau type d&#8217;expression est introduit dans le langage : les templates expressions pour effectuer une interpolation de chaîne pour créer une chaîne ou un objet.</p>
+</div>
+<div class="paragraph">
+<p>La syntaxe est la suivante :</p>
+</div>
+<div class="listingblock">
+<div class="title">Exemple de String Template</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">version</span> <span class="o">=</span> <span class="s">"22"</span><span class="o">;</span>
+<span class="nc">String</span> <span class="n">message</span> <span class="o">=</span> <span class="no">STR</span><span class="o">.</span><span class="s">"Java version \{version}"</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Une template expression est composée de trois éléments :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>un processeur de templates (<code>STR</code> dans l&#8217;exemple ci-dessus),</p>
+</li>
+<li>
+<p>suivi d&#8217;un caractère point <code>.</code>,</p>
+</li>
+<li>
+<p>puis d&#8217;un template comme <code>"Java version \{version}"</code> qui contient une ou plusieurs expressions intégrées comme <code>\{version}</code>.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Une chaîne de caractères littérale ne peut pas contenir une expression de la forme  <code>\{xxx}</code> sinon une erreur est émise par le compilateur, car dans ce cas la valeur littérale est considérée comme un template qui doit donc être obligatoirement préfixé par un processeur de templates pour être valide.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>jshell&gt; String message = "Bonjour \{prenom}";
+|  Error:
+|  processor missing from string template expression
+|  String message = "Bonjour \{prenom}";
+|</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_le_processeur_de_templates_stringtemplate_str"><a class="anchor" href="#_le_processeur_de_templates_stringtemplate_str"></a>1.1. Le processeur de templates <code>StringTemplate.STR</code></h5>
+<div class="paragraph">
+<p>Le processeur de templates <code>java.lang.StringTemplate.STR</code> effectue une interpolation pour créer une chaîne de caractères.
+<code>STR</code> est un champ <code>static</code> implicitement et automatiquement importé, comme les types du package <code>java.lang</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la classe <code>fr.sciam.workshop.javase.stringtemplates.MainStringTemplates</code>, compléter la méthode <code>manipulerStr()</code> pour afficher le prénom et le nom en utilisant un String Template avec le processeur <code>STR</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">manipulerStr</span><span class="o">(</span><span class="nc">String</span> <span class="n">prenom</span><span class="o">,</span> <span class="nc">String</span> <span class="n">nom</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">message</span> <span class="o">=</span> <span class="no">STR</span><span class="o">.</span><span class="s">"Prénom : \{prenom}, Nom : \{nom}"</span><span class="o">;</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainStringTemplates</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Affichage de l'identité :
+Prénom : Luke, Nom : Skywalker</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est possible de ne pas se limiter à l&#8217;utilisation de variables dans le String Template : on peut utiliser des expressions comme le résultat d&#8217;un calcul arithmétique ou de l&#8217;invocation d&#8217;une méthode.</p>
+</div>
+<div class="listingblock">
+<div class="title">Exemple</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>
+<span class="nc">String</span> <span class="n">message</span> <span class="o">=</span> <span class="no">STR</span><span class="o">.</span><span class="s">"x : \{x}, y : \{y}, somme : \{x + y}"</span><span class="o">;</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">message</span><span class="o">);</span></code></pre>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>manipulerStr()</code> pour afficher le nom en majuscule dans le Template, grâce à la méthode <code>String::toUpperCase()</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">manipulerStr</span><span class="o">(</span><span class="nc">String</span> <span class="n">prenom</span><span class="o">,</span> <span class="nc">String</span> <span class="n">nom</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">message</span> <span class="o">=</span> <span class="no">STR</span><span class="o">.</span><span class="s">"Prénom : \{prenom}, Nom : \{nom.toUpperCase()}"</span><span class="o">;</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainStringTemplates</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Manipuler STR
+Prénom : Luke, Nom : SKYWALKER</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Le String Template peut être défini comme étant multiligne via une syntaxe identique à celles des blocs de texte.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>manipulerStr()</code> pour afficher le prénom et le nom sur deux lignes distinctes en utilisant la syntaxe des blocs de texte.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Le concept de blocs de texte est abordé dans le lab <a href="lab-text-block.html#text-blocks">les Text Blocks</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">manipulerStr</span><span class="o">(</span><span class="nc">String</span> <span class="n">prenom</span><span class="o">,</span> <span class="nc">String</span> <span class="n">nom</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">message</span> <span class="o">=</span> <span class="no">STR</span><span class="o">.</span><span class="s">"""
+      Prénom : \{prenom}
+      Nom : \{nom}"""</span><span class="o">;</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainStringTemplates</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Processeur STR
+Prénom : Luke
+Nom : Skywalker</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_le_processeur_de_templates_formatprocessor_fmt"><a class="anchor" href="#_le_processeur_de_templates_formatprocessor_fmt"></a>1.2. Le processeur de templates <code>FormatProcessor.FMT</code></h5>
+<div class="paragraph">
+<p>Le processeur <code>java.util.FormatProcessor.FMT</code> effectue une interpolation pour créer une chaîne.
+Il interprète les spécificateurs de format à gauche des expressions intégrées.
+Les spécificateurs de format sont ceux définis dans <code>java.util.Formatter</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>manipulerFmt</code> pour afficher un texte suivi de la valeur de <code>Math.PI</code> avec une précision de 5 décimales.
+Utiliser pour cela le format <code>%.5f</code> et l&#8217;import <code>static</code> de <code>java.util.FormatProcessor.FMT</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">FormatProcessor</span><span class="o">.</span><span class="na">FMT</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">manipulerFmt</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">message</span> <span class="o">=</span> <span class="no">FMT</span><span class="o">.</span><span class="s">"Pi vaut environ : %.5f\{Math.PI}"</span><span class="o">;</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainStringTemplates</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Manipuler FMT
+Pi vaut environ : 3.14159</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_le_processeur_de_templates_stringtemplate_raw"><a class="anchor" href="#_le_processeur_de_templates_stringtemplate_raw"></a>1.3. Le processeur de templates <code>StringTemplate.RAW</code></h5>
+<div class="paragraph">
+<p>Le processeur <code>java.lang.StringTemplate.RAW</code> produit un objet de type <code>StringTemplate</code>.
+Cette instance peut être passée comme paramètre d&#8217;un processeur de templates via la méthode <code>StringTemplate.Processor::process</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>manipulerRaw()</code> pour obtenir une instance de <code>StringTemplate</code> à partir du template <code>"Star Wars est sorti au cinema en \{annee}."</code> et du processeur <code>RAW</code> et l&#8217;import <code>static</code> de <code>java.lang.StringTemplate.RAW</code>.
+Puis invoquer la méthode <code>process()</code> de <code>STR</code> avec cette instance.</p>
+</div>
+<div class="paragraph">
+<p>Enfin, afficher dans la console l&#8217;instance de <code>StringTemplate</code> et la chaîne de caractères obtenues.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">StringTemplate</span><span class="o">.</span><span class="na">RAW</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">manipulerRaw</span><span class="o">(</span><span class="kt">int</span> <span class="n">annee</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">StringTemplate</span> <span class="n">template</span> <span class="o">=</span> <span class="no">RAW</span><span class="o">.</span><span class="s">"Star Wars est sorti au cinema en \{annee}."</span><span class="o">;</span>
+    <span class="nc">String</span> <span class="n">message</span> <span class="o">=</span> <span class="no">STR</span><span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="n">template</span><span class="o">);</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">template</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainStringTemplates</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Manipuler RAW
+StringTemplate{ fragments = [ "Star Wars est sorti au cinema en ", "." ], values = [1977] }
+Star Wars est sorti au cinema en 1977.</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_processeurs_personnalisés"><a class="anchor" href="#_les_processeurs_personnalisés"></a>1.4. Les processeurs personnalisés</h5>
+<div class="paragraph">
+<p>Il est possible de définir des processeurs de templates personnalisés.
+Pour cela, il faut obtenir une instance de l&#8217;interface fonctionnelle <code>StringTemplate.Processor</code> qui implémente l&#8217;unique méthode <code>process()</code>.
+L&#8217;utilisation de la fabrique <code>StringTemplate.Processor::of</code> permet d&#8217;en obtenir une instance.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>creerProcesseurPersonnalise()</code>, afin de créer et renvoyer un processeur de templates personnalisé qui réalise les traitements suivants :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Vérifie qu&#8217;il n&#8217;y a qu&#8217;une seule valeur fournie de type entier (valeurs obtenues via <code>StringTemplate::values</code>)</p>
+</li>
+<li>
+<p>Vérifie que la valeur est strictement positive</p>
+</li>
+<li>
+<p>Effectue l&#8217;interpolation via <code>StringTemplate::interpolate</code></p>
+</li>
+<li>
+<p>Encode le résultat en base 64 via <code>Base64.getEncoder().encode()</code></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Processor</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[],</span> <span class="nc">RuntimeException</span><span class="o">&gt;</span> <span class="nf">creerProcesseurPersonnalise</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nc">StringTemplate</span><span class="o">.</span><span class="na">Processor</span><span class="o">.</span><span class="na">of</span><span class="o">((</span><span class="nc">StringTemplate</span> <span class="n">st</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+
+      <span class="c1">// vérification des paramètres</span>
+      <span class="nc">Object</span> <span class="n">valeur</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="na">values</span><span class="o">().</span><span class="na">getFirst</span><span class="o">();</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">valeur</span> <span class="k">instanceof</span> <span class="nc">Integer</span> <span class="n">entier</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">entier</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+          <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="no">STR</span><span class="o">.</span><span class="s">"Nombre de langues négatif : \{entier}"</span><span class="o">);</span>
+        <span class="o">}</span>
+      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Nombre de langues invalide"</span><span class="o">);</span>
+      <span class="o">}</span>
+
+      <span class="c1">// interpolation</span>
+      <span class="nc">String</span> <span class="n">message</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="na">interpolate</span><span class="o">();</span>
+
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="no">STR</span><span class="o">.</span><span class="s">"STR : \{message}"</span><span class="o">);</span>
+
+      <span class="c1">// Transformer en base 64</span>
+      <span class="k">return</span> <span class="nc">Base64</span><span class="o">.</span><span class="na">getEncoder</span><span class="o">().</span><span class="na">encode</span><span class="o">(</span><span class="n">message</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+    <span class="o">});</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Puis compléter la méthode <code>manipulerProcesseurPersonnalise()</code> pour obtenir une instance de ce processeur personnalisé avec <code>creerProcesseurPersonnalise()</code>.</p>
+</div>
+<div class="paragraph">
+<p>Utiliser ce processeur avec l&#8217;expression template <code>"C-3PO parle \{languesC3PO} de formes de communication"</code>. Afficher le résultat avec la méthode <code>afficherB64()</code>. Faire de même avec l&#8217;expression template <code>"Jabba le Hutt parle \{languesJabba} langues"</code> en gérant l&#8217;exception.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">manipulerProcesseurPersonnalise</span><span class="o">(</span><span class="kt">int</span> <span class="n">languesC3PO</span><span class="o">,</span> <span class="kt">int</span> <span class="n">languesJabba</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="no">L64</span> <span class="o">=</span> <span class="n">creerProcesseurPersonnalise</span><span class="o">();</span>
+
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">octets</span> <span class="o">=</span> <span class="no">L64</span><span class="o">.</span><span class="s">"C-3PO parle \{languesC3PO} de formes de communication"</span><span class="o">;</span>
+    <span class="n">afficherB64</span><span class="o">(</span><span class="n">octets</span><span class="o">);</span>
+
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="n">octets</span> <span class="o">=</span> <span class="no">L64</span><span class="o">.</span><span class="s">"Jabba le Hutt parle \{languesJabba} langues"</span><span class="o">;</span>
+      <span class="n">afficherB64</span><span class="o">(</span><span class="n">octets</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainStringTemplates</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Processeur personnalisé
+STR : C-3PO parle 6000000 de formes de communication
+51 79 30 7a 55 45 38 67 63 47 46 79 62 47 55 67 4e 6a 41 77 4d 44 41 77 4d 43 42 6b 5a 53 42 6d 62 33 4a 74 5a 58 4d 67 5a 47 55 67 59 32 39 74 62 58 56 75 61 57 4e 68 64 47 6c 76 62 67 3d 3d
+
+java.lang.IllegalArgumentException: Nombre de langues négatif : -2
+	at fr.sciam.workshop.javase.stringtemplates.MainStringTemplates.lambda$creerProcesseurPersonnalise$0(MainStringTemplates.java:72)
+	at fr.sciam.workshop.javase.stringtemplates.MainStringTemplates.manipulerProcesseurPersonnalise(MainStringTemplates.java:58)
+	at fr.sciam.workshop.javase.stringtemplates.MainStringTemplates.main(MainStringTemplates.java:27)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-07-03 23:54:36 +0200
+</div>
+</div>
+</body>
+</html>

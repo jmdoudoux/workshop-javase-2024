@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : les Switch Expressions</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="_lab_les_switch_expressions" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-switch-expression.html">Lab : les Switch Expressions</a></span></p><ul class="sectlevel3">
+<li><a href="lab-switch-expression.html#_lab_les_switch_expressions"><span class="toc-current">1. Lab : les Switch Expressions</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="_lab_les_switch_expressions"><a class="anchor" href="#_lab_les_switch_expressions"></a>1. Lab : les Switch Expressions</h4>
+<div class="paragraph">
+<p>Le JDK 14 vient enrichir le langage d&#8217;une nouvelle syntaxe pour l&#8217;instruction <code>switch</code> avec l&#8217;opérateur "arrow" <code>-&gt;</code>, le support des multi-valeurs ainsi que la possibilité de l&#8217;utiliser comme expression.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Première preview en Java 12 <a href="https://openjdk.org/jeps/425">JEP 425</a>. Standard en Java 14</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/361">361: Switch Expressions</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect4">
+<h5 id="_la_nouvelle_syntaxe"><a class="anchor" href="#_la_nouvelle_syntaxe"></a>1.1. La nouvelle syntaxe</h5>
+<div class="paragraph">
+<p>L&#8217;utilisation de ce nouvel opérateur "arrow" <code>-&gt;</code> implique :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>qu&#8217;il ne peut y avoir qu&#8217;une seule expression à droite de l&#8217;opérateur :</p>
+<div class="ulist">
+<ul>
+<li>
+<p>une unique instruction se terminant par un <code>;</code></p>
+</li>
+<li>
+<p>ou bien un bloc de code délimité par des accolades <code>{</code> <code>}</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>qu&#8217;il n&#8217;y a pas de "fall-through" avec les <code>case</code> suivants</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+L&#8217;utilisation de la syntaxe historique avec les <code>case</code> / <code>break</code> est toujours valide.
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la classe <code>fr.sciam.workshop.javase.switchexpressions.Poker</code>, modifier la méthode <code>obtenirNomEtSymbole()</code> afin d&#8217;utiliser cette nouvelle syntaxe.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">obtenirNomEtSymbole</span><span class="o">(</span><span class="nc">TypeCarte</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+
+  <span class="nc">String</span> <span class="n">nom</span><span class="o">;</span>
+
+  <span class="k">switch</span> <span class="o">(</span><span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="no">TREFLE</span> <span class="o">-&gt;</span> <span class="n">nom</span> <span class="o">=</span> <span class="s">"Trèfle ♣"</span><span class="o">;</span>
+    <span class="k">case</span> <span class="no">CARREAU</span> <span class="o">-&gt;</span> <span class="n">nom</span> <span class="o">=</span> <span class="s">"Carreau ♦"</span><span class="o">;</span>
+    <span class="k">case</span> <span class="no">COEUR</span> <span class="o">-&gt;</span> <span class="n">nom</span> <span class="o">=</span> <span class="s">"Cœur ♥"</span><span class="o">;</span>
+    <span class="k">case</span> <span class="no">PIQUE</span> <span class="o">-&gt;</span> <span class="n">nom</span> <span class="o">=</span> <span class="s">"Pique ♠"</span><span class="o">;</span>
+    <span class="k">default</span> <span class="o">-&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">IllegalArgumentException</span><span class="o">(</span><span class="s">"Type '"</span> <span class="o">+</span> <span class="n">type</span> <span class="o">+</span> <span class="s">"' inconnu"</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="k">return</span> <span class="n">nom</span><span class="o">;</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vérifier que le comportement de la méthode est toujours valide en exécutant le test unitaire <code>fr.sciam.workshop.javase.switchexpressions.PokerTest</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lutilisation_de_switch_comme_expression"><a class="anchor" href="#_lutilisation_de_switch_comme_expression"></a>1.2. L&#8217;utilisation de <code>switch</code> comme expression</h5>
+<div class="paragraph">
+<p>La nouvelle syntaxe est plus concise.
+Il est aussi possible d&#8217;utiliser l&#8217;instruction <code>switch</code> comme une expression et non plus seulement comme une structure de contrôle.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier à nouveau la méthode <code>obtenirNomEtSymbole()</code> de la classe <code>Poker</code> afin d&#8217;utiliser l&#8217;instruction <code>switch</code> comme une expression.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">obtenirNomEtSymbole</span><span class="o">(</span><span class="nc">TypeCarte</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+
+  <span class="k">return</span> <span class="nf">switch</span> <span class="o">(</span><span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="no">TREFLE</span> <span class="o">-&gt;</span> <span class="s">"Trèfle ♣"</span><span class="o">;</span>
+    <span class="k">case</span> <span class="no">CARREAU</span> <span class="o">-&gt;</span> <span class="s">"Carreau ♦"</span><span class="o">;</span>
+    <span class="k">case</span> <span class="no">COEUR</span> <span class="o">-&gt;</span> <span class="s">"Cœur ♥"</span><span class="o">;</span>
+    <span class="k">case</span> <span class="no">PIQUE</span> <span class="o">-&gt;</span> <span class="s">"Pique ♠"</span><span class="o">;</span>
+  <span class="o">};</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter à nouveau le test unitaire <code>PokerTest</code> pour vérifier le bon fonctionnement de ce code.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Noter la présence indispensable du caractère <code>;</code> qui vient clôturer l&#8217;expression.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Noter également que l&#8217;on a pu s&#8217;abstraire du <code>default</code>, l&#8217;intégralité des valeurs possibles de notre énumération ayant été couverte. Ceci est possible car il s&#8217;agit d&#8217;un énumération. Dans les autres cas, il faudra généralement définir le cas par défaut, le <code>switch</code> devant être exhaustif pour éviter une erreur de compilation.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_gestion_des_valeurs_multiples"><a class="anchor" href="#_la_gestion_des_valeurs_multiples"></a>1.3. La gestion des valeurs multiples</h5>
+<div class="paragraph">
+<p>La syntaxe propose un support des valeurs multiples dans les deux syntaxes (historique et nouvelle) : il est désormais possible de lister plusieurs valeurs dans un <code>case</code> séparées par des virgules <code>,</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>obtenirCouleur()</code> de la classe <code>Poker</code> afin d&#8217;utiliser une expression et sa syntaxe multi-valeurs.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">obtenirCouleur</span><span class="o">(</span><span class="nc">TypeCarte</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+
+  <span class="k">return</span> <span class="nf">switch</span> <span class="o">(</span><span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="no">TREFLE</span><span class="o">,</span> <span class="no">PIQUE</span> <span class="o">-&gt;</span> <span class="s">"noir"</span><span class="o">;</span>
+    <span class="k">case</span> <span class="no">COEUR</span><span class="o">,</span> <span class="no">CARREAU</span> <span class="o">-&gt;</span> <span class="s">"rouge"</span><span class="o">;</span>
+  <span class="o">};</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter à nouveau le test unitaire <code>PokerTest</code> pour vérifier le bon fonctionnement de ce code.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lutilisation_de_yield"><a class="anchor" href="#_lutilisation_de_yield"></a>1.4. L&#8217;utilisation de <code>yield</code></h5>
+<div class="paragraph">
+<p>Pour une expression <code>switch</code> où l&#8217;on souhaite renvoyer une valeur dans un bloc de code, il faut utiliser le nouveau mot clé contextuel <code>yield</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>obtenirCouleur()</code> de la classe <code>Poker</code> en utilisant des blocs de code dans chaque <code>case</code> puis <code>yield</code> pour retourner le résultat.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">obtenirCouleur</span><span class="o">(</span><span class="nc">TypeCarte</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+
+  <span class="k">return</span> <span class="nf">switch</span> <span class="o">(</span><span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="no">TREFLE</span><span class="o">,</span> <span class="no">PIQUE</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"♣ ou ♠"</span><span class="o">);</span>
+      <span class="n">yield</span> <span class="s">"noir"</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">case</span> <span class="no">COEUR</span><span class="o">,</span> <span class="no">CARREAU</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"♥ ou ♦"</span><span class="o">);</span>
+      <span class="n">yield</span> <span class="s">"rouge"</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">};</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter à nouveau le test unitaire <code>PokerTest</code> pour vérifier le bon fonctionnement de ce code. Les valeurs retournées sont toujours celles attendues et l&#8217;on a affiché quelques messages :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>♣ ou ♠
+♥ ou ♦
+♥ ou ♦
+♣ ou ♠</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_le_support_de_la_syntaxe_historique"><a class="anchor" href="#_le_support_de_la_syntaxe_historique"></a>1.5. Le support de la syntaxe historique</h5>
+<div class="paragraph">
+<p>L&#8217;instruction <code>yield</code> dans un <code>switch</code> comme expression et les valeurs multiples peuvent aussi être utilisées dans un <code>switch</code> qui utilise la syntaxe historique.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier à nouveau la méthode <code>obtenirCouleur()</code> de la classe <code>Poker</code> en utilisant la syntaxe historique <code>case</code> combinée avec l&#8217;utilisation de <code>yield</code> et <code>,</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">obtenirCouleur</span><span class="o">(</span><span class="nc">TypeCarte</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+
+  <span class="k">return</span> <span class="nf">switch</span> <span class="o">(</span><span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="no">TREFLE</span><span class="o">,</span> <span class="nl">PIQUE:</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"♣ ou ♠"</span><span class="o">);</span>
+      <span class="n">yield</span> <span class="s">"noir"</span><span class="o">;</span>
+
+    <span class="k">case</span> <span class="no">COEUR</span><span class="o">,</span> <span class="nl">CARREAU:</span>
+      <span class="n">yield</span> <span class="s">"rouge"</span><span class="o">;</span>
+  <span class="o">};</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter à nouveau le test unitaire <code>PokerTest</code> pour vérifier le bon fonctionnement de ce code.</p>
+</div>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Il n&#8217;est cependant pas possible de combiner la syntaxe historique qui utilise les <code>:</code> avec la nouvelle qui utilise <code>-&gt;</code>. L&#8217;instruction <code>switch</code> doit utiliser l&#8217;une ou l&#8217;autre des syntaxes.
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>traduireType()</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">traduireType</span><span class="o">(</span><span class="nc">TypeCarte</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="nf">switch</span> <span class="o">(</span><span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nl">TREFLE:</span> <span class="n">yield</span> <span class="s">"Club"</span><span class="o">;</span>
+    <span class="k">case</span> <span class="no">CARREAU</span> <span class="o">-&gt;</span> <span class="s">"Diamond"</span><span class="o">;</span>
+    <span class="k">case</span> <span class="no">COEUR</span> <span class="o">-&gt;</span> <span class="s">"Heart"</span><span class="o">;</span>
+    <span class="k">case</span> <span class="no">PIQUE</span> <span class="o">-&gt;</span> <span class="s">"Spade"</span><span class="o">;</span>
+  <span class="o">};</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que le compilateur lève l&#8217;erreur :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>|  Error:
+|  different case kinds used in the switch
+|                  case CARREAU -&gt; "diamond";
+|                  ^------------------------^</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 17:53:25 +0200
+</div>
+</div>
+</body>
+</html>

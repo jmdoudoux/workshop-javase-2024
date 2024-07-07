@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<meta name="author" content="Par Clément de Tastes et J.M. Doudoux">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<title>Workshop Java SE en 2024</title>
+<link rel="stylesheet" href="./styles/styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="script/clipboard.min.js"></script>
+<style>
+    .listingblock:hover .clipboard {
+        display: block;
+    }
+
+    .clipboard {
+        display: none;
+        border: 0;
+        font-size: .75em;
+        text-transform: uppercase;
+        font-weight: 500;
+        padding: 6px;
+        color: #999;
+        position: absolute;
+        top: .425rem;
+        right: .5rem;
+        background: transparent;
+    }
+
+    code + .clipboard {
+        top: 2rem !important;
+    }
+
+    .clipboard:hover, .clipboard:focus, .clipboard:active {
+        outline: 0;
+        background-color: #eee9e6;
+    }
+</style>
+<script >
+    window.onload = function() {
+        // var pre = document.getElementsByTagName('pre');
+        var pre = document.querySelectorAll("pre.rouge");
+        for (var i = 0; i < pre.length; i++) {
+            var b = document.createElement('button');
+            b.className = 'clipboard';
+            b.textContent = 'Copier';
+            if (pre[i].childNodes.length === 1 && pre[i].childNodes[0].nodeType === 3) {
+                var div = document.createElement('div');
+                div.textContent = pre[i].textContent;
+                pre[i].textContent = '';
+                pre[i].appendChild(div);
+            }
+            pre[i].appendChild(b);
+        }
+        var clipboard = new ClipboardJS('.clipboard', {
+           target: function(b) {
+                var p = b.parentNode;
+                if (p.className.includes("rouge highlight")) {
+                    var elems = p.getElementsByTagName("code");
+                    if (elems.length > 0)
+                        return elems[0];
+                }
+                return p.childNodes[0];
+            }
+        });
+        clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.textContent = 'Copié';
+            setTimeout(function() {
+                e.trigger.textContent = 'Copier';
+            }, 2000);
+        });
+        clipboard.on('error', function(e) {
+            console.error('Action:', e.action, e);
+            console.error('Trigger:', e.trigger);
+        });
+    };
+</script>
+</head>
+<body id="introduction" class="book toc2 toc-left">
+<div id="header">
+<h1>Workshop Java SE en 2024</h1>
+<div class="details">
+<span id="author" class="author">Par Clément de Tastes et J.M. Doudoux</span><br>
+<span id="revnumber">version 1.0.0,</span>
+<span id="revdate">2024-07-06</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table des matières</div>
+<p><span class="toc-root"><a href="index.html">Workshop Java SE en 2024</a></span></p><ul class="sectlevel1">
+<li><a href="introduction.html"><span class="toc-current">1. Introduction</span></a>
+<ul class="sectlevel2">
+<li><a href="introduction.html#_à_propos_de_ce_workshop">1.1. À propos de ce workshop</a>
+</li>
+<li><a href="introduction.html#_les_objectifs">1.2. Les objectifs</a>
+</li>
+<li><a href="introduction.html#_le_public_cible">1.3. Le public cible</a>
+</li>
+<li><a href="introduction.html#_la_signalétique">1.4. La signalétique</a>
+</li>
+<li><a href="introduction.html#_la_licence_dutilisation">1.5. La licence d&#8217;utilisation</a>
+</li>
+</ul>
+</li>
+<li><a href="requis.html">2. Les requis</a>
+</li>
+<li><a href="deroulement.html">3. Le déroulement du workshop</a>
+</li>
+<li><a href="partie1.html">4. Partie 1 : les évolutions dans la syntaxe</a>
+</li>
+<li><a href="partie2.html">5. Partie 2 : les évolutions dans les API</a>
+</li>
+<li><a href="partie3.html">6. Partie 3 : l&#8217;outillage du JDK</a>
+</li>
+<li><a href="conclusion.html">7. Conclusion</a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="introduction"><a class="anchor" href="#introduction"></a>1. Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Bienvenue dans ce workshop intitulé &laquo; Java SE en 2024 &raquo;.</p>
+</div>
+<div class="sect2">
+<h3 id="_à_propos_de_ce_workshop"><a class="anchor" href="#_à_propos_de_ce_workshop"></a>1.1. À propos de ce workshop</h3>
+<div class="paragraph">
+<p>Ce workshop ou "hands on lab" concerne l&#8217;utilisation de Java SE en 2024.</p>
+</div>
+<div class="paragraph">
+<p>Son but est de vous fournir une introduction pratique aux évolutions de Java.</p>
+</div>
+<div class="paragraph">
+<p>Les auteurs de ce workshop sont :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Clément de Tastes</strong> : Passionné par le développement logiciel depuis l&#8217;obtention de sa première calculatrice programmable, Clément se forge une solide expérience de tech lead et d&#8217;architecte dans la conception de systèmes de combats embarqués. Adepte du clean code, de "developer joy" et d&#8217;architectures bien pensées, il aime intervenir aussi bien sur les sujets de conception que de dev front ou back.</p>
+</li>
+<li>
+<p><strong>J.M. Doudoux</strong> : Passionné par le développement de logiciels depuis ses débuts, adolescent avec un Commodore 64, et par la veille technologique, Jean-Michel possède une longue expérience, en SSII/ESN et personnelle, dans l&#8217;écriture d&#8217;applications avec différents langages.
+Il utilise Java depuis sa version 1.0 et aime partager sa passion pour cette plateforme et son écosystème notamment en se consacrant, depuis plus d&#8217;une vingtaine d&#8217;années, à la rédaction d&#8217;un tutoriel intitulé "Développons en Java", diffusé sous licence GNU FDL. Ce travail et son implication dans la communauté lui a permis d&#8217;être nommé Java Champion.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_les_objectifs"><a class="anchor" href="#_les_objectifs"></a>1.2. Les objectifs</h3>
+<div class="paragraph">
+<p>Les objectifs de ce workshop sont :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Connaitre les récentes évolutions syntaxiques, dans les API et dans l&#8217;outillage</p>
+</li>
+<li>
+<p>Découvrir les fonctionnalités en preview et les API en incubation</p>
+</li>
+<li>
+<p>Par la pratique dans des labs guidés</p>
+</li>
+<li>
+<p>Afin d&#8217;enrichir ses connaissances de la plateforme Java</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_le_public_cible"><a class="anchor" href="#_le_public_cible"></a>1.3. Le public cible</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Développeurs</p>
+</li>
+<li>
+<p>Tech lead</p>
+</li>
+<li>
+<p>Architectes</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Une connaissance en programmation avec Java 11 est requise.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_la_signalétique"><a class="anchor" href="#_la_signalétique"></a>1.4. La signalétique</h3>
+<div class="paragraph">
+<p>Ce workshop utilise la signalétique suivante :</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+une note
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+un tips
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+un avertissement
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+une note importante
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+un danger
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_la_licence_dutilisation"><a class="anchor" href="#_la_licence_dutilisation"></a>1.5. La licence d&#8217;utilisation</h3>
+<div class="paragraph">
+<p>Ce workshop est diffusé sous la Licence Creative Commons BY-NC-ND 4.0 DEED .</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<a class="image" href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.fr"><img src="images/by-nc-nd.png" alt="by nc nd"></a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p>↑ : <a href="index.html">Workshop Java SE en 2024</a> | : <a href="requis.html">Les requis</a> →</p>
+</div>
+</div>
+<div id="footer">
+    <p class="footer-text" >© 2024 Clément de Tastes et J.M. Doudoux | Licence Creative Commons BY-NC-ND 4.0 DEED <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.fr" target="_blank"><img src="images/by-nc-nd.png" width="100"></a> </p>
+</div>
+</body>
+</html>

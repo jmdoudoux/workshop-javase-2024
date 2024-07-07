@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : les Text Blocks</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="text-blocks" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-text-block.html">Lab : les Text Blocks</a></span></p><ul class="sectlevel3">
+<li><a href="lab-text-block.html#text-blocks"><span class="toc-current">1. Lab : les Text Blocks</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="text-blocks"><a class="anchor" href="#text-blocks"></a>1. Lab : les Text Blocks</h4>
+<div class="paragraph">
+<p>Java 15 enrichit le langage en y apportant le concept de Text Block, permettant la représentation de chaînes de caractères multilignes. Définir de telles chaînes de caractères impliquait jusque-là des manipulations assez verbeuses rendant la lecture et la maintenance fastidieuse.<br>
+Cette nouvelle syntaxe apporte une nette simplification dans la définition de telles chaînes de caractères, ainsi que quelques fonctionnalités que nous allons détailler.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Première preview en Java 13 <a href="https://openjdk.org/jeps/355">JEP 355</a>. Standard en Java 15</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/378">378: Text Blocks</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Pour définir un Text Block, la syntaxe est la suivante :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>il débute par le délimiteur composé de :</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>"""</code> (triple guillemets doubles successifs)</p>
+</li>
+<li>
+<p>suivi de zéro ou plus caractères d&#8217;espacement</p>
+</li>
+<li>
+<p>et enfin obligatoirement d&#8217;un caractère de fin de ligne (comme <code>\r</code>, <code>\n</code>, <code>\r\n</code>, &#8230;&#8203;)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>il se termine par le délimiteur :</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>"""</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>afficherMessageAccueil()</code> de la classe <code>fr.sciam.workshop.javase.textblocks.TextBlocks</code> en définissant une chaîne de caractères multiligne avec un Text Block et l&#8217;afficher :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">afficherMessageAccueil</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"""
+        Bienvenue
+        dans
+        cet atelier"""</span><span class="o">;</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>TextBlocks</code> et vérifier que l&#8217;on obtient dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Afficher message d'accueil
+Bienvenue
+dans
+cet atelier</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+On notera que l&#8217;indentation a disparu. Cela est normal et ce point sera abordé un peu plus tard.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Toujours dans la classe <code>TextBlocks</code>, modifier la méthode <code>fournirChaineVide()</code> en transformant la chaîne de caractères littérale en Text Block. Elle doit toujours renvoyer une chaîne vide.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">fournirChaineVide</span><span class="o">()</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="s">"""
+"""</span><span class="o">;</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter le test unitaire <code>TextBlocksTest::fournirChaineVide_devraitRenvoyerChaineVide</code> pour vérifier qu&#8217;il est toujours en succès.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Évidemment, utiliser un Text Block pour cela n&#8217;a pas d&#8217;intérêt et n&#8217;est pas recommandé, mais cela illustre bien le fait que le délimiteur de début d&#8217;un Text Block contient un caractère de fin de ligne, après les 3 guillemets doubles (et les potentiels espaces).
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Recopier ces deux lignes dans la méthode <code>main()</code> de la classe <code>TextBlocks</code> ou dans un terminal <code>jshell</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">s1</span> <span class="o">=</span> <span class="s">""" """</span><span class="o">;</span>
+<span class="nc">String</span> <span class="n">s2</span> <span class="o">=</span> <span class="s">"""
+"</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater qu&#8217;aucun des deux Text Blocks n&#8217;est valide syntaxiquement.<br>
+Le premier ne comporte pas de caractère de fin de ligne après les 3 guillemets doubles ouvrants.<br></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">jshell&gt; String s1 = """ """;
+|  Error:
+|  illegal text block open delimiter sequence, missing line terminator
+|  String str = """ """;
+|                   ^</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Le second ne comporte pas de délimiteur de fin.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">jshell&gt; String s2 = """
+   ...&gt; ";
+   ...&gt; // On est encore en train de saisir le contenu du Text Block</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La syntaxe des Text Blocks permet également de ne pas avoir à échapper les guillemets doubles présents, comme on aurait dû traditionnellement le faire avec une chaîne de caractères standard.</p>
+</div>
+<div class="paragraph">
+<p>Supprimer ces deux lignes afin que le code compile à nouveau.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la classe <code>TextBlocks</code>, réécrire la méthode <code>fournirRequeteSQL()</code> en utilisant un Text Block en lieu et place de cette concaténation.</p>
+</div>
+<div class="listingblock">
+<div class="title">Code initial</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">requete</span> <span class="o">=</span> <span class="s">"SELECT *\n"</span> <span class="o">+</span>
+                 <span class="s">"FROM \"utilisateurs\"\n"</span> <span class="o">+</span>
+                 <span class="s">"WHERE \"nom\" = 'Duke';"</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Code modifié avec utilisation d&#8217;un Text Block</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">requete</span> <span class="o">=</span> <span class="s">"""
+         SELECT *
+         FROM "</span><span class="n">utilisateurs</span><span class="s">"
+         WHERE "</span><span class="n">nom</span><span class="s">" = 'Duke';"""</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter le test unitaire <code>TextBlocksTest::fournirRequeteSQL_devraitRenvoyerRequeteCorrecte</code> pour vérifier que le résultat est équivalent.</p>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_traitements_au_moment_de_la_compilation"><a class="anchor" href="#_les_traitements_au_moment_de_la_compilation"></a>1.1. Les traitements au moment de la compilation</h5>
+<div class="paragraph">
+<p>Un Text Block est une expression constante qui contrairement aux <code>String</code>, va subir plusieurs traitements par le compilateur :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Les caractères de fin de ligne sont transformés en <code>\n</code> (<code>\u000a</code>) afin d&#8217;assurer que le contenu du Text Block soit le même entre les plateformes (Windows, Linux, &#8230;&#8203;)</p>
+</li>
+<li>
+<p>Les espacements dits accessoires sont retirés. Ceci permet de présenter le Text Block de manière cohérente en termes d&#8217;indentation de code et le rend plus naturellement compatible de ce que l&#8217;on aurait écrit via des concaténations de caractères.<br>
+Cela concerne les caractères d&#8217;espacement qui constituent "l&#8217;indentation" minimale du bloc comme il est présenté, "à gauche" du bloc.<br>
+Aussi, les espaces qui sont présents en fin de chaque ligne "à droite" sont supprimés. Ils sont dans l&#8217;écrasante majorité des cas des espaces non-intentionnels. Comme ils sont invisibles, ils pourraient conduire à des comportements imprévisibles, d&#8217;où ce choix de comportement du compilateur.</p>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la classe <code>TextBlocks</code>, réécrire la méthode <code>fournirCodeHTML()</code> en utilisant un Text Block en lieu et place de la concaténation.</p>
+</div>
+<div class="listingblock">
+<div class="title">Code modifié avec utilisation d&#8217;un Text Block</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">html</span> <span class="o">=</span> <span class="s">"""
+        &lt;body&gt;
+            &lt;h2&gt;Login&lt;/h2&gt;
+            &lt;form&gt;
+                &lt;input type="</span><span class="n">text</span><span class="s">" name="</span><span class="n">login</span><span class="s">" required&gt;
+                &lt;input type="</span><span class="n">submit</span><span class="s">" value="</span><span class="nc">Login</span><span class="s">"&gt;
+            &lt;/form&gt;
+        &lt;/body&gt;
+        """</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter le test unitaire <code>TextBlocksTest::fournirCodeHTML_devraitRenvoyerCodeCorrect</code> pour constater que le résultat obtenu est identique.</p>
+</div>
+<div class="paragraph">
+<p>Toujours dans la méthode <code>fournirCodeHTML()</code>, modifier librement l&#8217;indentation globale du bloc et ajouter des espaces en fin de ligne après la balise <code>&lt;body&gt;</code> ou <code>&lt;form&gt;</code> par exemple.</p>
+</div>
+<div class="listingblock">
+<div class="title">Code avec modifications d&#8217;espacements accessoires.</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">html</span> <span class="o">=</span> <span class="s">"""
+                    &lt;body&gt;
+                        &lt;h2&gt;Login&lt;/h2&gt;
+                        &lt;form&gt;
+                            &lt;input type="</span><span class="n">text</span><span class="s">" name="</span><span class="n">login</span><span class="s">" required&gt;
+                            &lt;input type="</span><span class="n">submit</span><span class="s">" value="</span><span class="nc">Login</span><span class="s">"&gt;
+                        &lt;/form&gt;
+                    &lt;/body&gt;
+                    """</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter à nouveau le test unitaire <code>TextBlocksTest::fournirCodeHTML_devraitRenvoyerCodeCorrect</code> pour constater que le résultat n&#8217;a pas été altéré.</p>
+</div>
+<div class="paragraph">
+<p>On constate que les espacements représentés par des "<strong>.</strong>" sont bien retirés par le compilateur.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">html</span> <span class="o">=</span> <span class="s">"""
+..........&lt;body&gt;...
+..........    &lt;h2&gt;Login&lt;/h2&gt;.......
+..........    &lt;form&gt;
+..........        &lt;input type="</span><span class="n">text</span><span class="s">" name="</span><span class="n">login</span><span class="s">" required&gt;...
+..........        &lt;input type="</span><span class="n">submit</span><span class="s">" value="</span><span class="nc">Login</span><span class="s">"&gt;
+..........    &lt;/form&gt;
+..........&lt;/body&gt;
+.........."""</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On fait donc une différence entre les espacements accessoires qui ne servent qu&#8217;à la présentation et à la lisibilité du code, des espacements significatifs qui seront conservés dans la chaîne de caractères finale.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Le compilateur traite les caractères d&#8217;espacement comme ayant des longueurs identiques (une tabulation et un espace auront la même longueur). Donc, vigilance au mélange de différents types d&#8217;espacements. En activant l&#8217;option du compilateur <code>-Xlint:text-blocks</code> un tel cas de figure ressort en warning.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Enfin, les échappements sont interprétés, tels qu&#8217;un <code>\n</code> ajouté par l&#8217;utilisateur.
+Ceci est fait en dernier afin que les étapes précédentes ne viennent modifier ou supprimer de tels éléments.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_séquences_déchappement"><a class="anchor" href="#_les_séquences_déchappement"></a>1.2. Les séquences d&#8217;échappement</h5>
+<div class="paragraph">
+<p>Comme on a pu le voir, les Text Blocks nous ont permis de ne pas avoir recours aux caractères d&#8217;échappements. Ceci est valable pour la majorité des usages, mais il existe quelques cas de figure pour lesquels cela peut être nécessaire.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>\&lt;fin de ligne&gt;</code> : supprime le saut de ligne.
+La ligne courante sera donc concaténée avec la suivante</p>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier le code de la méthode <code>fournirMessage()</code> de la classe <code>TextBlocks</code> en y ajoutant des caractères d&#8217;échappements <code>\</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Code initial</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Bienvenue dans cet atelier"</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Code modifié</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"""
+        Bienvenue \
+        dans cet \
+        atelier"""</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter le test unitaire <code>TextBlocksTest::fournirMessage_devraitRenvoyerUneLigne</code> pour constater que le résultat est identique au précédent.</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>3 guillemets doubles successifs seraient interprétés comme le délimiteur de fin du Text Block, on doit donc échapper au moins un des guillemets (<code>\"""</code> par exemple) pour les interpréter comme caractères.</p>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>fournirExplication()</code> de <code>TextBlock</code> en utilisant un Text Block et la bonne séquence d&#8217;échappement.</p>
+</div>
+<div class="listingblock">
+<div class="title">Code initial</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">explication</span> <span class="o">=</span> <span class="s">"Le délimiteur de fin d'un Text Block est : \"\"\""</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Code modifié</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">explication</span> <span class="o">=</span> <span class="s">"""
+      Le délimiteur de fin d'un Text Block est : ""\""""</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter le test unitaire <code>TextBlocksTest::fournirExplication_devraitRenvoyerExplication</code> pour constater que le résultat est identique au précédent.</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>\s</code> : ajoute un espace, et a pour conséquence de conserver les espaces qui seraient placés avant</p>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>fournirEspaces()</code> de <code>TextBlock</code> en utilisant un Text Block et la bonne séquence d&#8217;échappement.</p>
+</div>
+<div class="listingblock">
+<div class="title">Code initial</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">espaces</span> <span class="o">=</span> <span class="s">"Voici 5 espaces:     \n"</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Code modifié</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">espaces</span> <span class="o">=</span> <span class="s">"""
+      Voici 5 espaces:    \s
+      """</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater que le résultat est identique au précédent en exécutant le test unitaire <code>TextBlocksTest::fournirEspaces_devraitRenvoyer5Espaces</code>.</p>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_nouvelles_méthodes_de_la_classe_string"><a class="anchor" href="#_les_nouvelles_méthodes_de_la_classe_string"></a>1.3. Les nouvelles méthodes de la classe <code>String</code></h5>
+<div class="paragraph">
+<p>3 nouvelles méthodes ont été ajoutées dans la classe <code>String</code>, en rapport avec les Text Blocks.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>String::stripIndent</code> : permet la suppression des espaces accessoires</p>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la méthode <code>main()</code>, utiliser la méthode <code>String::stripIndent</code> sur une chaîne de caractères contenant des espaces accessoires et l&#8217;afficher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="s">"  A\n  B\n  C\n  "</span><span class="o">.</span><span class="na">stripIndent</span><span class="o">();</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter le programme pour constater qu&#8217;il affiche :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>A
+B
+C</pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>String::translateEscapes</code> : convertit les caractères échappés en leurs valeurs respectives</p>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Dans la méthode <code>main()</code>, ajouter le code suivant et l&#8217;exécuter.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kt">boolean</span> <span class="n">egal</span> <span class="o">=</span> <span class="s">"\n \s \r"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"\\n \\s \\r"</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Egal : "</span> <span class="o">+</span> <span class="n">egal</span><span class="o">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vérifier que les chaînes sont bel et bien <strong>différentes</strong> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">Egal : false</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Modifier le code en ajoutant un appel à <code>String::translateEscapes</code> afin de convertir les caractères échappés.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kt">boolean</span> <span class="n">egal</span> <span class="o">=</span> <span class="s">"\n \s \r"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"\\n \\s \\r"</span><span class="o">.</span><span class="na">translateEscapes</span><span class="o">());</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Egal : "</span> <span class="o">+</span> <span class="n">egal</span><span class="o">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vérifier que les chaînes sont désormais <strong>identiques</strong> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">Egal : true</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>String::formatted</code> : identique à la méthode statique <code>String::format</code>, si ce n&#8217;est que c&#8217;est ici une méthode d&#8217;instance.</p>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>fournirRequeteSQLAvecParametre()</code> pour utiliser un Text Block et prendre en compte le paramètre <code>nom</code> avec <code>String::formatted</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">fournirRequeteSQLAvecParametre</span><span class="o">(</span><span class="nc">String</span> <span class="n">nom</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">String</span> <span class="n">requete</span> <span class="o">=</span> <span class="s">"""
+         SELECT *
+         FROM "</span><span class="n">utilisateurs</span><span class="s">"
+         WHERE "</span><span class="n">nom</span><span class="s">" = '%s';"""</span><span class="o">.</span><span class="na">formatted</span><span class="o">(</span><span class="n">nom</span><span class="o">);</span>
+
+  <span class="k">return</span> <span class="n">requete</span><span class="o">;</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vérifier que la méthode fonctionne comme attendu en exécutant le test unitaire <code>TextBlocksTest::fournirRequeteSQLAvecParametre_devraitRenvoyerRequeteFormatee</code></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+On note qu&#8217;un Text Block reste bien bel et bien une chaîne de caractères : <code>WHERE "nom"</code> est une condition sur la colonne "nom", il ne s&#8217;agit pas de l&#8217;argument de la méthode.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_text_blocks_et_la_concaténation"><a class="anchor" href="#_les_text_blocks_et_la_concaténation"></a>1.4. Les Text Blocks et la concaténation</h5>
+<div class="paragraph">
+<p>L&#8217;utilisation de la méthode <code>String::formatted</code> peut tout à fait laisser la place à une "simple" concaténation entre notre Text Block et l&#8217;argument.<br>
+Plus généralement, un Text Block étant transformé par le compilateur en une chaîne de caractères de type String, les règles habituelles s&#8217;appliquent.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier à nouveau la méthode <code>fournirRequeteSQLAvecParametre()</code> en utilisant une concaténation plutôt qu&#8217;un appel à la méthode <code>String::formatted</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">fournirRequeteSQL</span><span class="o">(</span><span class="nc">String</span> <span class="n">nom</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">String</span> <span class="n">requete</span> <span class="o">=</span> <span class="s">"""
+         SELECT *
+         FROM "</span><span class="n">utilisateurs</span><span class="s">"
+         WHERE "</span><span class="n">nom</span><span class="s">" = '"""</span> <span class="o">+</span> <span class="n">nom</span> <span class="o">+</span> <span class="s">"';"</span><span class="o">;</span>
+
+  <span class="k">return</span> <span class="n">requete</span><span class="o">;</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vérifier que la méthode fonctionne toujours comme attendu en exécutant à nouveau le test unitaire <code>TextBlocksTest::fournirRequeteSQLAvecParametre_devraitRenvoyerRequeteFormatee</code></p>
+</div>
+<div class="paragraph">
+<p>On a donc ici concaténé un Text Block, une variable de type <code>String</code> et une chaîne de caractères littérale.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 17:53:25 +0200
+</div>
+</div>
+</body>
+</html>

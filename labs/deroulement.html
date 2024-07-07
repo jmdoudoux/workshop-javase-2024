@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<meta name="author" content="Par Clément de Tastes et J.M. Doudoux">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<title>Workshop Java SE en 2024</title>
+<link rel="stylesheet" href="./styles/styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./styles/rouge-github.css">
+<script src="script/clipboard.min.js"></script>
+<style>
+    .listingblock:hover .clipboard {
+        display: block;
+    }
+
+    .clipboard {
+        display: none;
+        border: 0;
+        font-size: .75em;
+        text-transform: uppercase;
+        font-weight: 500;
+        padding: 6px;
+        color: #999;
+        position: absolute;
+        top: .425rem;
+        right: .5rem;
+        background: transparent;
+    }
+
+    code + .clipboard {
+        top: 2rem !important;
+    }
+
+    .clipboard:hover, .clipboard:focus, .clipboard:active {
+        outline: 0;
+        background-color: #eee9e6;
+    }
+</style>
+<script >
+    window.onload = function() {
+        // var pre = document.getElementsByTagName('pre');
+        var pre = document.querySelectorAll("pre.rouge");
+        for (var i = 0; i < pre.length; i++) {
+            var b = document.createElement('button');
+            b.className = 'clipboard';
+            b.textContent = 'Copier';
+            if (pre[i].childNodes.length === 1 && pre[i].childNodes[0].nodeType === 3) {
+                var div = document.createElement('div');
+                div.textContent = pre[i].textContent;
+                pre[i].textContent = '';
+                pre[i].appendChild(div);
+            }
+            pre[i].appendChild(b);
+        }
+        var clipboard = new ClipboardJS('.clipboard', {
+           target: function(b) {
+                var p = b.parentNode;
+                if (p.className.includes("rouge highlight")) {
+                    var elems = p.getElementsByTagName("code");
+                    if (elems.length > 0)
+                        return elems[0];
+                }
+                return p.childNodes[0];
+            }
+        });
+        clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.textContent = 'Copié';
+            setTimeout(function() {
+                e.trigger.textContent = 'Copier';
+            }, 2000);
+        });
+        clipboard.on('error', function(e) {
+            console.error('Action:', e.action, e);
+            console.error('Trigger:', e.trigger);
+        });
+    };
+</script>
+</head>
+<body id="deroulement" class="book toc2 toc-left">
+<div id="header">
+<h1>Workshop Java SE en 2024</h1>
+<div class="details">
+<span id="author" class="author">Par Clément de Tastes et J.M. Doudoux</span><br>
+<span id="revnumber">version 1.0.0,</span>
+<span id="revdate">2024-07-06</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table des matières</div>
+<p><span class="toc-root"><a href="index.html">Workshop Java SE en 2024</a></span></p><ul class="sectlevel1">
+<li><a href="introduction.html">1. Introduction</a>
+</li>
+<li><a href="requis.html">2. Les requis</a>
+</li>
+<li><a href="deroulement.html"><span class="toc-current">3. Le déroulement du workshop</span></a>
+<ul class="sectlevel2">
+<li><a href="deroulement.html#_les_modalités">3.1. Les modalités</a>
+</li>
+<li><a href="deroulement.html#preview">3.2. Les fonctionnalités en preview</a>
+<ul class="sectlevel3">
+<li><a href="deroulement.html#_avec_le_jdk">3.2.1. Avec le JDK</a>
+</li>
+<li><a href="deroulement.html#_avec_eclipse">3.2.2. Avec Eclipse</a>
+</li>
+<li><a href="deroulement.html#_avec_intellij_idea">3.2.3. Avec IntelliJ Idea</a>
+</li>
+<li><a href="deroulement.html#_avec_maven">3.2.4. Avec Maven</a>
+</li>
+</ul>
+</li>
+<li><a href="deroulement.html#options-jvm">3.3. Configuration des options de la JVM</a>
+<ul class="sectlevel3">
+<li><a href="deroulement.html#_avec_eclipse_2">3.3.1. Avec Eclipse</a>
+</li>
+<li><a href="deroulement.html#_avec_intellij_idea_2">3.3.2. Avec IntelliJ Idea</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="partie1.html">4. Partie 1 : les évolutions dans la syntaxe</a>
+</li>
+<li><a href="partie2.html">5. Partie 2 : les évolutions dans les API</a>
+</li>
+<li><a href="partie3.html">6. Partie 3 : l&#8217;outillage du JDK</a>
+</li>
+<li><a href="conclusion.html">7. Conclusion</a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="deroulement"><a class="anchor" href="#deroulement"></a>3. Le déroulement du workshop</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Ce workshop est une session BYOD (Bring Your Own Device), donc vous utilisez votre propre ordinateur portable.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Ce workshop est écrit pour Windows. Si vous utilisez un autre OS, des ajustements pourront être nécessaires.</p>
+</div>
+<div class="paragraph">
+<p>Le répertoire utilisé dans les exercices de ce workshop est par défaut <code>C:\workshop-javase</code>. Si ce n&#8217;est pas le répertoire utilisé, alors il faudra adapter les chemins indiqués.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>En préambule, il est nécessaire d&#8217;installer les différents <a href="requis.html">outils requis</a> pour la mise en œuvre de ce workshop.</p>
+</div>
+<div class="sect2">
+<h3 id="_les_modalités"><a class="anchor" href="#_les_modalités"></a>3.1. Les modalités</h3>
+<div class="paragraph">
+<p>Vous pouvez suivre pas-à-pas les instructions fournies dans ce document.</p>
+</div>
+<div class="paragraph">
+<p>Ce workshop se veut être aussi explicite que possible. Le niveau de détail doit permettre que votre travail consiste à suivre les instructions par vous-même.</p>
+</div>
+<div class="paragraph">
+<p>Il est composé de plusieurs grandes parties :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>partie 1 : les évolutions dans la syntaxe</p>
+</li>
+<li>
+<p>partie 2 : les évolutions dans les API</p>
+</li>
+<li>
+<p>partie 3 : l&#8217;outillage du JDK</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Chaque partie est composée de labs abordant chacun une fonctionnalité particulière.</p>
+</div>
+<div class="paragraph">
+<p>Chaque lab est autonome. Vous être donc libre de choisir les labs que vous allez réaliser :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>soit dans l&#8217;ordre fourni dans le workshop</p>
+</li>
+<li>
+<p>soit dans l&#8217;ordre de votre choix en fonction de vos préférences ou connaissances</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Parfois un lab utilise une fonctionnalité détaillée dans un autre lab : dans ce cas, un lien vers ce lab est fourni.</p>
+</div>
+<div class="paragraph">
+<p>Chaque action à réaliser est détaillée dans un bloc identifié avec l&#8217;icône &nbsp; <span class="icon blue"><i class="fa fa-keyboard-o fa-2x"></i></span></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="preview"><a class="anchor" href="#preview"></a>3.2. Les fonctionnalités en preview</h3>
+<div class="paragraph">
+<p>Depuis l&#8217;utilisation du nouveau modèle de release des versions de Java après Java 9, de nombreuses fonctionnalités sont proposées en Preview avant une mise à disposition en standard. Elles sont définies dans la <a href="https://openjdk.org/jeps/12">JEP 12</a>.</p>
+</div>
+<div class="paragraph">
+<p>Une fonctionnalité en preview est une nouvelle fonctionnalité du langage Java, de la machine virtuelle Java ou de l&#8217;API Java SE qui est entièrement spécifiée, entièrement mise en œuvre, mais pas encore standard. Elle est proposée dans une version du JDK afin de permettre aux développeurs de l&#8217;utiliser et de fournir du feedback. Selon le feedback, elle peut alors évoluer après plusieurs versions pour devenir standard ou être retirée. Il n&#8217;y a pas de garantie sur la compatibilité des fonctionnalités proposées en preview avec la version précédente.</p>
+</div>
+<div class="paragraph">
+<p>L&#8217;utilisation de fonctionnalités en preview impose plusieurs points :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>il faut explicitement les activer à la compilation et à l&#8217;exécution en utilisant l&#8217;option <code>--enable-preview</code></p>
+</li>
+<li>
+<p>il faut en plus préciser le niveau de compatibilité du code source à la compilation</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_avec_le_jdk"><a class="anchor" href="#_avec_le_jdk"></a>3.2.1. Avec le JDK</h4>
+<div class="paragraph">
+<p>Il faut utiliser l&#8217;option <code>--enable-preview</code> avec les outils <code>javac</code>, <code>java</code>, <code>jshell</code> et <code>javadoc</code></p>
+</div>
+<div class="paragraph">
+<p>Il faut en plus préciser le niveau de compatibilité du code source avec les options <code>--release</code> ou <code>-source</code> avec l&#8217;outil <code>javac</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">C:\java&gt;javac --enable-preview --release 22 MonApp.java
+
+C:\java&gt;java --enable-preview MonApp</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_avec_eclipse"><a class="anchor" href="#_avec_eclipse"></a>3.2.2. Avec Eclipse</h4>
+<div class="paragraph">
+<p>Par défaut, les fonctionnalités en preview ne sont pas activées et provoquent des erreurs de compilation.</p>
+</div>
+<div class="paragraph">
+<p>Pour les activer, il faut modifier les propriétés de compilation du projet en utilisant le menu contextuel "Properties" du projet et en sélectionnant "Java Compiler".</p>
+</div>
+<div class="paragraph">
+<p>Il faut cocher "Enable project specific settings" et cocher "Enable preview features for Java 22".</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/eclipse-properties-preview.png" alt="eclipse properties preview">
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Eclipse ne permet l&#8217;activation des fonctionnalités en preview que pour la version du JDK utilisée par le projet.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_avec_intellij_idea"><a class="anchor" href="#_avec_intellij_idea"></a>3.2.3. Avec IntelliJ Idea</h4>
+<div class="paragraph">
+<p>Ouvrir la boite de dialogue &laquo; Project structure &raquo;, soit :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>en cliquant sur le bouton <span class="image"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+ <path fill-rule="evenodd" clip-rule="evenodd" d="M3.22655 4.36961C2.92233 4.76924 2.66735 5.20781 2.47037 5.67626L3.30992 7.0943C3.6406 7.65283 3.6406 8.34718 3.30992 8.9057L2.47037 10.3237C2.66736 10.7922 2.92233 11.2308 3.22656 11.6304L4.87261 11.6124C5.52165 11.6053 6.12297 11.9524 6.44133 12.5181L7.24899 13.953C7.49593 13.984 7.74792 14 8.00408 14C8.2602 14 8.51214 13.984 8.75904 13.9531L9.56671 12.5181C9.88507 11.9524 10.4864 11.6053 11.1354 11.6124L12.7816 11.6304C13.0858 11.2308 13.3408 10.7923 13.5377 10.3239L12.6981 8.9057C12.3674 8.34718 12.3674 7.65283 12.6981 7.0943L13.5377 5.67613C13.3408 5.20773 13.0858 4.76921 12.7816 4.36961L11.1354 4.38764C10.4864 4.39475 9.88507 4.04758 9.56671 3.48194L8.75904 2.04693C8.51214 2.01599 8.2602 2 8.00408 2C7.74792 2 7.49594 2.016 7.24899 2.04695L6.44133 3.48194C6.12297 4.04758 5.52165 4.39475 4.87261 4.38764L3.22655 4.36961ZM10.655 8.00001C10.655 9.46412 9.46811 10.651 8.004 10.651C6.5399 10.651 5.353 9.46412 5.353 8.00001C5.353 6.53591 6.5399 5.34902 8.004 5.34902C9.46811 5.34902 10.655 6.53591 10.655 8.00001ZM4.88356 3.3877C5.16752 3.39081 5.4306 3.23892 5.56988 2.99146L6.43817 1.44875C6.54914 1.25159 6.7401 1.1101 6.96387 1.07676C7.30327 1.0262 7.65062 1 8.00408 1C8.3575 1 8.7048 1.02619 9.04414 1.07674C9.26792 1.11007 9.45889 1.25157 9.56986 1.44873L10.4382 2.99146C10.5774 3.23892 10.8405 3.39081 11.1245 3.3877L12.8938 3.36832C13.1196 3.36585 13.3372 3.46012 13.4781 3.63661C13.9099 4.17766 14.2632 4.78416 14.5207 5.43884C14.6034 5.6491 14.5763 5.88489 14.4612 6.07931L13.5586 7.60376C13.4139 7.84811 13.4139 8.15189 13.5586 8.39625L14.4612 9.92069C14.5763 10.1151 14.6034 10.3509 14.5207 10.5612C14.2632 11.2158 13.9099 11.8223 13.4781 12.3634C13.3372 12.5399 13.1196 12.6342 12.8938 12.6317L11.1245 12.6123C10.8405 12.6092 10.5774 12.7611 10.4382 13.0085L9.56986 14.5513C9.45889 14.7484 9.26792 14.8899 9.04414 14.9233C8.7048 14.9738 8.3575 15 8.00408 15C7.65062 15 7.30327 14.9738 6.96387 14.9232C6.7401 14.8899 6.54914 14.7484 6.43817 14.5512L5.56988 13.0085C5.4306 12.7611 5.16752 12.6092 4.88356 12.6123L3.1144 12.6317C2.8886 12.6342 2.67096 12.5399 2.5301 12.3634C2.09822 11.8223 1.74489 11.2158 1.48738 10.561C1.40469 10.3508 1.43184 10.115 1.54695 9.92057L2.44942 8.39625C2.5941 8.15189 2.5941 7.84811 2.44942 7.60376L1.54695 6.07944C1.43184 5.88502 1.40469 5.64924 1.48738 5.43898C1.74489 4.78425 2.09822 4.1777 2.53009 3.63661C2.67096 3.46012 2.8886 3.36585 3.1144 3.36832L4.88356 3.3877ZM9.655 8.00001C9.655 8.91183 8.91582 9.65101 8.004 9.65101C7.09218 9.65101 6.353 8.91183 6.353 8.00001C6.353 7.08819 7.09218 6.34902 8.004 6.34902C8.91582 6.34902 9.655 7.08819 9.655 8.00001Z" fill="#6C707E" />
+</svg></span> dans la barre d&#8217;outils et en sélectionnant &laquo; Project Structure &raquo;</p>
+<div class="imageblock">
+<div class="content">
+<img src="images/intellij-project-structure.png" alt="intellij project structure">
+</div>
+</div>
+</li>
+<li>
+<p>ou en utilisant l&#8217;option &laquo; File | Project structure&#8230;&#8203; &raquo; du menu principal</p>
+</li>
+<li>
+<p>ou en utilisant la combinaison de touches <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></span></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Dans les paramètres du projet (<code>Project Settings/Project</code>) :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>sélectionner le SDK sur un &laquo; JDK 22 &raquo;</p>
+</li>
+<li>
+<p>pour le niveau de langage, sélectionner &laquo; 22 (Preview) - Statements before super(), string templates (2nd preview) etc &raquo;</p>
+<div class="imageblock">
+<div class="content">
+<img src="images/intellij-project-settings-preview.png" alt="intellij project settings preview">
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_avec_maven"><a class="anchor" href="#_avec_maven"></a>3.2.4. Avec Maven</h4>
+<div class="paragraph">
+<p>La configuration se fait dans le fichier <code>pom.xml</code> pour chaque plugin qui le requiert.</p>
+</div>
+<div class="listingblock">
+<div class="title">Exemple avec le plugin compiler</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+            &lt;configuration&gt;
+                &lt;source&gt;22&lt;/source&gt;
+                &lt;target&gt;22&lt;/target&gt;
+                &lt;compilerArgs&gt;
+                    --enable-preview
+                &lt;/compilerArgs&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="options-jvm"><a class="anchor" href="#options-jvm"></a>3.3. Configuration des options de la JVM</h3>
+<div class="paragraph">
+<p>Certaines fonctionnalités présentées dans les labs font intervenir des options de la JVM.
+Celles-ci s&#8217;ajoutent dans la ligne de commande java utilisée pour lancer l&#8217;application.</p>
+</div>
+<div class="listingblock">
+<div class="title">Exemple avec l&#8217;option <code>-Xmx512m</code></div>
+<div class="content">
+<pre>java -Xmx512m fr.sciam.workshop.javase.Main</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_avec_eclipse_2"><a class="anchor" href="#_avec_eclipse_2"></a>3.3.1. Avec Eclipse</h4>
+<div class="paragraph">
+<p>Il faut accéder au menu &laquo; Run Configurations&#8230;&#8203; &raquo;</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/eclipse-run-configuration.png" alt="eclipse run configuration">
+</div>
+</div>
+<div class="paragraph">
+<p>Puis dans l&#8217;onglet &laquo; Arguments &raquo; on peut saisir les paramètres dans le champ de saisie &laquo; VM arguments &raquo;</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/eclipse-run-configuration-vm-arguments.png" alt="eclipse run configuration vm arguments">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_avec_intellij_idea_2"><a class="anchor" href="#_avec_intellij_idea_2"></a>3.3.2. Avec IntelliJ Idea</h4>
+<div class="paragraph">
+<p>Il faut accéder au menu &laquo; Configuration &#8594; Edit&#8230;&#8203; &raquo;</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/intellij-edit-configuration.png" alt="intellij edit configuration">
+</div>
+</div>
+<div class="paragraph">
+<p>Puis &laquo; Modify options &#8594; Add VM options &raquo; ou via le raccourci <span class="keyseq"><kbd>Alt</kbd>+<kbd>V</kbd></span></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/intellij-vm-options.png" alt="intellij vm options">
+</div>
+</div>
+<div class="paragraph">
+<p>Ce qui fait apparaître le champ de saisie des paramètres de la VM</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/intellij-vm-options-input.png" alt="intellij vm options input">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p>← : <a href="requis.html">Les requis</a> | ↑ : <a href="index.html">Workshop Java SE en 2024</a> | : <a href="partie1.html">Partie 1 : les évolutions dans la syntaxe</a> →</p>
+</div>
+</div>
+<div id="footer">
+    <p class="footer-text" >© 2024 Clément de Tastes et J.M. Doudoux | Licence Creative Commons BY-NC-ND 4.0 DEED <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.fr" target="_blank"><img src="images/by-nc-nd.png" width="100"></a> </p>
+</div>
+</body>
+</html>

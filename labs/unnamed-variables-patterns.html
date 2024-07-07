@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : les Unnamed Variables &amp; Patterns</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="unnamed-variables-patterns" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-unamed-variables-patterns.html">Lab : les Unnamed Variables &amp; Patterns</a></span></p><ul class="sectlevel3">
+<li><a href="lab-unamed-variables-patterns.html#unnamed-variables-patterns"><span class="toc-current">1. Lab : les Unnamed Variables &amp; Patterns</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="unnamed-variables-patterns"><a class="anchor" href="#unnamed-variables-patterns"></a>1. Lab : les Unnamed Variables &amp; Patterns</h4>
+<div class="paragraph">
+<p>Il est parfois nécessaire de définir des variables locales ou des patterns qui ne sont pas utilisés. Il arrive aussi parfois que certains patterns imbriqués dans un record pattern ne soient pas utilisés. Ces situations étaient ennuyeuses jusqu&#8217;à Java 21 car il fallait définir ces éléments en leur fournissant un nom qui idéalement exprime leur inutilité.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br></p>
+</div>
+<div class="paragraph">
+<p>Observer et exécuter la classe <code>fr.sciam.workshop.javase.unnamed.MainUnnamed</code> pour vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Variable sans nom
+traiter
+Fermeture de la ressource
+
+Variable de pattern sans nom
+Employe : Nom1
+
+Variable de pattern sans nom avec pattern matching
+fr.sciam.workshop.javase.unnamed.Cercle@1b701da1
+
+Pattern sans nom
+Employe : Nom1</pre>
+</div>
+</div>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Première preview en Java 21 <a href="https://openjdk.org/jeps/443">JEP 443</a>. Standard en Java 22</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/456">456: Unnamed Variables &amp; Patterns</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>A partir de Java 22, le langage Java est enrichi d&#8217;une syntaxe pour définir des variables ainsi que des motifs sans nom (Unnamed), qui peuvent être utilisés lorsque des déclarations de variables ou de patterns imbriqués qui peuvent être nécessaires mais ne sont jamais utilisés dans le code.</p>
+</div>
+<div class="paragraph">
+<p>La mise en œuvre syntaxique se fait en utilisant le 51<sup>eme</sup> mot clé réservé de Java, introduit en Java 9 : l&#8217;unique caractère <code>_</code> (underscore).</p>
+</div>
+<div class="paragraph">
+<p>Trois cas d&#8217;utilisation sont proposés :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Unnamed variable : pour une variable qui peut être initialisée mais non utilisée</p>
+</li>
+<li>
+<p>Unnamed pattern variable : pour une variable de pattern utilisable avec tous types de patterns</p>
+</li>
+<li>
+<p>Unnamed pattern : un pattern inconditionnel, qui ne correspond à rien, utilisable uniquement dans un pattern imbriqué à la place d&#8217;un type ou record pattern</p>
+</li>
+</ul>
+</div>
+<div class="sect4">
+<h5 id="_les_variables_sans_nom_unnamed_variable"><a class="anchor" href="#_les_variables_sans_nom_unnamed_variable"></a>1.1. Les variables sans nom (Unnamed variable)</h5>
+<div class="paragraph">
+<p>Une variable sans nom est une variable qui peut être initialisée mais non utilisée dans :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Une variable locale dans un bloc</p>
+</li>
+<li>
+<p>Une ressource dans un try-with-resources</p>
+</li>
+<li>
+<p>L&#8217;en-tête d&#8217;une boucle <code>for</code> et <code>for</code> améliorée</p>
+</li>
+<li>
+<p>Une exception d&#8217;un bloc <code>catch</code></p>
+</li>
+<li>
+<p>Un paramètre formel d&#8217;une expression Lambda</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Comme elles ne peuvent pas être utilisées après leur déclaration, elles sont utilisables plusieurs fois dans la même portée.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>utiliserVariableSansNom()</code> de la classe <code>MainUnnamed</code> pour remplacer les variables <code>u</code>, <code>r</code>, <code>a</code>, <code>b</code>, et <code>t</code> par des variables sans nom  :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">utiliserVariableSansNom</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">(</span><span class="kt">var</span> <span class="n">_</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UneRessource</span><span class="o">())</span> <span class="o">{</span>
+      <span class="kt">var</span> <span class="n">_</span> <span class="o">=</span> <span class="n">traiter</span><span class="o">((</span><span class="n">_</span><span class="o">,</span> <span class="n">_</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"traiter"</span><span class="o">),</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+    <span class="o">}</span>  <span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">_</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainUnnamed</code> pour vérifier que la méthode <code>utiliserVariableSansNom()</code> affiche toujours la même chose</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Variable sans nom
+traiter
+Fermeture de la ressource</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_variables_de_pattern_sans_nom_unnamed_pattern_variable"><a class="anchor" href="#_les_variables_de_pattern_sans_nom_unnamed_pattern_variable"></a>1.2. Les variables de pattern sans nom (Unnamed pattern variable)</h5>
+<div class="paragraph">
+<p>Une variable de pattern sans nom est utilisable avec tous types de patterns</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+cette section utilise un record pattern. Le lab <a href="lab-record-patterns.html#record-patterns">les Record Patterns</a> détaille cette fonctionnalité.
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>utiliserVariablePatternSansNom()</code> de la classe <code>MainUnnamed</code> pour remplacer les variables <code>prenom</code> et <code>grade</code> par des variables de pattern sans nom  :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">utiliserVariablePatternSansNom</span><span class="o">(</span><span class="nc">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">o</span> <span class="k">instanceof</span> <span class="nf">Employe</span><span class="o">(</span><span class="kt">var</span> <span class="n">nom</span><span class="o">,</span> <span class="kt">var</span> <span class="n">_</span> <span class="o">,</span> <span class="kt">var</span> <span class="n">_</span><span class="o">))</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Employe : "</span> <span class="o">+</span> <span class="n">nom</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainUnnamed</code> pour vérifier que la méthode <code>utiliserVariablePatternSansNom()</code> affiche toujours la même chose</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Variable de pattern sans nom
+Employe : Nom1</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lutilisation_de_variables_de_pattern_sans_nom_avec_le_pattern_matching"><a class="anchor" href="#_lutilisation_de_variables_de_pattern_sans_nom_avec_le_pattern_matching"></a>1.3. L&#8217;utilisation de variables de pattern sans nom avec le pattern matching</h5>
+<div class="paragraph">
+<p>Les variables de pattern sans nom sont particulièrement utiles dans des <code>switch</code> avec des patterns sur des types scellés.</p>
+</div>
+<div class="paragraph">
+<p>Il n&#8217;est pas possible d&#8217;avoir plusieurs patterns nommés dans une même clause <code>case</code>. Si plusieurs patterns ne sont pas utiles, il faut les définir chacun dans un <code>case</code> avec un bloc de code vide.</p>
+</div>
+<div class="paragraph">
+<p>Il est possible d&#8217;utiliser des variables de pattern sans nom dans plusieurs types patterns d&#8217;un même <code>case</code>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+cette section utilise des classes scellées. Le lab <a href="lab-classes-scellees.html#classes-scellees">les classes scellées</a> détaille cette fonctionnalité.
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>utiliserVariablePatternSansNomAvecPatternMatching()</code> de la classe <code>MainUnnamed</code> pour remplacer les cases avec des types pattern sur <code>Carre</code> et <code>Rectangle</code> par un seul <code>case</code> utilisant des variables de pattern sans nom  :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">utiliserVariablePatternSansNomAvecPatternMatching</span><span class="o">(</span><span class="nc">Forme</span> <span class="n">forme</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">switch</span><span class="o">(</span><span class="n">forme</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Cercle</span> <span class="n">c</span> <span class="o">-&gt;</span> <span class="n">afficher</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+      <span class="k">case</span> <span class="nc">Carre</span> <span class="n">_</span> <span class="o">,</span> <span class="nc">Rectangle</span> <span class="n">_</span> <span class="o">-&gt;</span> <span class="o">{}</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainUnnamed</code> pour vérifier que la méthode <code>utiliserVariablePatternSansNomAvecPatternMatching()</code> affiche toujours la même chose</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Variable de pattern sans nom avec pattern matching
+fr.sciam.workshop.javase.unnamed.Cercle@1b701da1</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Si un nouveau type est ajouté à la hiérarchie scellée, alors le compilateur émettra une erreur à la compilation du code contenant le <code>switch</code> et la JVM lèvera une exception puisque l&#8217;exhaustivité des cas n&#8217;est plus assurée.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_patterns_sans_nom_unnamed_pattern"><a class="anchor" href="#_les_patterns_sans_nom_unnamed_pattern"></a>1.4. Les patterns sans nom (Unnamed pattern)</h5>
+<div class="paragraph">
+<p>Un pattern sans nom est un pattern inconditionnel, qui ne correspond à rien, utilisable uniquement dans un pattern imbriqué à la place d&#8217;un type ou d&#8217;un record pattern.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>utiliserPatternSansNom()</code> de la classe <code>MainUnnamed</code> pour remplacer les variables <code>prenom</code> et <code>grade</code> par des patterns sans nom  :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">utiliserPatternSansNom</span><span class="o">(</span><span class="nc">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">o</span> <span class="k">instanceof</span> <span class="nf">Employe</span><span class="o">(</span><span class="kt">var</span> <span class="n">nom</span><span class="o">,</span> <span class="n">_</span> <span class="o">,</span> <span class="n">_</span><span class="o">))</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Employe : "</span> <span class="o">+</span> <span class="n">nom</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainUnnamed</code> pour vérifier que la méthode <code>utiliserVariablePatternSansNom()</code> affiche toujours la même chose</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Pattern sans nom
+Employe : Nom1</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 17:53:25 +0200
+</div>
+</div>
+</body>
+</html>

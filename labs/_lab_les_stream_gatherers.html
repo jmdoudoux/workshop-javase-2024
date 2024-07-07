@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : les Stream Gatherers</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="_lab_les_stream_gatherers" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-stream-gatherers.html">Lab : les Stream Gatherers</a></span></p><ul class="sectlevel3">
+<li><a href="lab-stream-gatherers.html#_lab_les_stream_gatherers"><span class="toc-current">1. Lab : les Stream Gatherers</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="_lab_les_stream_gatherers"><a class="anchor" href="#_lab_les_stream_gatherers"></a>1. Lab : les Stream Gatherers</h4>
+<div class="paragraph">
+<p>L&#8217;API <code>Stream</code> fournit de nombreuses opérations intermédiaires, telles que <code>map()</code>, <code>filter()</code>, <code>sorted()</code>, <code>distinct()</code>, &#8230;&#8203; permettant de répondre à bon nombre de cas d&#8217;usages.</p>
+</div>
+<div class="paragraph">
+<p>Malgré cette richesse, cela ne couvre pas tous les besoins. Le concept de "gatherer" a pour but de définir ses propres opérations intermédiaires par le biais de l&#8217;opération intermédiaire <code>Stream::gather</code> qui accepte une instance de l&#8217;interface <code>java.util.stream.Gatherer</code>. Ceci de manière analogue à l&#8217;opération terminale <code>Stream::collect</code> qui accepte une instance de l&#8217;interface <code>java.util.stream.Collector</code>.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Première preview en Java 22</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/461">461: Stream Gatherers (Preview)</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+{preview}
+</td>
+</tr>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_linterface_java_util_stream_gatherer"><a class="anchor" href="#_linterface_java_util_stream_gatherer"></a>1.1. L&#8217;interface <code>java.util.stream.Gatherer</code></h5>
+<div class="paragraph">
+<p>Un <code>Gatherer</code> a pour but de représenter quasiment tout type d&#8217;opération intermédiaire, et il peut être :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>exécuté en séquentiel ou en parallèle</p>
+</li>
+<li>
+<p>stateless ou stateful</p>
+</li>
+<li>
+<p>court-circuit (peut s&#8217;arrêter avant la fin) ou greedy (traite forcément tous les éléments)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>L&#8217;interface <code>Gatherer</code> définit 4 opérations qui fonctionnent de concert, selon les besoins :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>default Supplier&lt;A&gt; initializer()</code> : optionnelle, permet de fournir un objet pour stocker un état privé qui pourra être utilisé lors de la consommation des éléments du flux.</p>
+</li>
+<li>
+<p><code>Integrator&lt;A, T, R&gt; integrator()</code> : fournit une instance d'<code>Integrator</code>, interface fonctionnelle qui définit la façon dont sont intégrés les éléments du flux entrant vers le flux de sortie, en tenant éventuellement compte de l&#8217;état privé.</p>
+</li>
+<li>
+<p><code>default BinaryOperator&lt;A&gt; combiner()</code> : optionnelle, combine deux états dans le cas d&#8217;un <code>Stream</code> parallèle.</p>
+</li>
+<li>
+<p><code>default BiConsumer&lt;A, Downstream&lt;? super R&gt;&gt; finisher()</code> : optionnelle, invoquée lorsqu&#8217;il n&#8217;y a plus d&#8217;éléments à traiter. Elle peut utiliser l&#8217;état privé pour éventuellement, émettre des éléments supplémentaires vers le flux de sortie.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_les_fabriques_de_gatherer"><a class="anchor" href="#_les_fabriques_de_gatherer"></a>1.2. Les fabriques de <code>Gatherer</code></h5>
+<div class="paragraph">
+<p>L&#8217;interface <code>Gatherer</code> fournit plusieurs fabriques permettant d&#8217;obtenir une instance de <code>Gatherer</code> à partir d&#8217;une implémentation de tout ou partie des quatre opérations. La fourniture d&#8217;une implémentation d&#8217;un <code>integrator</code> est le minimum requis, les autres opérations étant quant à elles optionnelles.</p>
+</div>
+<div class="paragraph">
+<p>Cette instance de <code>Gatherer</code> peut être :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>parallélisable via les surcharges de <code>Gatherer::of</code></p>
+</li>
+<li>
+<p>séquentielle via les surcharges de <code>Gatherer::ofSequential</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>ofSequential()</code> ne propose pas de surcharge faisant intervenir de <code>combiner</code> car cela est réservé aux <code>Gatherer</code> parallélisables.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_définition_dun_integrator"><a class="anchor" href="#_la_définition_dun_integrator"></a>1.3. La définition d&#8217;un <code>Integrator</code></h5>
+<div class="paragraph">
+<p>Il est possible d&#8217;émettre ou non un ou plusieurs éléments vers le flux de sortie, tout comme d&#8217;interrompre prématurément le traitement avant d&#8217;avoir atteint la fin des éléments. La signature de la méthode est la suivante :</p>
+</div>
+<div class="paragraph">
+<p><code>boolean integrate(A state, T element, Downstream&lt;? super R&gt; downstream)</code></p>
+</div>
+<div class="paragraph">
+<p>Le retour de type booléen indique s&#8217;il faut continuer à traiter de nouveaux éléments ou court-circuiter.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Il est possible de définir avec un <code>Gatherer</code> une des opérations intermédiaires déjà existante de <code>Stream</code>, par exemple <code>Stream::map</code>.
+Compléter la méthode <code>definirGathererMapDouble()</code> de la classe <code>fr.sciam.workshop.javase.gatherers.MainGatherers</code> afin qu&#8217;elle retourne une implémentation de <code>Gatherer</code> qui renvoie le double d&#8217;un nombre entier, en utilisant la fabrique <code>Gatherer.of(Integrator&lt;Void, T, R&gt; integrator)</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Gatherer</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">Void</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="nf">definirGathererMapDouble</span><span class="o">()</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="k">return</span> <span class="nc">Gatherer</span><span class="o">.</span><span class="na">of</span><span class="o">((</span><span class="n">state</span><span class="o">,</span> <span class="n">element</span><span class="o">,</span> <span class="n">downstream</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="n">downstream</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">element</span> <span class="o">*</span> <span class="mi">2</span><span class="o">);</span>
+      <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">});</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Le type générique <code>Void</code> est utilisé car on ne gère pas d&#8217;état privé</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainGatherers</code> et vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Map double
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 1, 0] -&gt; [0, 2, 2, 4, 6, 10, 16, 26, 42, 2, 0]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est possible de ne pas émettre tous les éléments du flux d&#8217;entrée.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>definirGathererMapGrandsDoubles()</code> afin qu&#8217;elle retourne une implémentation de <code>Gatherer</code> qui renvoie le double d&#8217;un nombre entier, mais ce uniquement pour les nombres plus grands que 10.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Gatherer</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">Void</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="nf">definirGathererMapGrandsDoubles</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nc">Gatherer</span><span class="o">.</span><span class="na">of</span><span class="o">((</span><span class="n">state</span><span class="o">,</span> <span class="n">element</span><span class="o">,</span> <span class="n">downstream</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">element</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">downstream</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">element</span> <span class="o">*</span> <span class="mi">2</span><span class="o">);</span>
+      <span class="o">}</span>
+      <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">});</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainGatherers</code> et vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Map grands doubles
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 1, 0] -&gt; [26, 42]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est également possible de terminer prématurément, via un "court-circuit" en renvoyant <code>false</code> lorsque l&#8217;on souhaite s&#8217;arrêter.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>definirGathererCourtCircuit()</code> afin qu&#8217;elle retourne une implémentation de <code>Gatherer</code> qui transmet les éléments du flux d&#8217;entrée sans modification, mais qui s&#8217;arrête de traiter les éléments dès lors qu&#8217;une valeur supérieure à 10 est rencontrée.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Gatherer</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">Void</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="nf">definirGathererCourtCircuit</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nc">Gatherer</span><span class="o">.</span><span class="na">of</span><span class="o">((</span><span class="n">state</span><span class="o">,</span> <span class="n">element</span><span class="o">,</span> <span class="n">downstream</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">element</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">downstream</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">element</span><span class="o">);</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">});</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainGatherers</code> et vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Court-circuit
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 1, 0] -&gt; [0, 1, 1, 2, 3, 5, 8]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_gestion_dun_état_privé_avec_un_initializer"><a class="anchor" href="#_la_gestion_dun_état_privé_avec_un_initializer"></a>1.4. La gestion d&#8217;un état privé avec un <code>initializer</code></h5>
+<div class="paragraph">
+<p>La méthode <code>Gatherer::initializer</code> permet de fournir un objet pour gérer un état privé durant certains traitements du <code>Gatherer</code>, selon les besoins.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>definirGathererSequentielAvecEtat()</code> afin qu&#8217;elle retourne une implémentation de <code>Gatherer</code> séquentiel qui transmet les éléments du flux d&#8217;entrée sans modification, mais qui s&#8217;arrête après avoir traité 5 éléments.
+Utiliser la fabrique <code>&lt;T, A, R&gt; Gatherer&lt;T, A, R&gt; ofSequential(Supplier&lt;A&gt; initializer, Integrator&lt;A, T, R&gt; integrator)</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Gatherer</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="o">?,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="nf">definirGathererSequentielAvecEtat</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nc">Gatherer</span><span class="o">.</span><span class="na">ofSequential</span><span class="o">(</span>
+      <span class="nl">AtomicInteger:</span><span class="o">:</span><span class="k">new</span><span class="o">,</span>
+      <span class="o">(</span><span class="n">state</span><span class="o">,</span> <span class="n">element</span><span class="o">,</span> <span class="n">downstream</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+        <span class="n">downstream</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">element</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="na">incrementAndGet</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainGatherers</code> et vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Séquentiel avec état
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 1, 0] -&gt; [0, 1, 1, 2, 3]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lutilisation_dun_finisher"><a class="anchor" href="#_lutilisation_dun_finisher"></a>1.5. L&#8217;utilisation d&#8217;un <code>finisher</code></h5>
+<div class="paragraph">
+<p>Le <code>finisher</code> permet de réaliser des traitements une fois tous les éléments du flux d&#8217;entrée consommés, pouvant impliquer l&#8217;état privé ainsi que le <code>Downstream</code> fournis en paramètres.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Un cas d&#8217;usage d&#8217;un <code>Gatherer</code> peut être de regrouper les éléments du flux d&#8217;entrée vers le flux de sortie en lots, par exemple deux par deux.
+La définition d&#8217;un <code>finisher</code> est nécessaire, car on voudra émettre le dernier élément seul quand le nombre d&#8217;éléments du flux d&#8217;entrée est impair.</p>
+</div>
+<div class="paragraph">
+<p>Compléter la méthode <code>definirGathererGroupeDeuxParDeux()</code> pour définir un <code>Gatherer</code> séquentiel qui groupe les éléments deux par deux. Utiliser la fabrique <code>Gatherer.ofSequential()</code> qui accepte un <code>initializer</code>, un <code>integrator</code> et un <code>finisher</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Gatherer</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="o">?,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;&gt;</span> <span class="nf">definirGathererGroupeDeuxParDeux</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nc">Gatherer</span><span class="o">.</span><span class="na">ofSequential</span><span class="o">(</span>
+      <span class="o">()</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;(),</span>
+      <span class="o">(</span><span class="n">state</span><span class="o">,</span> <span class="n">element</span><span class="o">,</span> <span class="n">downstream</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+        <span class="n">state</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">element</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">state</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">==</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+          <span class="n">downstream</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">state</span><span class="o">));</span>
+          <span class="n">state</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">},</span>
+      <span class="o">(</span><span class="n">integers</span><span class="o">,</span> <span class="n">downstream</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">downstream</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">integers</span><span class="o">)</span>
+    <span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainGatherers</code> et vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Groupe deux par deux
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 1, 0] -&gt; [[0, 1], [1, 2], [3, 5], [8, 13], [21, 1], [0]]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lutilisation_dun_combiner"><a class="anchor" href="#_lutilisation_dun_combiner"></a>1.6. L&#8217;utilisation d&#8217;un <code>combiner</code></h5>
+<div class="paragraph">
+<p>Le <code>Gatherer</code> peut être défini comme étant parallélisable, auquel cas, il faut fournir un <code>combiner</code> qui définit la façon dont sont combinés les états des lots parallèles entre eux.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>definirGathererParallelePlusGrandElement()</code> pour définir un <code>Gatherer</code> parallélisable qui permette de trouver le plus grand élément d&#8217;un flux d&#8217;entiers, mais en s&#8217;arrêtant dès lors qu&#8217;on a rencontré un élément supérieur à 10.</p>
+</div>
+<div class="paragraph">
+<p>Utiliser la fabrique <code>Gatherer.of()</code> qui accepte les quatre opérations : <code>initializer</code>, <code>integrator</code>, <code>combiner</code> et <code>finisher</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Gatherer</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="o">?,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="nf">definirGathererParallelePlusGrandElement</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="kd">class</span> <span class="nc">Etat</span> <span class="o">{</span>
+      <span class="nc">Integer</span> <span class="n">max</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="nc">Gatherer</span><span class="o">.</span><span class="na">of</span><span class="o">(</span>
+
+      <span class="c1">// Initializer</span>
+      <span class="nl">Etat:</span><span class="o">:</span><span class="k">new</span><span class="o">,</span>
+
+      <span class="c1">// Integrator</span>
+      <span class="o">(</span><span class="n">state</span><span class="o">,</span> <span class="n">element</span><span class="o">,</span> <span class="n">downstream</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+
+        <span class="c1">// On sauvegarde l'élément s'il est le plus grand connu</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">state</span><span class="o">.</span><span class="na">max</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">element</span> <span class="o">&gt;</span> <span class="n">state</span><span class="o">.</span><span class="na">max</span><span class="o">)</span> <span class="o">{</span>
+          <span class="n">state</span><span class="o">.</span><span class="na">max</span> <span class="o">=</span> <span class="n">element</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">// On court-circuite si l'élément est supérieur à 10</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">state</span><span class="o">.</span><span class="na">max</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span>
+          <span class="n">downstream</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">state</span><span class="o">.</span><span class="na">max</span><span class="o">);</span>
+          <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">},</span>
+
+      <span class="c1">// Combiner : on renvoie le plus grand des deux éléments</span>
+      <span class="o">(</span><span class="n">e1</span><span class="o">,</span> <span class="n">e2</span><span class="o">)</span> <span class="o">-&gt;</span>  <span class="o">(</span><span class="n">e1</span><span class="o">.</span><span class="na">max</span> <span class="o">&gt;</span> <span class="n">e2</span><span class="o">.</span><span class="na">max</span><span class="o">)</span> <span class="o">?</span> <span class="n">e1</span> <span class="o">:</span> <span class="n">e2</span><span class="o">,</span>
+
+      <span class="c1">// Finisher</span>
+      <span class="nc">Gatherer</span><span class="o">.</span><span class="na">defaultFinisher</span><span class="o">()</span>
+    <span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainGatherers</code> et vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Parallèle plus grand élément
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 1, 0] -&gt; [13]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_classe_gatherers"><a class="anchor" href="#_la_classe_gatherers"></a>1.7. La classe <code>Gatherers</code></h5>
+<div class="paragraph">
+<p>Un certain nombre de fabriques pour des implémentations de <code>Gatherer</code> répondant à des usages courants sont disponibles dans la classe <code>java.util.stream.Gatherers</code>.</p>
+</div>
+<div class="sect5">
+<h6 id="_la_fabrique_gatherersfold"><a class="anchor" href="#_la_fabrique_gatherersfold"></a>1.7.1. La fabrique <code>Gatherers::fold</code></h6>
+<div class="paragraph">
+<p><code>static &lt;T, R&gt; java.util.stream.Gatherer&lt;T, ?, R&gt; fold(Supplier&lt;R&gt; initial, BiFunction&lt;? super R, ? super T, ? extends R&gt; folder)</code> renvoie un <code>Gatherer</code> séquentiel de type "many-to-one" qui agrège les données du flux de manière incrémentale et renvoie le résultat une fois tous les éléments du flux entrant consommés. Le type de l&#8217;état initial et du flux de sortie sont identiques (<code>&lt;R&gt;</code>).</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>definirGathererFold()</code> afin qu&#8217;elle renvoie un <code>Gatherer</code> qui concatène tous les éléments du flux d&#8217;entrée dans une chaîne de caractères.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Gatherer</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="o">?,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="nf">definirGathererFold</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nc">Gatherers</span><span class="o">.</span><span class="na">fold</span><span class="o">(</span>
+      <span class="c1">// Etat initial</span>
+      <span class="o">()</span> <span class="o">-&gt;</span> <span class="s">""</span><span class="o">,</span>
+
+      <span class="c1">// Fonction d'agrégation</span>
+      <span class="o">(</span><span class="n">etat</span><span class="o">,</span> <span class="n">nombre</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">etat</span> <span class="o">+</span> <span class="n">nombre</span>
+    <span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainGatherers</code> et vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Gatherers::fold
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 1, 0] -&gt; [0112358132110]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_la_fabrique_gatherersscan"><a class="anchor" href="#_la_fabrique_gatherersscan"></a>1.7.2. La fabrique <code>Gatherers::scan</code></h6>
+<div class="paragraph">
+<p><code>scan(Supplier&lt;R&gt; initial, BiFunction&lt;? super R, ? super T, ? extends R&gt; scanner</code> renvoie un <code>Gatherer</code> séquentiel de type "one-to-one" qui applique la fonction fournie à l&#8217;état actuel et à l&#8217;élément courant pour produire l&#8217;élément suivant, qu&#8217;il transmet en sortie.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>definirGathererScan()</code> afin qu&#8217;elle renvoie un <code>Gatherer</code> qui concatène l&#8217;état avec l&#8217;élément courant.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Gatherer</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="o">?,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="nf">definirGathererScan</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nc">Gatherers</span><span class="o">.</span><span class="na">scan</span><span class="o">(</span>
+      <span class="o">()</span> <span class="o">-&gt;</span> <span class="s">""</span><span class="o">,</span>
+      <span class="o">(</span><span class="n">etat</span><span class="o">,</span> <span class="n">nombre</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">etat</span> <span class="o">+</span> <span class="n">nombre</span>
+    <span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainGatherers</code> et vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Gatherers::scan
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 1, 0] -&gt; [0, 01, 011, 0112, 01123, 011235, 0112358, 011235813, 01123581321, 011235813211, 0112358132110]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_les_fabriques_gathererswindowfixed_et_gathererswindowsliding"><a class="anchor" href="#_les_fabriques_gathererswindowfixed_et_gathererswindowsliding"></a>1.7.3. Les fabriques <code>Gatherers::windowFixed</code> et <code>Gatherers::windowSliding</code></h6>
+<div class="paragraph">
+<p><code>windowFixed(int windowSize)</code> renvoie un <code>Gatherer</code> séquentiel de type "many-to-many" qui regroupe les éléments d&#8217;entrée dans des listes de la taille fournie et transmet les listes en sortie lorsqu&#8217;elles sont pleines ou qu&#8217;il n&#8217;y a plus d&#8217;éléments. Cette fabrique aurait pu être utilisée pour définir notre <code>Gatherer</code> qui rassemble les éléments deux par deux.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>definirGathererWindowFixed()</code> afin qu&#8217;elle renvoie un <code>Gatherer</code> qui regroupe les éléments trois par trois.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Gatherer</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="o">?,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;&gt;</span> <span class="nf">definirGathererWindowFixed</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nc">Gatherers</span><span class="o">.</span><span class="na">windowFixed</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainGatherers</code> et vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Gatherers::windowFixed
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 1, 0] -&gt; [[0, 1, 1], [2, 3, 5], [8, 13, 21], [1, 0]]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><code>windowSliding(int windowSize)</code> renvoie un <code>Gatherer</code> du même type qui regroupe les éléments d&#8217;entrée dans des listes de la taille fournie. Après la première fenêtre, chaque liste suivante est créée à partir d&#8217;une copie de la précédente en supprimant le premier élément et en ajoutant l&#8217;élément suivant à partir du flux d&#8217;entrée.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>definirGathererWindowSliding()</code> afin qu&#8217;elle renvoie un <code>Gatherer</code> qui regroupe les éléments dans une fenêtre glissante de trois éléments.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Gatherer</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="o">?,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;&gt;</span> <span class="nf">definirGathererWindowSliding</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nc">Gatherers</span><span class="o">.</span><span class="na">windowSliding</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainGatherers</code> et vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Gatherers::windowSliding
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 1, 0] -&gt; [[0, 1, 1], [1, 1, 2], [1, 2, 3], [2, 3, 5], [3, 5, 8], [5, 8, 13], [8, 13, 21], [13, 21, 1], [21, 1, 0]]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_la_fabrique_gatherersmapconcurrent"><a class="anchor" href="#_la_fabrique_gatherersmapconcurrent"></a>1.7.4. La fabrique <code>Gatherers::mapConcurrent</code></h6>
+<div class="paragraph">
+<p><code>mapConcurrent(final int maxConcurrency, final Function&lt;? super T, ? extends R&gt; mapper)</code> renvoie un <code>Gatherer</code> "one-to-one" qui invoque la fonction fournie sur chaque élément du flux en parallèle avec des threads virtuels, jusqu&#8217;à une limite fournie. Son implémentation repose sur un <code>Semaphore</code> qui limite le nombre d&#8217;accès simultanés à la valeur fournie.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Consulter la classe <code>fr.sciam.workshop.javase.gatherers.Guichet</code> pour information puis compléter la méthode <code>definirGathererMapConcurrent()</code> afin de réaliser des accès concurrents à la méthode <code>Guichet::acceder</code>, avec une limite de deux opérations simultanées.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Gatherer</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="o">?,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="nf">definirGathererMapConcurrent</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nc">Gatherers</span><span class="o">.</span><span class="na">mapConcurrent</span><span class="o">(</span>
+      <span class="mi">2</span><span class="o">,</span> <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="nl">Guichet:</span><span class="o">:</span><span class="n">acceder</span>
+    <span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Nombre maximal d&#8217;accès simultanés</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainGatherers</code> et vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Gatherers::mapConcurrent
+Accès au guichet de #1 / (2 accès simultané(s))
+Accès au guichet de #0 / (1 accès simultané(s))
+Accès au guichet de #1 / (2 accès simultané(s))
+Accès au guichet de #2 / (2 accès simultané(s))
+Accès au guichet de #3 / (1 accès simultané(s))
+Accès au guichet de #5 / (2 accès simultané(s))
+Accès au guichet de #8 / (1 accès simultané(s))
+Accès au guichet de #13 / (2 accès simultané(s))
+Accès au guichet de #21 / (1 accès simultané(s))
+Accès au guichet de #1 / (2 accès simultané(s))
+Accès au guichet de #0 / (1 accès simultané(s))
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 1, 0] -&gt; [0, 1, 1, 2, 3, 5, 8, 13, 21, 1, 0]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Constater qu&#8217;il n&#8217;y a jamais eu plus de deux accès concurrents.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_la_composition_de_gatherer"><a class="anchor" href="#_la_composition_de_gatherer"></a>1.7.5. La composition de <code>Gatherer</code></h6>
+<div class="paragraph">
+<p>Les gatherers supportent la composition via la méthode <code>andThen(Gatherer)</code> qui joint deux gatherers où le premier produit des éléments que le second peut consommer.</p>
+</div>
+<div class="paragraph">
+<p>Ainsi sémantiquement :</p>
+</div>
+<div class="paragraph">
+<p><code>source.gather(a).gather(b).gather(c).collect(&#8230;&#8203;)</code></p>
+</div>
+<div class="paragraph">
+<p>Est équivalent à :</p>
+</div>
+<div class="paragraph">
+<p><code>source.gather(a.andThen(b).andThen(c)).collect(&#8230;&#8203;)</code></p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Compléter la méthode <code>composerGatherers()</code> afin qu&#8217;elle renvoie un <code>Gatherer</code> qui est la composition des deux gatherers renvoyés par <code>definirGathererMapDouble()</code> et <code>definirGathererWindowSliding()</code>;</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Gatherer</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="o">?,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;&gt;</span> <span class="nf">composerGatherers</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="kt">var</span> <span class="n">g1</span> <span class="o">=</span> <span class="n">definirGathererMapDouble</span><span class="o">();</span>
+    <span class="kt">var</span> <span class="n">g2</span> <span class="o">=</span> <span class="n">definirGathererWindowSliding</span><span class="o">();</span>
+
+    <span class="k">return</span> <span class="n">g1</span><span class="o">.</span><span class="na">andThen</span><span class="o">(</span><span class="n">g2</span><span class="o">);</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainGatherers</code> et vérifier qu&#8217;elle affiche dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Composition
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 1, 0] -&gt; [[0, 2, 2], [2, 2, 4], [2, 4, 6], [4, 6, 10], [6, 10, 16], [10, 16, 26], [16, 26, 42], [26, 42, 2], [42, 2, 0]]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 17:53:25 +0200
+</div>
+</div>
+</body>
+</html>

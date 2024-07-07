@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : le Pattern Matching for instanceof</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="pattern-matching-for-instanceof" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-pattern-matching-instanceof.html">Lab : le Pattern Matching for instanceof</a></span></p><ul class="sectlevel3">
+<li><a href="lab-pattern-matching-instanceof.html#pattern-matching-for-instanceof"><span class="toc-current">1. Lab : le Pattern Matching for instanceof</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="pattern-matching-for-instanceof"><a class="anchor" href="#pattern-matching-for-instanceof"></a>1. Lab : le Pattern Matching for instanceof</h4>
+<div class="paragraph">
+<p>Historiquement, l&#8217;opérateur <code>instanceof</code> permet de vérifier le type d&#8217;une variable avant de pouvoir l&#8217;utiliser. Si l&#8217;opérateur renvoie <code>true</code> alors il est nécessaire de faire un cast vers une autre variable du type testé.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Consulter la méthode <code>afficherConges()</code> de la classe <code>fr.sciam.workshop.javase.patternmatchinginstanceof.MainPatternMatchingInstanceof</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">afficherConges</span><span class="o">(</span><span class="nc">Object</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">obj</span> <span class="k">instanceof</span> <span class="nc">Employe</span><span class="o">)</span> <span class="o">{</span>
+      <span class="nc">Employe</span> <span class="n">employe</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Employe</span><span class="o">)</span> <span class="n">obj</span><span class="o">;</span>
+      <span class="kt">var</span> <span class="n">conges</span> <span class="o">=</span> <span class="n">employe</span><span class="o">.</span><span class="na">conges</span><span class="o">();</span>
+      <span class="n">conges</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainPatternMatchingInstanceof</code> pour vérifier l&#8217;affichage.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Congés du 15 mars 2024 au 22 mars 2024
+Congés du 1 août 2024 au 21 août 2024</pre>
+</div>
+</div>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Première preview en Java 14 (<a href="https://openjdk.org/jeps/305">JEP 305</a>). Standard en Java 16</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/394">394: Pattern Matching for instanceof</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Le concept de pattern matching existe déjà dans de nombreux langages. Le but est de permettre d&#8217;utiliser le pattern matching avec l&#8217;opérateur <code>instanceof</code>.</p>
+</div>
+<div class="paragraph">
+<p>Le pattern matching permet de simplifier l&#8217;utilisation de l&#8217;opérateur <code>instanceof</code>.
+La syntaxe est simple : il suffit de faire suivre l&#8217;opérateur instanceof d&#8217;un pattern. Le premier pattern proposé est le type pattern qui syntaxiquement est composé d&#8217;un type suivi d&#8217;un nom de variable de pattern.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>afficherConges()</code> de la classe <code>MainPatternMatchingInstanceof</code> pour utiliser un pattern de type dans l&#8217;opérateur <code>instanceof</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">afficherConges</span><span class="o">(</span><span class="nc">Object</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">obj</span> <span class="k">instanceof</span> <span class="nc">Employe</span> <span class="n">employe</span><span class="o">)</span> <span class="o">{</span>
+      <span class="kt">var</span> <span class="n">conges</span> <span class="o">=</span> <span class="n">employe</span><span class="o">.</span><span class="na">conges</span><span class="o">();</span>
+      <span class="n">conges</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainListFormat</code> pour vérifier que le résultat affiché est toujours le même.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Congés du 15 mars 2024 au 22 mars 2024
+Congés du 1 août 2024 au 21 août 2024</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Si la variable testée est du type ou est compatible avec le type du pattern alors la variable de pattern sera initialisée avec la référence de la variable testée.
+Cela évite la redondance historique du type pour la déclaration de la variable et pour le cast.</p>
+</div>
+<div class="paragraph">
+<p>La portée de la variable de pattern est définie en fonction du résultat de l&#8217;évaluation de l&#8217;expression. La variable n&#8217;est utilisable que dans le bloc où l&#8217;évaluation est <code>true</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Exemple</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="k">if</span> <span class="o">(!(</span><span class="n">obj</span> <span class="k">instanceof</span> <span class="nc">Employe</span> <span class="n">employe</span><span class="o">))</span> <span class="o">{</span>
+    <span class="c1">// employe n'est pas accessible</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="n">conges</span> <span class="o">=</span> <span class="n">employe</span><span class="o">.</span><span class="na">conges</span><span class="o">();</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>La portée contient également la déclaration de la condition : cela permet d&#8217;enrichir celle-ci avec une condition supplémentaire en utilisant uniquement l&#8217;opérateur <code>&amp;&amp;</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>afficherConges()</code> de la classe <code>MainPatternMatchingInstanceof</code> pour ajouter une condition au pattern de type dans l&#8217;opérateur <code>instanceof</code> pour vérifier que la liste des congés ne soit pas vide.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">afficherConges</span><span class="o">(</span><span class="nc">Object</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">obj</span> <span class="k">instanceof</span> <span class="nc">Employe</span> <span class="n">employe</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">employe</span><span class="o">.</span><span class="na">conges</span><span class="o">().</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+      <span class="kt">var</span> <span class="n">conges</span> <span class="o">=</span> <span class="n">employe</span><span class="o">.</span><span class="na">conges</span><span class="o">();</span>
+      <span class="n">conges</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exécuter la classe <code>MainListFormat</code> pour vérifier que le résultat affiché est toujours le même.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Congés du 15 mars 2024 au 22 mars 2024
+Congés du 1 août 2024 au 21 août 2024</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Cela ne fonctionne pas avec l&#8217;opérateur <code>||</code> puisque la variable de pattern pourrait ne pas être initialisée.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-16 21:34:12 +0200
+</div>
+</div>
+</body>
+</html>

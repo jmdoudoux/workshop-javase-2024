@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<title>Lab : les Code Snippets</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./rouge-github.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="_lab_les_code_snippets" class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<p><span class="toc-root"><a href="lab-code-snippets.html">Lab : les Code Snippets</a></span></p><ul class="sectlevel3">
+<li><a href="lab-code-snippets.html#_lab_les_code_snippets"><span class="toc-current">1. Lab : les Code Snippets</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect3">
+<h4 id="_lab_les_code_snippets"><a class="anchor" href="#_lab_les_code_snippets"></a>1. Lab : les Code Snippets</h4>
+<div class="paragraph">
+<p>Historiquement jusqu&#8217;à Java 18, l&#8217;inclusion de fragment de code dans la Javadoc requérait l&#8217;utilisation des balises HTML <code>&lt;pre&gt;</code> et <code>&lt;code&gt;</code>, le tag <code>{@code}</code> depuis Java 5, parfois en combinaison, selon la nécessité :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>de conserver l&#8217;indentation et les sauts de lignes,</p>
+</li>
+<li>
+<p>d&#8217;échapper ou non les caractères HTML,</p>
+</li>
+<li>
+<p>de la nécessité de l&#8217;évaluation ou non du caractère <code>@</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Java 18 introduit le tag <code>{@snippet}</code> dans le Doclet standard de la Javadoc pour offrir de puissantes fonctionnalités concernant l&#8217;inclusion de fragment de code dans la documentation générée.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JDK</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Standard en Java 18</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>JEP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://openjdk.org/jeps/413">413: Code Snippets in Java API Documentation</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect4">
+<h5 id="_linclusion_dun_fragment_en_ligne"><a class="anchor" href="#_linclusion_dun_fragment_en_ligne"></a>1.1. L&#8217;inclusion d&#8217;un fragment en ligne</h5>
+<div class="paragraph">
+<p>Le fragment de code peut être déclaré en ligne : dans ce cas, il est inclus dans le tag lui-même.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier l&#8217;interface <code>fr.sciam.workshop.javase.codesnippet.MonUtil</code> pour ajouter un fragment de code dans la documentation de l&#8217;interface avec le tag <code>{@snippet}</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"> <span class="o">*</span>
+ <span class="o">*</span> <span class="o">{</span><span class="nd">@snippet</span> <span class="o">:</span>
+ <span class="o">*</span>   <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+ <span class="o">*</span>       <span class="kt">var</span> <span class="n">message</span> <span class="o">=</span> <span class="s">"Exemple"</span><span class="o">;</span>
+ <span class="o">*</span>       <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+ <span class="o">*</span>       <span class="kt">long</span> <span class="n">valeur</span> <span class="o">=</span> <span class="nc">MonUtil</span><span class="o">.</span><span class="na">additionner</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span><span class="mi">4</span><span class="o">);</span>
+ <span class="o">*</span>   <span class="o">}</span>
+ <span class="o">*</span> <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Pour obtenir :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>/**
+ * Propose des utilitaires.
+ *
+ * {@snippet :
+ *   public static void main(String[] args) {
+ *       var message = "Exemple";
+ *       System.out.println(message);
+ *       long valeur = MonUtil.additionner(3,4);
+ *   }
+ * }
+ */
+ public interface MonUtil {</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+dans <code>@snippet</code>, tout comme dans <code>@code</code>, les accolades <code>{</code> <code>}</code> doivent s&#8217;équilibrer
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+le caractère <code>:</code> à la fin de la ligne contenant <code>@snippet</code> est important car il marque après le retour chariot qui le suit le début du fragment
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+comme dans toute JavaDoc, il n&#8217;est pas possible d&#8217;avoir des commentaires multilignes <code>/*</code> <code>*/</code> car le <code>*/</code> fermerait de bloc de commentaires JavaDoc. En Java, les commentaires ne s&#8217;emboîtent pas et JavaDoc ne peut pas modifier le traitement des commentaires.
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Construire la documentation JavaDoc en exécutant la commande dans le répertoire du projet :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">javadoc -d target\doc -sourcepath .\src\main\java --snippet-path .\src\test\java -subpackages fr.sciam --enable-preview --source 22 -Xdoclint:all,-missing</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>L&#8217;exécution de la commande affiche des messages dans la console :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{workdir}&gt;javadoc -d target\doc -sourcepath .\src\main\java --snippet-path .\src\test\java -subpackages fr.sciam --enable-preview --source 22 -Xdoclint:all,-missing
+Loading source files for package fr.sciam...
+Constructing Javadoc information...
+Creating destination directory: "target\doc\"
+Building index for all the packages and classes...
+Standard Doclet version 22+36-2370
+Building tree for all the packages and classes...
+Generating target\doc\fr\sciam\workshop\javase\structuredconcurrency\AbstractServiceMeteo.html...
+Generating target\doc\fr\sciam\workshop\javase\sealedclasses\BrassageMain.html...
+...
+Generating target\doc\serialized-form.html...
+Generating target\doc\overview-tree.html...
+Generating target\doc\index.html...
+Generating target\doc\allclasses-index.html...
+Building index for all classes...
+Generating target\doc\allpackages-index.html...
+Generating target\doc\index-all.html...
+Generating target\doc\search.html...
+Generating target\doc\overview-summary.html...
+Generating target\doc\help-doc.html...
+
+{workdir}&gt;</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Consulter la documentation générée en ouvrant le fichier <code>target/doc/fr/sciam/workshop/javase/codesnippet/MonUtil.html</code> dans un navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="lab-code-snippets-001.png" alt="lab code snippets 001">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_linclusion_dun_fragment_externe"><a class="anchor" href="#_linclusion_dun_fragment_externe"></a>1.2. L&#8217;inclusion d&#8217;un fragment externe</h5>
+<div class="paragraph">
+<p>Le fragment peut aussi être externe : dans ce cas, il est lu à partir d&#8217;un fichier source distinct précisé avec l&#8217;attribut <code>file</code>.</p>
+</div>
+<div class="paragraph">
+<p>Les fichiers externes contenant des fragments peuvent être placés :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>dans le sous-répertoire <code>snippet-files</code> du package de la classe documentée</p>
+</li>
+<li>
+<p>dans un sous-répertoire précisé grâce à l&#8217;option <code>--snippet-path</code> de l&#8217;outil <code>javadoc</code></p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+l&#8217;utilisation de fichiers externes permet d&#8217;inclure des fragments de code par exemple des tests automatisés, ce qui permet garantir leur fiabilité.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Il est possible de définir une région particulière du fichier à inclure en précisant son nom comme valeur de l&#8217;attribut <code>region</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la méthode <code>additionnerDevrait_avec2et3_renvoyer5()</code> de la classe de test <code>fr.sciam.workshop.javase.codesnippet.MonUtilTest</code> pour définir une région nommée <code>exemple</code> contenant une portion de code :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ajouter avant l&#8217;invocation de la méthode <code>additionner()</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">		<span class="c1">// @start region="exemple"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>ajouter après l&#8217;invocation de la méthode <code>additionner()</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">		<span class="c1">// @end</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Pour obtenir :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>	@Test
+	void additionnerDevrait_avec2et3_renvoyer5() {
+		// @start region="exemple"
+		long resultat = MonUtil.additionner(2,3);
+		// @end
+		assertEquals(5, resultat, "Valeur attendue différente");
+	}</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier le commentaire de documentation de la méthode <code>additionner()</code> de la classe <code>fr.sciam.workshop.javase.codesnippet.MonUtil</code> pour ajouter un fragment de code correspondant à la région <code>exemple</code> de la classe <code>fr.sciam.workshop.javase.codesnippet.MonUtilTest</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">   <span class="o">*</span> <span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="nc">Exemple</span> <span class="o">:</span>
+   <span class="o">*</span> <span class="o">{</span><span class="nd">@snippet</span> <span class="kd">class</span><span class="err">="</span><span class="nc">fr</span><span class="o">.</span><span class="na">sciam</span><span class="o">.</span><span class="na">workshop</span><span class="o">.</span><span class="na">javase</span><span class="o">.</span><span class="na">codesnippet</span><span class="o">.</span><span class="na">MonUtilTest</span><span class="s">" region="</span><span class="n">exemple</span><span class="err">"</span><span class="o">}</span>
+   <span class="o">*</span> <span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Pour obtenir :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>    /**
+     * Additionner deux entiers.
+     *
+     * &lt;p&gt;Exemple :
+     * {@snippet class="fr.sciam.workshop.javase.codesnippet.MonUtilTest" region="exemple"}
+     * &lt;/p&gt;
+     *
+     * @param a premier entier
+     * @param b second entier
+     * @return la valeur calculée
+     */</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Construire la documentation JavaDoc en exécutant la commande dans le répertoire du projet :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">javadoc -d target\doc -sourcepath .\src\main\java --snippet-path .\src\test\java -subpackages fr.sciam --enable-preview --source 22 -Xdoclint:all,-missing</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Consulter la documentation générée en rafraîchissant le fichier <code>target/doc/fr/sciam/workshop/javase/codesnippet/MonUtil.html</code> dans le navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="lab-code-snippets-002.png" alt="lab code snippets 002">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_mise_en_évidence_dune_portion_de_code"><a class="anchor" href="#_la_mise_en_évidence_dune_portion_de_code"></a>1.3. La mise en évidence d&#8217;une portion de code</h5>
+<div class="paragraph">
+<p>Le tag <code>@highlight</code> permet de mettre en évidence une ou plusieurs portions de texte du fragment.</p>
+</div>
+<div class="paragraph">
+<p>L&#8217;attribut <code>type</code> permet d&#8217;indiquer le type de mise en évidence : <code>bold</code> pour une mise en gras, <code>italic</code> pour une mise en italique ou <code>highlighted</code> pour une mise en surbrillance.</p>
+</div>
+<div class="paragraph">
+<p>La mise en évidence s&#8217;applique :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>par défaut, sur la ligne suivante</p>
+</li>
+<li>
+<p>sur la région précisée avec l&#8217;attribut <code>region</code></p>
+</li>
+<li>
+<p>sur les sous-chaines précisées avec l&#8217;attribut <code>substring</code></p>
+</li>
+<li>
+<p>sur les correspondances d&#8217;expressions régulières avec l&#8217;attribut <code>regexp</code></p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la documentation de l&#8217;interface <code>fr.sciam.workshop.javase.codesnippet.MonUtil</code> pour mettre en évidence la variable <code>valeur</code> dans le fragment de code :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ajouter avant l&#8217;invocation de la méthode <code>additionner()</code> pour affecter la variable <code>valeur</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"> <span class="o">*</span>       <span class="c1">// @highlight substring="valeur" type="highlighted" :</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+le caractère <code>:</code> à la fin du commentaire est obligatoire
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Pour obtenir :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre> *       System.out.println(message);
+ *       // @highlight substring="valeur" type="highlighted" :
+ *       long valeur = MonUtil.additionner(3,4);</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Construire la documentation JavaDoc en exécutant la commande dans le répertoire du projet :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">javadoc -d target\doc -sourcepath .\src\main\java --snippet-path .\src\test\java -subpackages fr.sciam --enable-preview --source 22 -Xdoclint:all,-missing</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Consulter la documentation générée en rafraîchissant le fichier <code>target/doc/fr/sciam/workshop/javase/codesnippet/MonUtil.html</code> dans le navigateur.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="lab-code-snippets-003.png" alt="lab code snippets 003">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_le_remplacement_dune_ou_plusieurs_portions_de_texte"><a class="anchor" href="#_le_remplacement_dune_ou_plusieurs_portions_de_texte"></a>1.4. Le remplacement d&#8217;une ou plusieurs portions de texte</h5>
+<div class="paragraph">
+<p>Le tag <code>@replace</code> permet de remplacer une ou plusieurs portions de texte, par exemple pour raccourcir quelque chose avec une ellipse.</p>
+</div>
+<div class="paragraph">
+<p>L&#8217;attribut <code>replacement</code> permet d&#8217;indiquer le texte de remplacement.</p>
+</div>
+<div class="paragraph">
+<p>La sélection de la portion de texte peut se faire :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>sur la région précisée avec l&#8217;attribut <code>region</code></p>
+</li>
+<li>
+<p>sur les sous-chaines précisées avec l&#8217;attribut <code>substring</code></p>
+</li>
+<li>
+<p>sur les correspondances d&#8217;expressions régulières avec l&#8217;attribut <code>regexp</code></p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la documentation de l&#8217;interface <code>fr.sciam.workshop.javase.codesnippet.MonUtil</code> pour remplacer la valeur de la variable <code>message</code> dans le fragment de code :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ajouter avant la définition de la variable <code>message</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"> <span class="o">*</span>       <span class="c1">// @replace substring='"Exemple"' replacement='"..."' :</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+le caractère <code>:</code> à la fin du commentaire est obligatoire
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Pour obtenir :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre> *   public static void main(String[] args) {
+ *       // @replace substring='"Exemple"' replacement='"..."' :
+ *       var message = "Exemple";....</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Construire la documentation JavaDoc en exécutant la commande dans le répertoire du projet :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">javadoc -d target\doc -sourcepath .\src\main\java --snippet-path .\src\test\java -subpackages fr.sciam --enable-preview --source 22 -Xdoclint:all,-missing</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Consulter la documentation générée en rafraîchissant le fichier <code>target/doc/fr/sciam/workshop/javase/codesnippet/MonUtil.html</code> dans le navigateur</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="lab-code-snippets-004.png" alt="lab code snippets 004">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_la_liaison_dune_portion_de_code_à_un_élément_de_la_documentation"><a class="anchor" href="#_la_liaison_dune_portion_de_code_à_un_élément_de_la_documentation"></a>1.5. La liaison d&#8217;une portion de code à un élément de la documentation</h5>
+<div class="paragraph">
+<p>Le tag <code>@link</code> permet de lier une portion de texte, comme des appels de méthode ou des noms de type, à d&#8217;autres éléments de la documentation.</p>
+</div>
+<div class="paragraph">
+<p>L&#8217;attribut <code>target</code> permet d&#8217;indiquer la cible dans la documentation.</p>
+</div>
+<div class="paragraph">
+<p>La sélection de la portion de texte peut se faire :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>sur la région précisée avec l&#8217;attribut <code>region</code></p>
+</li>
+<li>
+<p>sur les sous-chaines précisées avec l&#8217;attribut <code>substring</code></p>
+</li>
+<li>
+<p>sur les correspondances d&#8217;expressions régulières avec l&#8217;attribut <code>regexp</code></p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Modifier la documentation de l&#8217;interface <code>fr.sciam.workshop.javase.codesnippet.MonUtil</code> pour mettre un lien sur <code>System.out</code> vers la documentation en ligne dans le fragment de code :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ajouter avant l&#8217;affichage de la variable <code>message</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"> <span class="o">*</span>       <span class="c1">// @link substring="System.out" target="System#out" :</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+le caractère <code>:</code> à la fin du commentaire est obligatoire
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Pour obtenir :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre> *       var message = "Exemple";
+ *       // @link substring="System.out" target="System#out" :
+ *       System.out.println(message);</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Construire la documentation JavaDoc en exécutant la commande dans le répertoire du projet :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="plain">javadoc -d target\doc -sourcepath .\src\main\java --snippet-path .\src\test\java -subpackages fr.sciam --enable-preview --source 22 -Xdoclint:all,-missing</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>{kb}<br>
+Consulter la documentation générée en rafraîchissant le fichier <code>target/doc/fr/sciam/workshop/javase/codesnippet/MonUtil.html</code> dans le navigateur</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="lab-code-snippets-005.png" alt="lab code snippets 005">
+</div>
+</div>
+<div class="paragraph">
+<p>Cliquer sur le lien pour vérifier que la documentation Javadoc en ligne de <code>System.out</code> s&#8217;affiche.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="lab-code-snippets-006.png" alt="lab code snippets 006">
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2024-06-23 17:53:25 +0200
+</div>
+</div>
+</body>
+</html>
